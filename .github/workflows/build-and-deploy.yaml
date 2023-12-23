@@ -19,6 +19,7 @@ jobs:
       with:
         node-version: 16
         cache: 'yarn'
+        cache-dependency-path: ./frontend/package.json
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2

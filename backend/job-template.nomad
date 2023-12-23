@@ -41,7 +41,7 @@ job "succulent-backend$BRANCH_SUFFIX" {
 
       service {
         tags = ["public"]
-        name = "succulent-frontend$BRANCH_SUFFIX"
+        name = "succulent-backend$BRANCH_SUFFIX"
         port = "http"
         provider = "consul"
       }
