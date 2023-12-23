@@ -224,6 +224,8 @@ async function runner() {
                                             (await res.json()) as { id: string }
                                         ).id;
 
+                                        image.set("instagramContainerId", containerId);
+
                                         return containerId;
                                     }
                                 })
