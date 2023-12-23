@@ -185,7 +185,7 @@ async function runner() {
                             const res = await await fetch(url, {
                                 method: "POST",
                             });
-                            console.log(res.status, await res.text());
+                            res.status !== 200 && console.log(res.status, await res.text());
                             topContainerId = (
                                 (await res.json()) as { id: string }
                             ).id;
@@ -214,7 +214,7 @@ async function runner() {
                                         const res = await fetch(url, {
                                             method: "POST",
                                         });
-                                        console.log(
+                                        res.status !== 200 && console.log(
                                             res.status,
                                             await res.text()
                                         );
@@ -240,7 +240,7 @@ async function runner() {
                             const res = await fetch(url, {
                                 method: "POST",
                             });
-                            console.log(res.status, await res.text());
+                            res.status !== 200 && console.log(res.status, await res.text());
                             topContainerId = (
                                 (await res.json()) as { id: string }
                             ).id;
