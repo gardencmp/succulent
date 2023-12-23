@@ -3,7 +3,7 @@ job "succulent-backend$BRANCH_SUFFIX" {
   datacenters = ["*"]
 
   group "static" {
-    count = 4
+    count = 1
 
     network {
       port "http" {
