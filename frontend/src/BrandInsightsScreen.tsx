@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Brand, InstagramInsights } from "./dataModel";
 import { ResolvedCoMap, useAutoSub } from "jazz-react";
 import { CoID } from "cojson";
 import { useEffect } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import { useParams } from "react-router-dom";
+import { Brand, InstagramInsights } from "./sharedDataModel";
 
 export function BrandInsightsScreen() {
     const brandId = useParams<{ brandId: CoID<Brand>; }>().brandId;

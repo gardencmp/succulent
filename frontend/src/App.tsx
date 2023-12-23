@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { AccountRoot, Brand, ListOfPosts } from "./dataModel";
+import { AccountRoot } from "./dataModel";
 import { ResolvedCoMap, useJazz } from "jazz-react";
 import { Profile, AccountID } from "cojson";
 import { Input } from "./components/ui/input";
@@ -8,6 +8,7 @@ import { Link, RouterProvider, createHashRouter } from "react-router-dom";
 import { BrandInsightsScreen } from "./BrandInsightsScreen";
 import { BrandScheduleScreen } from "./BrandScheduleScreen";
 import { useState } from "react";
+import { Brand, ListOfPosts } from "./sharedDataModel";
 
 const router = createHashRouter([
     {
@@ -180,7 +181,7 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
                     Choose an Instagram page:
                     {pagesToChoose.map((page) => (
                         <Button
-                            key={page.id}
+                            key={page.instagram_business_account.id}
                             onClick={() => {
                                 brand.set("instagramPage", {
                                     id: page.instagram_business_account.id,

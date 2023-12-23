@@ -16,7 +16,7 @@ import {
 import { createOrResumeWorker, autoSub } from "jazz-nodejs";
 import { autoSubResolution, Resolved } from "jazz-autosub";
 
-import { Image, Post } from "../shared/sharedDataModel";
+import { Image, Post } from "./sharedDataModel";
 
 type WorkerAccountRoot = CoMap<{
     scheduledPosts: ScheduledPosts["id"];

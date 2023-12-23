@@ -1,11 +1,11 @@
-import { CoMap, CoList, AccountMigration } from "cojson";
-import { ListOfBrands, Post } from "../../shared/sharedDataModel";
+import { CoMap, AccountMigration } from "cojson";
+import { ListOfBrands } from "./sharedDataModel";
 
 export type AccountRoot = CoMap<{
     brands: ListOfBrands["id"];
 }>;
 
-export const accountMigration: AccountMigration = (account, profile) => {
+export const accountMigration: AccountMigration = (account, _profile) => {
     if (!account.get("root")) {
         account.set(
             "root",

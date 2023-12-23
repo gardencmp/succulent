@@ -1,20 +1,13 @@
-import { AccountRoot, Brand } from "./dataModel";
+import { AccountRoot } from "./dataModel";
 import { Resolved, useAutoSub, useJazz } from "jazz-react";
-import { createBinaryStreamFromBlob } from "jazz-browser";
 import { CoID, Profile, CoStream } from "cojson";
 import { useParams } from "react-router-dom";
 import { Button } from "./components/ui/button";
-import { Image, ListOfImages, Post } from "../../shared/sharedDataModel";
+import { Brand, Image, ListOfImages, Post } from "./sharedDataModel";
 import { Textarea } from "./components/ui/textarea";
 import { Input } from "./components/ui/input";
 import { BrowserImage, createImage } from "jazz-browser-media-images";
-import { Calendar } from "./components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "./components/ui/popover";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 
 const scheduledPostsStreamId = "co_zGzPPekq1KTv7szgJ8VFcFUe8ht" as CoID<
     CoStream<Post["id"]>
