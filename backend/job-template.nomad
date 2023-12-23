@@ -47,8 +47,8 @@ job "succulent-backend$BRANCH_SUFFIX" {
       }
 
       resources {
-        cpu    = 50 # MHz
-        memory = 50 # MB
+        cpu    = 500 # MHz
+        memory = 500 # MB
       }
     }
   }

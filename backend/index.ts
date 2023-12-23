@@ -54,7 +54,7 @@ async function runner() {
 
             for (let perSession of account.root.scheduledPosts.perSession) {
                 for (let post of perSession[1].all) {
-                    if (!post.value) continue;
+                    if (!post?.value) continue;
                     if (post.value.instagram.state === "scheduleDesired") {
                         actuallyScheduled.set(
                             post.value.id,
