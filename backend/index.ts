@@ -253,8 +253,7 @@ async function runner() {
 
                         const url = `https://graph.facebook.com/v18.0/${
                             brand.get("instagramPage")?.id
-                        }/media_publish
-                    ?creation_id=${topContainerId}}`;
+                        }/media_publish?creation_id=${topContainerId}}`;
                         console.log("POST", url);
                         const res = await fetch(url, {
                             method: "POST",
