@@ -39,6 +39,10 @@ job "succulent-backend$BRANCH_SUFFIX" {
         }
       }
 
+      env {
+        SUCCULENT_ADDR = "https://succulent-backend$BRANCH_SUFFIX.jazz.tools"
+      }
+
       service {
         tags = ["public"]
         name = "succulent-backend$BRANCH_SUFFIX"
