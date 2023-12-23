@@ -185,7 +185,8 @@ async function runner() {
                             const res = await await fetch(url, {
                                 method: "POST",
                             });
-                            res.status !== 200 && console.log(res.status, await res.text());
+                            res.status !== 200 &&
+                                console.log(res.status, await res.text());
                             topContainerId = (
                                 (await res.json()) as { id: string }
                             ).id;
@@ -214,10 +215,11 @@ async function runner() {
                                         const res = await fetch(url, {
                                             method: "POST",
                                         });
-                                        res.status !== 200 && console.log(
-                                            res.status,
-                                            await res.text()
-                                        );
+                                        res.status !== 200 &&
+                                            console.log(
+                                                res.status,
+                                                await res.text()
+                                            );
                                         const containerId = (
                                             (await res.json()) as { id: string }
                                         ).id;
@@ -240,7 +242,8 @@ async function runner() {
                             const res = await fetch(url, {
                                 method: "POST",
                             });
-                            res.status !== 200 && console.log(res.status, await res.text());
+                            res.status !== 200 &&
+                                console.log(res.status, await res.text());
                             topContainerId = (
                                 (await res.json()) as { id: string }
                             ).id;
@@ -253,12 +256,13 @@ async function runner() {
                         }/media_publish
                     ?creation_id=${topContainerId}}`;
                         console.log("POST", url);
+                        const res = await fetch(url, {
+                            method: "POST",
+                        });
+                        res.status !== 200 &&
+                            console.log(res.status, await res.text());
                         const postMediaId = (
-                            (await (
-                                await fetch(url, {
-                                    method: "POST",
-                                })
-                            ).json()) as { id: string }
+                            (await res.json()) as { id: string }
                         ).id;
 
                         if (!postMediaId) throw new Error("no post media id");
