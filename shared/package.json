@@ -1,0 +1,6 @@
+{
+  "name": "succulent-shared",
+  "dependencies": {
+    "cojson": "^0.6.2"
+  }
+}
