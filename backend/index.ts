@@ -196,9 +196,9 @@ async function runner() {
                                     const existingContainerId = image.get(
                                         "instagramContainerId"
                                     );
-                                    if (existingContainerId) {
-                                        return existingContainerId;
-                                    } else {
+                                    // if (existingContainerId) {
+                                    //     return existingContainerId;
+                                    // } else {
                                         const url = `https://graph.facebook.com/v18.0/${
                                             brand.get("instagramPage")?.id
                                         }/media?image_url=${encodeURIComponent(
@@ -227,7 +227,7 @@ async function runner() {
                                         image.set("instagramContainerId", containerId);
 
                                         return containerId;
-                                    }
+                                    // }
                                 })
                             );
 
