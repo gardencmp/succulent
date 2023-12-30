@@ -7,7 +7,7 @@ import { Brand, Image, ListOfImages, Post } from "./sharedDataModel";
 import { Textarea } from "./components/ui/textarea";
 import { Input } from "./components/ui/input";
 import { BrowserImage, createImage } from "jazz-browser-media-images";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 const scheduledPostsStreamId = "co_zGzPPekq1KTv7szgJ8VFcFUe8ht" as CoID<
     CoStream<Post["id"]>
@@ -69,6 +69,7 @@ function PostComponent({
     onDelete?: () => void;
 }) {
     const { me, localNode } = useJazz<Profile, AccountRoot>();
+    const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
     const schedule = useCallback(
         async (scheduleAt: Date) => {
             post.set("instagram", {
@@ -157,15 +158,21 @@ function PostComponent({
                             : undefined
                     }
                     onChange={(event) => {
-                        console.log(new Date(event.target.value));
-                        schedule(new Date(event.target.value));
+                        setDesiredScheduleDate(new Date(event.target.value));
+
                     }}
                     min={toDatetimeLocal(new Date())}
                     className="dark:[color-scheme:dark] max-w-[13rem]"
                 />
                 <div className="whitespace-nowrap mr-auto">
                     {post.instagram.state === "notScheduled"
-                        ? "Not yet scheduled"
+                        ? desiredScheduleDate ? <Button onClick={() => {
+                            if (!desiredScheduleDate) return;
+                            console.log("Scheduling for " + desiredScheduleDate.toISOString());
+                            schedule(desiredScheduleDate);
+                        }}>
+                            Schedule
+                        </Button>: "Not yet scheduled"
                         : post.instagram.state === "scheduleDesired"
                         ? "Schedule desired"
                         : post.instagram.state === "scheduled"
