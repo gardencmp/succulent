@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { AccountRoot } from "./dataModel";
-import { ResolvedCoMap, useJazz } from "jazz-react";
+import { ResolvedCoMap, useAcceptInvite, useJazz } from "jazz-react";
 import { Profile, AccountID } from "cojson";
 import { Input } from "./components/ui/input";
 import FacebookLogin from "react-facebook-login";
@@ -9,6 +9,9 @@ import { BrandInsightsScreen } from "./BrandInsightsScreen";
 import { BrandScheduleScreen } from "./BrandScheduleScreen";
 import { useState } from "react";
 import { Brand, ListOfPosts } from "./sharedDataModel";
+import { InviteButton } from "./components/InviteButton";
+import { Toaster } from "./components/ui/toaster";
+import { autoSubResolution, ResolvedAccount } from "jazz-autosub";
 
 const router = createHashRouter([
     {
@@ -30,7 +33,26 @@ const router = createHashRouter([
 ]);
 
 function App() {
-    return <><div className="text-center p-2 tracking-wider">succulent</div><RouterProvider router={router} /></>;
+    const { me, localNode } = useJazz<Profile, AccountRoot>();
+    useAcceptInvite<Brand>(async (brandID) => {
+        const myBrands = await autoSubResolution(me.id, me => me.root?.brands, localNode)
+
+        if (!myBrands) {
+            console.log("myBrands not available");
+            return
+        }
+
+        myBrands.append(brandID);
+        router.navigate("/")
+    });
+
+    return (
+        <>
+            <div className="text-center p-2 tracking-wider">succulent</div>
+            <RouterProvider router={router} />
+            <Toaster/>
+        </>
+    );
 }
 
 const scheduleWorkerId = "co_z4RuEedFWkdzjGEsXg2aBR4UYL6" as AccountID;
@@ -118,18 +140,23 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
         <div className="flex flex-col gap-2">
             <h1 className="text-2xl mb-4">
                 {brand.name}{" "}
+            </h1>
+            <div className="flex justify-end gap-2">
+                <InviteButton value={brand} />
                 <Button
                     variant="destructive"
                     size="sm"
                     onClick={() => {
-                        me.root?.brands?.delete(
-                            me.root.brands.findIndex((b) => b?.id === brand.id)
-                        );
+                        if (confirm("Really delete " + brand.name + "?")) {
+                            me.root?.brands?.delete(
+                                me.root.brands.findIndex((b) => b?.id === brand.id)
+                            );
+                        }
                     }}
                 >
                     Delete brand
                 </Button>
-            </h1>
+            </div>
             {!brand.instagramAccessToken && (
                 <div>
                     <FacebookLogin
