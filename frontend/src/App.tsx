@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Brand, ListOfPosts } from "./sharedDataModel";
 import { InviteButton } from "./components/InviteButton";
 import { Toaster } from "./components/ui/toaster";
-import { autoSubResolution, ResolvedAccount } from "jazz-autosub";
+import { autoSubResolution } from "jazz-autosub";
 
 const router = createHashRouter([
     {
