@@ -41,6 +41,17 @@ job "succulent-backend$BRANCH_SUFFIX" {
 
       env {
         SUCCULENT_BACKEND_ADDR = "https://succulent-backend$BRANCH_SUFFIX.jazz.tools"
+        SUCCULENT_FRONTEND_ADDR = "https://succulent$BRANCH_SUFFIX.jazz.tools"
+      }
+
+      template {
+        data = <<EOH
+        {{ with nomadVar "nomad/jobs/succulent-backend/credentials" }}{
+          "accountID": "{{ .accountID }}",
+          "accountName": "{{ .accountName }}"
+        }{{ end }}
+        EOH
+        destination = "local/SucculentSchedulerCredentials.json"
       }
 
       service {
