@@ -16,7 +16,7 @@ import {
 import { createOrResumeWorker, autoSub } from "jazz-nodejs";
 import { autoSubResolution, Resolved } from "jazz-autosub";
 
-import { Image, Post } from "./sharedDataModel";
+import { Brand, Image, Post } from "./sharedDataModel";
 
 type WorkerAccountRoot = CoMap<{
     scheduledPosts: ScheduledPosts["id"];
@@ -85,40 +85,90 @@ async function runner() {
 
     Bun.serve({
         async fetch(req) {
-            console.log(req.url);
-            const imageFileId = req.url.split("/image/")[1];
-            console.log(imageFileId);
+            if (req.url.includes("/connectFB")) {
+                const code = new URL(req.url).searchParams.get("code");
 
-            const image = await node.load(
-                imageFileId as CoID<Media.ImageDefinition>
-            );
-            if (image === "unavailable") return new Response("unavailable!");
-            const originalRes = image.get("originalSize");
-            if (!originalRes) return new Response("no original res");
-            const resName =
-                `${originalRes[0]}x${originalRes[1]}` as `${number}x${number}`;
-            const resId = image.get(resName);
-            if (!resId) return new Response("no resId");
-            const res = await node.load(resId);
-            if (res === "unavailable") return new Response("unavailable!");
+                if (!code) return new Response("no code");
 
-            const streamInfo = await new Promise<
-                BinaryStreamInfo & { chunks: Uint8Array[] }
-            >((resolve) => {
-                const unsub = res.subscribe(async (stream) => {
-                    const streamInfo = await stream.getBinaryChunks();
-                    if (streamInfo) {
-                        resolve(streamInfo);
-                        unsub();
-                    }
+                const shortLivedResult = await (
+                    await fetch(
+                        `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${
+                            process.env.FB_CLIENT_ID
+                        }&redirect_uri=${encodeURIComponent(
+                            process.env.SUCCULENT_BACKEND_ADDR + "/connectFB"
+                        )}&client_secret=${
+                            process.env.FB_CLIENT_SECRET
+                        }&code=${code}`
+                    )
+                ).json();
+
+                const longLivedResult = await (
+                    await fetch(
+                        `https://graph.facebook.com/v2.3/oauth/access_token?grant_type=fb_exchange_token&client_id=${
+                            process.env.FB_CLIENT_ID
+                        }&client_secret=${
+                            process.env.FB_CLIENT_SECRET
+                        }&fb_exchange_token=${
+                            shortLivedResult.access_token
+                        }`
+                    )
+                ).json();
+
+                const brandId = new URL(req.url).searchParams.get("state");
+
+                if (!brandId) return new Response("no brandId");
+
+                const brand = await node.load(brandId as CoID<Brand>);
+
+                if (brand === "unavailable") return new Response("unavailable");
+
+                brand.set("instagramAccessToken", longLivedResult.access_token);
+                brand.set(
+                    "instagramAccessTokenValidUntil",
+                    Date.now() + longLivedResult.expires_in * 1000
+                );
+
+                // redirect to frontend
+                return Response.redirect(process.env.SUCCULENT_FRONTEND_ADDR!);
+            } else if (req.url.includes("/image/")) {
+                console.log(req.url);
+                const imageFileId = req.url.split("/image/")[1];
+                console.log(imageFileId);
+
+                const image = await node.load(
+                    imageFileId as CoID<Media.ImageDefinition>
+                );
+                if (image === "unavailable")
+                    return new Response("unavailable!");
+                const originalRes = image.get("originalSize");
+                if (!originalRes) return new Response("no original res");
+                const resName =
+                    `${originalRes[0]}x${originalRes[1]}` as `${number}x${number}`;
+                const resId = image.get(resName);
+                if (!resId) return new Response("no resId");
+                const res = await node.load(resId);
+                if (res === "unavailable") return new Response("unavailable!");
+
+                const streamInfo = await new Promise<
+                    BinaryStreamInfo & { chunks: Uint8Array[] }
+                >((resolve) => {
+                    const unsub = res.subscribe(async (stream) => {
+                        const streamInfo = stream.getBinaryChunks();
+                        if (streamInfo) {
+                            resolve(streamInfo);
+                            unsub();
+                        }
+                    });
                 });
-            });
 
-            return new Response(streamInfo.chunks, {
-                headers: {
-                    "Content-Type": streamInfo.mimeType,
-                },
-            });
+                return new Response(new Blob(streamInfo.chunks), {
+                    headers: {
+                        "Content-Type": streamInfo.mimeType,
+                    },
+                });
+            } else {
+                return new Response("not found", { status: 404 });
+            }
         },
         port: 3331,
     });
@@ -174,7 +224,7 @@ async function runner() {
                             }/media?caption=${encodeURIComponent(
                                 post.get("content") || ""
                             )}&image_url=${encodeURIComponent(
-                                (process.env.SUCCULENT_ADDR ||
+                                (process.env.SUCCULENT_BACKEND_ADDR ||
                                     "http://localhost:3331") +
                                     "/image/" +
                                     images[0].get("imageFile")
@@ -182,7 +232,7 @@ async function runner() {
                                 "instagramAccessToken"
                             )}`;
                             console.log("POST", url);
-                            const res = await await fetch(url, {
+                            const res = await fetch(url, {
                                 method: "POST",
                             });
                             res.status !== 200 &&
@@ -199,34 +249,37 @@ async function runner() {
                                     // if (existingContainerId) {
                                     //     return existingContainerId;
                                     // } else {
-                                        const url = `https://graph.facebook.com/v18.0/${
-                                            brand.get("instagramPage")?.id
-                                        }/media?image_url=${encodeURIComponent(
-                                            (process.env.SUCCULENT_ADDR ||
-                                                "http://localhost:3331") +
-                                                "/image/" +
-                                                image.get("imageFile")
-                                        )}&access_token=${brand.get(
-                                            "instagramAccessToken"
-                                        )}`;
+                                    const url = `https://graph.facebook.com/v18.0/${
+                                        brand.get("instagramPage")?.id
+                                    }/media?image_url=${encodeURIComponent(
+                                        (process.env.SUCCULENT_BACKEND_ADDR ||
+                                            "http://localhost:3331") +
+                                            "/image/" +
+                                            image.get("imageFile")
+                                    )}&access_token=${brand.get(
+                                        "instagramAccessToken"
+                                    )}`;
 
-                                        console.log("POST", url);
+                                    console.log("POST", url);
 
-                                        const res = await fetch(url, {
-                                            method: "POST",
-                                        });
-                                        res.status !== 200 &&
-                                            console.log(
-                                                res.status,
-                                                await res.text()
-                                            );
-                                        const containerId = (
-                                            (await res.json()) as { id: string }
-                                        ).id;
+                                    const res = await fetch(url, {
+                                        method: "POST",
+                                    });
+                                    res.status !== 200 &&
+                                        console.log(
+                                            res.status,
+                                            await res.text()
+                                        );
+                                    const containerId = (
+                                        (await res.json()) as { id: string }
+                                    ).id;
 
-                                        image.set("instagramContainerId", containerId);
+                                    image.set(
+                                        "instagramContainerId",
+                                        containerId
+                                    );
 
-                                        return containerId;
+                                    return containerId;
                                     // }
                                 })
                             );

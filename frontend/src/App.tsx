@@ -138,9 +138,7 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
 
     return (
         <div className="flex flex-col gap-2">
-            <h1 className="text-2xl mb-4">
-                {brand.name}{" "}
-            </h1>
+            <h1 className="text-2xl mb-4">{brand.name} </h1>
             <div className="flex justify-end gap-2">
                 <InviteButton value={brand} />
                 <Button
@@ -149,7 +147,9 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
                     onClick={() => {
                         if (confirm("Really delete " + brand.name + "?")) {
                             me.root?.brands?.delete(
-                                me.root.brands.findIndex((b) => b?.id === brand.id)
+                                me.root.brands.findIndex(
+                                    (b) => b?.id === brand.id
+                                )
                             );
                         }
                     }}
@@ -158,34 +158,17 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
                 </Button>
             </div>
             {!brand.instagramAccessToken && (
-                <div>
-                    <FacebookLogin
-                        appId="851322152980071"
-                        autoLoad={true}
-                        fields="name,email"
-                        scope={scopes.join(",")}
-                        callback={async (userInfo) => {
-                            console.log("FB", userInfo);
-                            // TODO: move this to backend!!!
-                            const longLivedResult = await (
-                                await fetch(
-                                    `https://graph.facebook.com/v2.3/oauth/access_token?grant_type=fb_exchange_token&client_id=${"851322152980071"}&client_secret=${"4b98eab5cb91eb00ccea27ed2fef6a9d"}&fb_exchange_token=${
-                                        (userInfo as any).accessToken
-                                    }`
-                                )
-                            ).json();
-                            console.log("RESULT", longLivedResult);
-                            brand.set(
-                                "instagramAccessToken",
-                                longLivedResult.access_token
-                            );
-                            brand.set(
-                                "instagramAccessTokenValidUntil",
-                                Date.now() + longLivedResult.expires_in * 1000
-                            );
-                        }}
-                    />
-                </div>
+                <Button
+                    onClick={() => {
+                        window.location = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${"851322152980071"}&redirect_uri=${encodeURIComponent(
+                            process.env.VITE_SUCCULENT_BACKEND_ADDR + "/connectFB"
+                        )}&state=${brand.id}&scope=${encodeURIComponent(
+                            scopes.join(",")
+                        )}&response_type=code` as string & Location;
+                    }}
+                >
+                    Connect to Instagram/Facebook
+                </Button>
             )}
             {brand.instagramAccessToken &&
                 !brand.instagramPage &&
@@ -222,11 +205,21 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
                     ))}
                 </div>
             )}
-            {brand.instagramPage && <div>Instagram page: {brand.instagramPage.name} <Button size="sm" className="text-xs" variant="ghost" onClick={
-                () => {
-                    brand.delete("instagramPage");
-                }
-            }>Reset</Button></div>}
+            {brand.instagramPage && (
+                <div>
+                    Instagram page: {brand.instagramPage.name}{" "}
+                    <Button
+                        size="sm"
+                        className="text-xs"
+                        variant="ghost"
+                        onClick={() => {
+                            brand.delete("instagramPage");
+                        }}
+                    >
+                        Reset
+                    </Button>
+                </div>
+            )}
 
             <div>
                 IG Access Token{" "}

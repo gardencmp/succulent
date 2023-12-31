@@ -40,7 +40,7 @@ job "succulent-backend$BRANCH_SUFFIX" {
       }
 
       env {
-        SUCCULENT_ADDR = "https://succulent-backend$BRANCH_SUFFIX.jazz.tools"
+        SUCCULENT_BACKEND_ADDR = "https://succulent-backend$BRANCH_SUFFIX.jazz.tools"
       }
 
       service {
