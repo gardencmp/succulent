@@ -2,7 +2,7 @@ import { CoMap, CoList, Media } from "cojson";
 
 export type Platform = "Twitter" | "Instagram" | "Facebook" | "TikTok";
 
-type ISODate = string;
+export type ISODate = string;
 
 export type InstagramState =
     | {
