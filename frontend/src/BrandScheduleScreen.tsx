@@ -1,9 +1,9 @@
 import { useAutoSub } from "jazz-react";
 import { CoID } from "cojson";
 import { useParams } from "react-router-dom";
-import { Button } from "./components/ui/button";
-import { Brand, ListOfImages, Post } from "./sharedDataModel";
-import { PostComponent } from "./components/Post";
+import { Brand } from "./sharedDataModel";
+import { CalendarView } from "./components/CalendarView";
+import { FeedView } from "./components/FeedView";
 
 export function BrandScheduleScreen() {
     const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
@@ -17,42 +17,8 @@ export function BrandScheduleScreen() {
               <li className="selected text-bold">Feed</li>
               <li>Calender</li>
             </ul>
-            <Button
-                variant="outline"
-                className="h-20"
-                onClick={() => {
-                    if (!brand) return;
-                    const draftPost = brand.meta.group.createMap<Post>({
-                        instagram: {
-                            state: "notScheduled",
-                        },
-                        images: brand.meta.group.createList<ListOfImages>().id,
-                        inBrand: brand.id,
-                    });
-                    brand.posts?.append(draftPost.id);
-                }}
-            >
-                + Add draft post
-            </Button>
-            {brand?.posts?.map(
-                (post) =>
-                    post && (
-                        <PostComponent
-                            key={post.id}
-                            post={post}
-                            onDelete={() => {
-                                post.set("instagram", {
-                                    state: "notScheduled",
-                                });
-                                brand.posts?.delete(
-                                    brand.posts.findIndex(
-                                        (p) => p?.id === post.id
-                                    )
-                                );
-                            }}
-                        />
-                    )
-            )}
+            <FeedView />
+            {/* <CalendarView /> */}
         </div>
     );
 };
