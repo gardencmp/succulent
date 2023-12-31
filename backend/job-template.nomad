@@ -37,6 +37,12 @@ job "succulent-backend$BRANCH_SUFFIX" {
           username = "$DOCKER_USER"
           password = "$DOCKER_PASSWORD"
         }
+
+        mount {
+          type   = "bind"
+          source = "configs"
+          target = "/usr/src/app"
+        }
       }
 
       env {
@@ -51,7 +57,7 @@ job "succulent-backend$BRANCH_SUFFIX" {
           "accountName": "{{ .accountName }}"
         }{{ end }}
         EOH
-        destination = "local/SucculentSchedulerCredentials.json"
+        destination = "configs/SucculentSchedulerCredentials.json"
       }
 
       service {
