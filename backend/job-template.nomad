@@ -54,7 +54,7 @@ job "succulent-backend$BRANCH_SUFFIX" {
         data = <<EOH
         {{ with nomadVar "nomad/jobs/succulent-backend" }}{
           "accountID": "{{ .accountID }}",
-          "accountName": "{{ .accountName }}"
+          "accountSecret": "{{ .accountSecret }}"
         }{{ end }}
         EOH
         destination = "configs/SucculentSchedulerCredentials.json"
