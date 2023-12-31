@@ -10,7 +10,7 @@ export function CalendarView() {
   const brand = useAutoSub(brandId);
 
   return (
-    <div className="flex flex-col gap-8 p-8">
+    <div className="flex flex-col gap-8 px-8">
       <Button
         variant="outline"
         className="h-20"
