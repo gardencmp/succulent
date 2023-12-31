@@ -11,11 +11,6 @@ export function CalendarView() {
 
   return (
     <div className="flex flex-col gap-8 p-8">
-      <h1 className="text-3xl ">{brand?.name} Schedule</h1>
-      <ul className="tabs flex">
-        <li className="selected text-bold">Feed</li>
-        <li>Calender</li>
-      </ul>
       <Button
         variant="outline"
         className="h-20"
