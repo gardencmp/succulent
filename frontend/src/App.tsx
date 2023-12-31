@@ -48,7 +48,7 @@ function App() {
 
     return (
         <>
-            <div className="text-center p-2 tracking-wider">succulent</div>
+            <div className="text-center p-2 tracking-wider">succulent 🪴</div>
             <RouterProvider router={router} />
             <Toaster/>
         </>
