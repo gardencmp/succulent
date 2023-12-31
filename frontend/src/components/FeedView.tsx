@@ -7,9 +7,11 @@ import { BrowserImage } from 'jazz-browser-media-images';
 import { compareDesc } from 'date-fns';
 import { useState } from 'react';
 import { PostComponent } from './Post';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from './ui/drawer';
 
 export function FeedView() {
-  const draftStates = ['scheduleDesired', 'scheduled', 'notScheduled'];
+  const draftStates = ['notScheduled'];
   const scheduledStates = ['scheduleDesired', 'scheduled'];
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
@@ -27,11 +29,13 @@ export function FeedView() {
         new Date((b?.instagram as { scheduledAt: ISODate }).scheduledAt)
       );
     });
-  console.log('post', brand?.posts?.[0]);
   const activePost = brand?.posts?.find((post) => post?.id === activePostID);
+  const draftPosts = brand?.posts?.filter((post) =>
+    draftStates.includes(post?.instagram.state!)
+  );
 
   return (
-    <div className="container">
+    <Dialog>
       <div className="flex columns-3 w-full">
         <Button
           variant="outline"
@@ -54,22 +58,24 @@ export function FeedView() {
           (post) =>
             post && (
               <div className="col-span-1">
-                {draftStates.includes(post.instagram.state) &&
+                {scheduledStates.includes(post.instagram.state) &&
                   post.images?.[0] && (
-                    <Button
-                      variant="ghost"
-                      className="p-0 h-40 hover:outline-dotted outline-pink-500 rounded-none"
-                      onClick={() => setActivePostID(post.id)}
-                    >
-                      <img
-                        key={post?.images[0].id}
-                        className="w-40 h-40 object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
-                        src={
-                          post.images[0].imageFile?.as(BrowserImage)
-                            ?.highestResSrcOrPlaceholder
-                        }
-                      />
-                    </Button>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="p-0 h-40 hover:outline-dotted outline-pink-500 rounded-none"
+                        onClick={() => setActivePostID(post.id)}
+                      >
+                        <img
+                          key={post?.images[0].id}
+                          className="w-40 h-40 object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
+                          src={
+                            post.images[0].imageFile?.as(BrowserImage)
+                              ?.highestResSrcOrPlaceholder
+                          }
+                        />
+                      </Button>
+                    </DialogTrigger>
                   )}
                 {post.instagram.state === 'posted' && post.images?.[0] && (
                   <img
@@ -85,18 +91,19 @@ export function FeedView() {
             )
         )}
       </div>
-      {activePost && (
-        <div className="modal position-absolute">
-          <Button
-            variant="ghost"
-            className=""
-            onClick={() => setActivePostID(undefined)}
-          >
-            X
-          </Button>
-          <PostComponent post={activePost} />
-        </div>
-      )}
-    </div>
+      <DialogContent>
+        <PostComponent post={activePost!} />
+      </DialogContent>
+      <Drawer open={true}>
+        <DrawerContent>
+          <div className="mx-auto w-full h-[50vh] max-w-sm">
+            <DrawerHeader>
+              <DrawerTitle>Drafts</DrawerTitle>
+            </DrawerHeader>
+            {draftPosts?.map((post) => post && <PostComponent post={post} />)}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </Dialog>
   );
 }
