@@ -12,7 +12,7 @@ export function BrandScheduleScreen() {
   const viewTabs = ['feed', 'calendar'];
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
-  const [activeTab, setActiveTab] = useState<viewTypes>('calendar');
+  const [activeTab, setActiveTab] = useState<viewTypes>('feed');
 
   return (
     <div className="flex flex-col gap-6 px-8">
