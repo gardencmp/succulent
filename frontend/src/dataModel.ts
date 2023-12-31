@@ -5,7 +5,7 @@ export type AccountRoot = CoMap<{
   brands: ListOfBrands['id'];
 }>;
 
-export const accountMigration: AccountMigration = (account, _profile) => {
+export const accountMigration: AccountMigration = (account) => {
   if (!account.get('root')) {
     account.set(
       'root',

@@ -13,7 +13,7 @@ export function FeedView() {
   const scheduledStates = ['scheduleDesired', 'scheduled'];
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
-  const [activePostID, setActivePostID] = useState(null);
+  const [activePostID, setActivePostID] = useState<CoID<Post>>();
   const chronologicalScheduledPosts = [...(brand?.posts || [])]
     .filter(
       (post) =>
@@ -85,12 +85,12 @@ export function FeedView() {
             )
         )}
       </div>
-      {activePostID && (
+      {activePost && (
         <div className="modal position-absolute">
           <Button
             variant="ghost"
             className=""
-            onClick={() => setActivePostID(null)}
+            onClick={() => setActivePostID(undefined)}
           >
             X
           </Button>

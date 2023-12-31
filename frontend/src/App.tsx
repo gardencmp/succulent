@@ -3,7 +3,6 @@ import { AccountRoot } from './dataModel';
 import { ResolvedCoMap, useAcceptInvite, useJazz } from 'jazz-react';
 import { Profile, AccountID } from 'cojson';
 import { Input } from './components/ui/input';
-import FacebookLogin from 'react-facebook-login';
 import { Link, RouterProvider, createHashRouter } from 'react-router-dom';
 import { BrandInsightsScreen } from './BrandInsightsScreen';
 import { BrandScheduleScreen } from './BrandScheduleScreen';
