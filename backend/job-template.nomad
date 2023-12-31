@@ -40,8 +40,8 @@ job "succulent-backend$BRANCH_SUFFIX" {
 
         mount {
           type   = "bind"
-          source = "configs"
-          target = "/usr/src/app"
+          source = "configs/SucculentSchedulerCredentials.json"
+          target = "/usr/src/app/SucculentSchedulerCredentials.json"
         }
       }
 
