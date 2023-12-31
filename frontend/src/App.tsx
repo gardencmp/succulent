@@ -239,25 +239,6 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
       <Button asChild>
         <Link to={`/brand/${brand.id}/schedule`}>Schedule</Link>
       </Button>
-      <Button
-        onClick={async () => {
-          const oldAccount = await localNode.load(
-            'co_z4RuEedFWkdzjGEsXg2aBR4UYL6' as AccountID
-          );
-          if (!oldAccount || oldAccount === 'unavailable') {
-            throw new Error('oldAccount unavailable');
-          }
-          brand.meta.group.removeMember(oldAccount);
-          const newAccount = await localNode.load(scheduleWorkerId);
-          if (!newAccount || newAccount === 'unavailable') {
-            throw new Error('newAccount unavailable');
-          }
-          brand.meta.group.addMember(newAccount, 'writer');
-          console.log('SUCCESSFULLY FIXED SCHEDULED POSTS ACCESS');
-        }}
-      >
-        FIX SCHEDULED POSTS ACCESS
-      </Button>
     </div>
   );
 }
