@@ -52,7 +52,7 @@ job "succulent-backend$BRANCH_SUFFIX" {
 
       template {
         data = <<EOH
-        {{ with nomadVar "nomad/jobs/succulent-backend/credentials" }}{
+        {{ with nomadVar "nomad/jobs/succulent-backend" }}{
           "accountID": "{{ .accountID }}",
           "accountName": "{{ .accountName }}"
         }{{ end }}
