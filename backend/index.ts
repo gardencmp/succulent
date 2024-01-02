@@ -36,52 +36,72 @@ async function runner() {
         const scheduledPosts =
           scheduledPostsGroup.createStream<ScheduledPosts>();
 
-        console.log('scheduledPosts', scheduledPosts.id);
+        console.log('scheduledPosts in migration', scheduledPosts.id);
+
+        const after = account.set(
+          'root',
+          account.createMap<WorkerAccountRoot>({
+            scheduledPosts: scheduledPosts.id,
+          }).id
+        );
+
+        console.log(after.toJSON());
       }
     },
   });
 
   const actuallyScheduled = new Map<Post['id'], Date>();
 
-  autoSub<Account<Profile, WorkerAccountRoot>>('me', node, (account) => {
-    if (account?.root?.scheduledPosts) {
-      console.log(
-        'scheduledPosts',
-        account.root.scheduledPosts.perSession.map((entry) =>
-          entry[1].all.map((post) => post.value?.content)
-        )
-      );
+  console.log(
+    'root after migration',
+    (node.account as ControlledAccount<Profile, WorkerAccountRoot>).get('root')
+  );
 
-      for (let perSession of account.root.scheduledPosts.perSession) {
-        for (let post of perSession[1].all) {
-          if (!post?.value) continue;
-          if (post.value.instagram.state === 'scheduleDesired') {
-            actuallyScheduled.set(
-              post.value.id,
-              new Date(post.value.instagram.scheduledAt)
-            );
-            post.value.set('instagram', {
-              state: 'scheduled',
-              scheduledAt: post.value.instagram.scheduledAt,
-            });
-          } else if (post.value.instagram.state === 'scheduled') {
-            if (!actuallyScheduled.has(post.value.id)) {
+  autoSub(
+    node.account.id as CoID<Account<Profile, WorkerAccountRoot>>,
+    node,
+    (account) => {
+      console.log('root in autosub', account?.meta.coValue.get('root'));
+      if (account?.root?.scheduledPosts) {
+        console.log(
+          'scheduledPosts',
+          account.root.scheduledPosts.id,
+          account.root.scheduledPosts.perSession.map((entry) =>
+            entry[1].all.map((post) => post.value?.content)
+          )
+        );
+
+        for (let perSession of account.root.scheduledPosts.perSession) {
+          for (let post of perSession[1].all) {
+            if (!post?.value) continue;
+            if (post.value.instagram.state === 'scheduleDesired') {
               actuallyScheduled.set(
                 post.value.id,
                 new Date(post.value.instagram.scheduledAt)
               );
-              console.log('re-adding post', post.value.id);
-            }
-          } else if (post.value.instagram.state !== 'posted') {
-            if (actuallyScheduled.has(post.value.id)) {
-              console.log('removing post', post.value.id);
-              actuallyScheduled.delete(post.value.id);
+              post.value.set('instagram', {
+                state: 'scheduled',
+                scheduledAt: post.value.instagram.scheduledAt,
+              });
+            } else if (post.value.instagram.state === 'scheduled') {
+              if (!actuallyScheduled.has(post.value.id)) {
+                actuallyScheduled.set(
+                  post.value.id,
+                  new Date(post.value.instagram.scheduledAt)
+                );
+                console.log('re-adding post', post.value.id);
+              }
+            } else if (post.value.instagram.state !== 'posted') {
+              if (actuallyScheduled.has(post.value.id)) {
+                console.log('removing post', post.value.id);
+                actuallyScheduled.delete(post.value.id);
+              }
             }
           }
         }
       }
     }
-  });
+  );
 
   Bun.serve({
     async fetch(req) {
