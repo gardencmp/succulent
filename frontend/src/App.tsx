@@ -128,7 +128,7 @@ const scopes = [
 ];
 
 function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
-  const { me, localNode } = useJazz<Profile, AccountRoot>();
+  const { me } = useJazz<Profile, AccountRoot>();
 
   const [pagesToChoose, setPagesToChoose] = useState<
     { name: string; instagram_business_account: { id: string } }[]
