@@ -8,7 +8,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 
-const scheduledPostsStreamId = 'co_zBxaLLfs6nLSdooXdEQHzdXkAxE' as CoID<
+const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
 >;
 
