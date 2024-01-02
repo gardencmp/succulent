@@ -58,7 +58,7 @@ function App() {
   );
 }
 
-const scheduleWorkerId = 'co_z4RuEedFWkdzjGEsXg2aBR4UYL6' as AccountID;
+const scheduleWorkerId = 'co_zjCnxyEB93sdMwGBHeF5xPY17H9' as AccountID;
 
 function HomeScreen() {
   const { me, localNode } = useJazz<Profile, AccountRoot>();

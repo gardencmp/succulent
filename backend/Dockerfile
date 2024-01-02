@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1 as base
+FROM oven/bun:1.0.21 as base
 LABEL org.opencontainers.image.source="https://github.com/gardencmp/succulent"
 WORKDIR /usr/src/app
 
@@ -30,7 +30,6 @@ FROM base AS release
 LABEL org.opencontainers.image.source="https://github.com/gardencmp/succulent"
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/index.ts .
-COPY --from=prerelease /usr/src/app/SucculentSchedulerCredentials.json .
 COPY --from=prerelease /usr/src/app/package.json .
 
 USER bun
