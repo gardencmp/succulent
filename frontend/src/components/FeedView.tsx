@@ -32,6 +32,7 @@ import {
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { cn } from '@/lib/utils';
 import { PostInsights } from './PostInsights';
+import { smartSchedule } from '@/lib/smartSchedule';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -104,8 +105,18 @@ export function FeedView() {
           'Schedule',
           event.active.id,
           event.over?.data?.current?.before,
-          event.over?.data?.current?.after
+          event.over?.data?.current?.after,
+          smartSchedule(
+            event.over?.data?.current as { before?: ISODate; after?: ISODate }
+          )
         );
+        const post = brand?.posts?.find((p) => p?.id === event.active.id);
+        post?.set('instagram', {
+          state: 'scheduleDesired',
+          scheduledAt: smartSchedule(
+            event.over?.data?.current as { before?: ISODate; after?: ISODate }
+          ),
+        });
       }}
       modifiers={[snapCenterToCursor]}
     >
@@ -114,7 +125,7 @@ export function FeedView() {
         initialDrawerHeightPercent={30}
         minDrawerHeightPercent={10}
       >
-        <MainContent>
+        <MainContent className="relative">
           <Button
             className="absolute right-0 z-10 text-xs p-1 px-2"
             variant="outline"
@@ -164,18 +175,17 @@ export function FeedView() {
                           onMouseOver={() => setHoveredPost(post.id)}
                           onMouseLeave={() => setHoveredPost(false)}
                         >
-                          {showInsights ||
-                            (post.id === hoveredPost && (
-                              <>
-                                {post.instagram.state === 'posted' ? (
-                                  <PostInsights post={post} />
-                                ) : (
-                                  <div className="absolute">
-                                    scheduled: {post.instagram.scheduledAt}
-                                  </div>
-                                )}
-                              </>
-                            ))}
+                          {(showInsights || post.id === hoveredPost) && (
+                            <>
+                              {post.instagram.state === 'posted' ? (
+                                <PostInsights post={post} />
+                              ) : (
+                                <div className="absolute">
+                                  scheduled: {post.instagram.scheduledAt}
+                                </div>
+                              )}
+                            </>
+                          )}
                           <PostImage post={post} />
                         </Button>
                       </DialogTrigger>
@@ -238,7 +248,7 @@ export function FeedView() {
                 <PostImage post={draggedPost} />
               </div>
               {schedulePreview && (
-                <div className="bg-background text-xs p-4 rounded mt-2 -mx-10">
+                <div className="bg-background p-4 rounded mt-2 -mx-24">
                   Schedule:
                   <br />
                   {schedulePreview.before && (
@@ -252,6 +262,10 @@ export function FeedView() {
                       After: {new Date(schedulePreview.after).toLocaleString()}
                     </p>
                   )}
+                  <p>
+                    ✨ Schedule:{' '}
+                    {new Date(smartSchedule(schedulePreview)).toLocaleString()}
+                  </p>
                 </div>
               )}
             </div>
