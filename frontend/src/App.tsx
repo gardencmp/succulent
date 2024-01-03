@@ -26,11 +26,10 @@ function App() {
   });
 
   return (
-    <>
-      <div className="text-center p-2 tracking-wider">succulent 🪴</div>
+    <div className="flex-col max-h-[100dvh]">
       <RouterProvider router={router} />
       <Toaster />
-    </>
+    </div>
   );
 }
 

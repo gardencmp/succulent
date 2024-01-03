@@ -64,7 +64,7 @@ export function FeedView() {
 
   return (
     <ResponsiveDrawer
-      className="h-[calc(100dvh-10rem)]"
+      className="h-[calc(100dvh-120px)]"
       initialDrawerHeightPercent={30}
       minDrawerHeightPercent={10}
     >

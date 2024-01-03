@@ -12,15 +12,18 @@ export const router = createHashRouter([
   {
     path: '/brand/:brandId',
     element: <BrandHome />,
+    children: [
+      {
+        path: '/brand/:brandId/insights',
+        element: <BrandInsightsScreen />,
+      },
+      {
+        path: '/brand/:brandId/schedule',
+        element: <BrandScheduleScreen />,
+      },
+    ],
   },
-  {
-    path: '/brand/:brandId/insights',
-    element: <BrandInsightsScreen />,
-  },
-  {
-    path: '/brand/:brandId/schedule',
-    element: <BrandScheduleScreen />,
-  },
+
   {
     path: '/invite/*',
     element: <p>Accepting invite...</p>,
