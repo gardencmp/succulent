@@ -258,7 +258,23 @@ export function FeedView() {
             (post) =>
               post && (
                 <Draggable postId={post.id}>
-                  <DraftPostComponent post={post} styling="mb-3" />
+                  <DraftPostComponent
+                    post={post}
+                    styling="mb-3"
+                    onDelete={() => {
+                      if (!brand) return;
+                      if (
+                        !confirm('Are you sure you want to delete this post?')
+                      )
+                        return;
+                      post.set('instagram', {
+                        state: 'notScheduled',
+                      });
+                      brand.posts?.delete(
+                        brand.posts.findIndex((p) => p?.id === post.id)
+                      );
+                    }}
+                  />
                 </Draggable>
               )
           )}
