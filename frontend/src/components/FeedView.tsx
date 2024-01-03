@@ -37,7 +37,6 @@ import { smartSchedule } from '@/lib/smartSchedule';
 export function FeedView() {
   const draftStates = ['notScheduled'];
   const scheduledOrPostedStates = ['scheduleDesired', 'scheduled', 'posted'];
-  const scheduledStates = ['scheduleDesired', 'scheduled'];
   const [showInsights, setShowInsights] = useState<boolean>(false);
   const [hoveredPost, setHoveredPost] = useState<string | false>(false);
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
