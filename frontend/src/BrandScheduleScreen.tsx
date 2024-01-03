@@ -2,8 +2,8 @@ import { useAutoSub } from 'jazz-react';
 import { CoID } from 'cojson';
 import { useParams } from 'react-router-dom';
 import { Brand } from './sharedDataModel';
-// import { CalendarView } from './components/CalendarView';
-import { FeedView } from './components/FeedView';
+import { CalendarView } from './components/CalendarView';
+// import { FeedView } from './components/FeedView';
 
 export function BrandScheduleScreen() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
@@ -17,8 +17,8 @@ export function BrandScheduleScreen() {
         <li className="selected text-bold">Feed</li>
         <li>Calender</li>
       </ul>
-      <FeedView />
-      {/* <CalendarView /> */}
+      {/* <FeedView /> */}
+      <CalendarView />
     </div>
   );
 }

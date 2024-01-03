@@ -12,6 +12,7 @@ import {
   Media,
   BinaryStreamInfo,
 } from 'cojson';
+import 'dotenv/config';
 
 import { createOrResumeWorker, autoSub } from 'jazz-nodejs';
 import { autoSubResolution, Resolved } from 'jazz-autosub';
@@ -115,16 +116,21 @@ async function runner() {
             `https://graph.facebook.com/v18.0/oauth/access_token?client_id=${
               process.env.FB_CLIENT_ID
             }&redirect_uri=${encodeURIComponent(
-              process.env.SUCCULENT_BACKEND_ADDR + '/connectFB'
+              (process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331') +
+                '/connectFB'
             )}&client_secret=${process.env.FB_CLIENT_SECRET}&code=${code}`
           )
         ).json();
+
+        console.log('shortLivedResult', shortLivedResult);
 
         const longLivedResult = await (
           await fetch(
             `https://graph.facebook.com/v2.3/oauth/access_token?grant_type=fb_exchange_token&client_id=${process.env.FB_CLIENT_ID}&client_secret=${process.env.FB_CLIENT_SECRET}&fb_exchange_token=${shortLivedResult.access_token}`
           )
         ).json();
+
+        console.log('longLivedResult', longLivedResult);
 
         const brandId = new URL(req.url).searchParams.get('state');
 
@@ -140,8 +146,12 @@ async function runner() {
           Date.now() + longLivedResult.expires_in * 1000
         );
 
+        console.log(brand.toJSON());
+
         // redirect to frontend
-        return Response.redirect(process.env.SUCCULENT_FRONTEND_ADDR!);
+        return Response.redirect(
+          process.env.SUCCULENT_FRONTEND_ADDR || 'http://localhost:3889/'
+        );
       } else if (req.url.includes('/image/')) {
         console.log(req.url);
         const imageFileId = req.url.split('/image/')[1];
@@ -186,6 +196,10 @@ async function runner() {
 
   const tryPosting = async () => {
     console.log('actuallyScheduled', actuallyScheduled);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('not actually scheduling in dev mode');
+      return;
+    }
 
     for (let [postId, scheduledAt] of actuallyScheduled.entries()) {
       if (scheduledAt < new Date()) {
@@ -303,10 +317,26 @@ async function runner() {
             const postMediaId = ((await res.json()) as { id: string }).id;
 
             if (!postMediaId) throw new Error('no post media id');
+
+            const permalinkReqUrl = `https://graph.facebook.com/v18.0/${postMediaId}?fields=permalink&access_token=${brand.get(
+              'instagramAccessToken'
+            )}`;
+            console.log('GET', permalinkReqUrl);
+            const permalinkRes = await fetch(permalinkReqUrl);
+            permalinkRes.status !== 200 &&
+              console.log(permalinkRes.status, await permalinkRes.text());
+
+            const postPermalink = (
+              (await permalinkRes.json()) as {
+                permalink: string;
+              }
+            ).permalink;
+
             post.set('instagram', {
               state: 'posted',
               postedAt: new Date().toISOString(),
               postId: postMediaId,
+              permalink: postPermalink,
             });
           } catch (e) {
             console.error('Error posting after post load', postId, e);
