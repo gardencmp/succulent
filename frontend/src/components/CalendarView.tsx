@@ -2,7 +2,7 @@ import { Brand, Post, ListOfImages } from '@/sharedDataModel';
 import { useAutoSub } from 'jazz-react';
 import { Button } from '../components/ui/button';
 import { useParams } from 'react-router-dom';
-import { PostComponent } from './Post';
+import { DraftPostComponent } from './DraftPost';
 import { CoID } from 'cojson';
 import { useCallback, useState } from 'react';
 import { importPostsHelper } from '../lib/importPostsHelper';
@@ -47,7 +47,7 @@ export function CalendarView() {
       {brand?.posts?.map(
         (post) =>
           post && (
-            <PostComponent
+            <DraftPostComponent
               key={post.id}
               post={post}
               onDelete={() => {

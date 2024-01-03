@@ -14,6 +14,7 @@ import { Button } from './ui/button';
 import { BrowserImage } from 'jazz-browser-media-images';
 import { compareDesc } from 'date-fns';
 import { useState } from 'react';
+import { DraftPostComponent } from './DraftPost';
 import { PostComponent } from './Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
@@ -92,46 +93,40 @@ export function FeedView() {
                 post &&
                 post.images?.[0] && (
                   <div className="col-span-1 aspect-square">
-                    {post.instagram.state === 'posted' ? (
-                      <img
-                        key={post?.images[0].id}
-                        className="w-full h-full object-cover shrink-0 opacity-50 hover:opacity-100 hover:outline-dotted outline-pink-500"
-                        src={
-                          post.images[0].imageFile?.as(BrowserImage(500))
-                            ?.highestResSrcOrPlaceholder
-                        }
-                      />
-                    ) : (
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex m-0 p-0 h-full w-full hover:outline-dotted outline-pink-500 rounded-none"
-                          onClick={() => setActivePostID(post.id)}
-                        >
-                          <img
-                            key={post?.images[0].id}
-                            className="block w-full h-full object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
-                            src={
-                              post.images[0].imageFile?.as(BrowserImage(500))
-                                ?.highestResSrcOrPlaceholder
-                            }
-                          />
-                        </Button>
-                      </DialogTrigger>
-                    )}
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="flex m-0 p-0 h-full w-full rounded-none"
+                        onClick={() => setActivePostID(post.id)}
+                      >
+                        <img
+                          key={post?.images[0].id}
+                          className="block w-full h-full object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
+                          src={
+                            post.images[0].imageFile?.as(BrowserImage(500))
+                              ?.highestResSrcOrPlaceholder
+                          }
+                        />
+                      </Button>
+                    </DialogTrigger>
                   </div>
                 )
             )}
           </div>
           <DialogContent>
-            <PostComponent post={activePost!} />
+            {activePost?.instagram.state === 'posted' && (
+              <PostComponent post={activePost!} border={false} />
+            )}
+            {activePost?.instagram.state !== 'posted' && (
+              <DraftPostComponent post={activePost!} border={false} />
+            )}
           </DialogContent>
         </Dialog>
       </MainContent>
       <DrawerOrSidebar>
         <Button
           variant="outline"
-          className="m-6 justify-center"
+          className="mb-6 justify-center"
           onClick={() => {
             if (!brand) return;
             const draftPost = brand.meta.group.createMap<Post>({
@@ -146,7 +141,9 @@ export function FeedView() {
         >
           New Draft
         </Button>
-        {draftPosts?.map((post) => post && <PostComponent post={post} />)}
+        {draftPosts?.map(
+          (post) => post && <DraftPostComponent post={post} styling="mb-3" />
+        )}
       </DrawerOrSidebar>
     </ResponsiveDrawer>
   );
