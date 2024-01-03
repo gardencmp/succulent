@@ -1,3 +1,4 @@
+import { useBreakpoint } from '@/lib/useBreakpoint';
 import { cn } from '@/lib/utils';
 import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 
@@ -56,13 +57,13 @@ export function MainContent(props: { children: ReactNode }) {
   if (!ctx)
     throw new Error('MainContent must be used within ResponsiveDrawerScreen');
 
-  console.log(ctx.drawerHeight);
+  const { isMd } = useBreakpoint('md');
 
   return (
     <div
       className="md:col-span-8 xl:col-span-6 overflow-y-auto"
       style={{
-        height: 100 - ctx.drawerHeight + '%',
+        height: isMd ? undefined : 100 - ctx.drawerHeight + '%',
       }}
     >
       {props.children}
@@ -75,20 +76,25 @@ export function DrawerOrSidebar(props: { children: ReactNode }) {
   if (!ctx)
     throw new Error('MainContent must be used within ResponsiveDrawerScreen');
 
+  const { isMd } = useBreakpoint('md');
+
   return (
     <>
-      <div
-        className="md:hidden flex flex-col overflow-auto"
-        style={{
-          height: ctx.drawerHeight + '%',
-        }}
-      >
-        <DrawerHandle />
-        {props.children}
-      </div>
-      <div className="hidden md:flex md:col-span-4 xl:col-span-6 flex-col overflow-auto">
-        {props.children}
-      </div>
+      {isMd ? (
+        <div className="flex md:col-span-4 xl:col-span-6 flex-col overflow-auto">
+          {props.children}
+        </div>
+      ) : (
+        <div
+          className="flex flex-col overflow-auto"
+          style={{
+            height: ctx.drawerHeight + '%',
+          }}
+        >
+          <DrawerHandle />
+          {props.children}
+        </div>
+      )}
     </>
   );
 }
