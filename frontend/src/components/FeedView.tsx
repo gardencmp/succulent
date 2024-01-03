@@ -177,7 +177,7 @@ export function FeedView() {
                           {(showInsights || post.id === hoveredPost) && (
                             <>
                               {post.instagram.state === 'posted' ? (
-                                <PostInsights post={post} />
+                                <PostInsights />
                               ) : (
                                 <div className="absolute">
                                   scheduled: {post.instagram.scheduledAt}
