@@ -1,9 +1,7 @@
-import { AccountRoot } from '@/dataModel';
-import { Post, Image } from '@/sharedDataModel';
-import { Profile, CoStream, CoID } from 'cojson';
-import { BrowserImage, createImage } from 'jazz-browser-media-images';
-import { Resolved, useJazz } from 'jazz-react';
-import { useCallback, useState } from 'react';
+import { Post } from '@/sharedDataModel';
+import { BrowserImage } from 'jazz-browser-media-images';
+import { Resolved } from 'jazz-react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 
@@ -73,10 +71,4 @@ export function PostComponent({
       <div className="flex gap-2 items-center flex-wrap"></div>
     </div>
   );
-}
-
-function toDatetimeLocal(d: Date) {
-  const copy = new Date(d);
-  copy.setMinutes(copy.getMinutes() - copy.getTimezoneOffset());
-  return copy.toISOString().slice(0, 16);
 }

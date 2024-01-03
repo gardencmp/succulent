@@ -52,7 +52,10 @@ export function ResponsiveDrawer(props: {
   );
 }
 
-export function MainContent(props: { children: ReactNode }) {
+export function MainContent(props: {
+  children: ReactNode;
+  className?: string;
+}) {
   const ctx = useContext(ResponsiveDrawerContext);
   if (!ctx)
     throw new Error('MainContent must be used within ResponsiveDrawerScreen');
@@ -61,7 +64,10 @@ export function MainContent(props: { children: ReactNode }) {
 
   return (
     <div
-      className="md:col-span-8 xl:col-span-6 overflow-y-auto"
+      className={cn(
+        'md:col-span-8 xl:col-span-6 overflow-y-auto',
+        props.className
+      )}
       style={{
         height: isMd ? undefined : 100 - ctx.drawerHeight + '%',
       }}
