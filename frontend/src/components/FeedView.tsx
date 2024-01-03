@@ -156,29 +156,29 @@ export function FeedView() {
                 return (
                   post && (
                     <div className="col-span-1 aspect-square relative p-1">
-                      {/* <DialogTrigger asChild> */}
-                      <Button
-                        variant="ghost"
-                        className="flex m-0 p-0 h-full w-full rounded-none relative"
-                        onClick={() => setActivePostID?.(post.id)}
-                        onMouseOver={() => setHoveredPost(post.id)}
-                        onMouseLeave={() => setHoveredPost(false)}
-                      >
-                        {showInsights ||
-                          (post.id === hoveredPost && (
-                            <>
-                              {post.instagram.state === 'posted' ? (
-                                <PostInsights post={post} />
-                              ) : (
-                                <div className="absolute">
-                                  scheduled: {post.instagram.scheduledAt}
-                                </div>
-                              )}
-                            </>
-                          ))}
-                        <PostImage post={post} />
-                      </Button>
-                      {/* </DialogTrigger> */}
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="flex m-0 p-0 h-full w-full rounded-none relative"
+                          onClick={() => setActivePostID?.(post.id)}
+                          onMouseOver={() => setHoveredPost(post.id)}
+                          onMouseLeave={() => setHoveredPost(false)}
+                        >
+                          {showInsights ||
+                            (post.id === hoveredPost && (
+                              <>
+                                {post.instagram.state === 'posted' ? (
+                                  <PostInsights post={post} />
+                                ) : (
+                                  <div className="absolute">
+                                    scheduled: {post.instagram.scheduledAt}
+                                  </div>
+                                )}
+                              </>
+                            ))}
+                          <PostImage post={post} />
+                        </Button>
+                      </DialogTrigger>
                       {post.instagram.state !== 'posted' && draggedPostId && (
                         <DropGap
                           before={post.instagram.scheduledAt}
