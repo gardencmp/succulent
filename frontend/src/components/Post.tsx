@@ -92,7 +92,7 @@ export function PostComponent({
         }}
         placeholder="Post content"
       />
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center flex-wrap">
         <Input
           type="datetime-local"
           value={

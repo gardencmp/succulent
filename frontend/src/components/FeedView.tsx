@@ -7,9 +7,15 @@ import { BrowserImage } from 'jazz-browser-media-images';
 import { compareDesc } from 'date-fns';
 import { useState } from 'react';
 import { PostComponent } from './Post';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import {
+  DrawerOrSidebar,
+  MainContent,
+  ResponsiveDrawerScreen,
+} from './ResponsiveDrawerScreen';
 
 export function FeedView() {
-  const draftStates = ['scheduleDesired', 'scheduled', 'notScheduled'];
+  const draftStates = ['notScheduled'];
   const scheduledStates = ['scheduleDesired', 'scheduled'];
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
@@ -27,15 +33,83 @@ export function FeedView() {
         new Date((b?.instagram as { scheduledAt: ISODate }).scheduledAt)
       );
     });
-  console.log('post', brand?.posts?.[0]);
   const activePost = brand?.posts?.find((post) => post?.id === activePostID);
+  const draftPosts = brand?.posts?.filter((post) =>
+    draftStates.includes(post?.instagram.state!)
+  );
 
   return (
-    <div className="container">
-      <div className="flex columns-3 w-full">
+    <ResponsiveDrawerScreen
+      className="h-[calc(100dvh-10rem)]"
+      initialDrawerHeightPercent={30}
+      minDrawerHeightPercent={10}
+    >
+      <MainContent>
+        <Dialog>
+          <div className="grid grid-cols-3 gap-4">
+            <Button
+              variant="outline"
+              className="aspect-square m-0 p-0 h-auto w-auto col-span-1 rounded-none"
+              onClick={() => {
+                if (!brand) return;
+                const draftPost = brand.meta.group.createMap<Post>({
+                  instagram: {
+                    state: 'notScheduled',
+                  },
+                  images: brand.meta.group.createList<ListOfImages>().id,
+                  inBrand: brand.id,
+                });
+                brand.posts?.append(draftPost.id);
+              }}
+            >
+              +
+            </Button>
+            {chronologicalScheduledPosts.map(
+              (post) =>
+                post && (
+                  <div className="col-span-1 aspect-square">
+                    {scheduledStates.includes(post.instagram.state) &&
+                      post.images?.[0] && (
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="m-0 p-0 h-full w-full hover:outline-dotted outline-pink-500 rounded-none"
+                            onClick={() => setActivePostID(post.id)}
+                          >
+                            <img
+                              key={post?.images[0].id}
+                              className="w-full h-full object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
+                              src={
+                                post.images[0].imageFile?.as(BrowserImage)
+                                  ?.highestResSrcOrPlaceholder
+                              }
+                            />
+                          </Button>
+                        </DialogTrigger>
+                      )}
+                    {post.instagram.state === 'posted' && post.images?.[0] && (
+                      <img
+                        key={post?.images[0].id}
+                        className="w-full h-full object-cover shrink-0 opacity-50 hover:opacity-100 hover:outline-dotted outline-pink-500"
+                        src={
+                          post.images[0].imageFile?.as(BrowserImage)
+                            ?.highestResSrcOrPlaceholder
+                        }
+                      />
+                    )}
+                  </div>
+                )
+            )}
+          </div>
+          <DialogContent>
+            <PostComponent post={activePost!} />
+          </DialogContent>
+        </Dialog>
+      </MainContent>
+      <DrawerOrSidebar>
         <Button
           variant="outline"
-          className="h-40 w-40 col-span-1 rounded-none"
+          className="m-6 justify-center"
           onClick={() => {
             if (!brand) return;
             const draftPost = brand.meta.group.createMap<Post>({
@@ -48,55 +122,10 @@ export function FeedView() {
             brand.posts?.append(draftPost.id);
           }}
         >
-          +
+          New Draft
         </Button>
-        {chronologicalScheduledPosts.map(
-          (post) =>
-            post && (
-              <div className="col-span-1">
-                {draftStates.includes(post.instagram.state) &&
-                  post.images?.[0] && (
-                    <Button
-                      variant="ghost"
-                      className="p-0 h-40 hover:outline-dotted outline-pink-500 rounded-none"
-                      onClick={() => setActivePostID(post.id)}
-                    >
-                      <img
-                        key={post?.images[0].id}
-                        className="w-40 h-40 object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
-                        src={
-                          post.images[0].imageFile?.as(BrowserImage)
-                            ?.highestResSrcOrPlaceholder
-                        }
-                      />
-                    </Button>
-                  )}
-                {post.instagram.state === 'posted' && post.images?.[0] && (
-                  <img
-                    key={post?.images[0].id}
-                    className="w-40 h-40 object-cover shrink-0 opacity-50 hover:opacity-100 hover:outline-dotted outline-pink-500"
-                    src={
-                      post.images[0].imageFile?.as(BrowserImage)
-                        ?.highestResSrcOrPlaceholder
-                    }
-                  />
-                )}
-              </div>
-            )
-        )}
-      </div>
-      {activePost && (
-        <div className="modal position-absolute">
-          <Button
-            variant="ghost"
-            className=""
-            onClick={() => setActivePostID(undefined)}
-          >
-            X
-          </Button>
-          <PostComponent post={activePost} />
-        </div>
-      )}
-    </div>
+        {draftPosts?.map((post) => post && <PostComponent post={post} />)}
+      </DrawerOrSidebar>
+    </ResponsiveDrawerScreen>
   );
 }
