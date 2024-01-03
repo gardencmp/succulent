@@ -30,14 +30,29 @@ export async function importPostsHelper(
     console.log(imageUrls);
 
     if (imageUrls.length > 0) {
-      const existingPost = brand?.posts?.find(
-        (p) =>
-          p?.instagram?.state === 'posted' && p?.instagram?.postId === post.id
-      );
+      const existingPosts =
+        brand?.posts?.filter(
+          (p) =>
+            p?.instagram?.state === 'posted' && p?.instagram?.postId === post.id
+        ) || [];
 
-      console.log('existingPost', post.id, existingPost);
+      console.log('existingPosts', post.id, existingPosts);
 
-      if (!existingPost) {
+      if (existingPosts?.length > 1) {
+        console.warn(
+          'Multiple posts with same ID, deduplicating',
+          existingPosts
+        );
+
+        for (const existingPost of existingPosts.slice(1)) {
+          console.log('Deleting', existingPost?.id);
+          brand.posts?.delete(
+            brand.posts.findIndex((p) => p?.id === existingPost?.id)
+          );
+        }
+      }
+
+      if (existingPosts.length === 0) {
         const images = brand.meta.group.createList<ListOfImages>(
           await Promise.all(
             imageUrls.map(
