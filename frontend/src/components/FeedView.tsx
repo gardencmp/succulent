@@ -1,5 +1,14 @@
-import { Brand, ISODate, ListOfImages, Post } from '@/sharedDataModel';
-import { useAutoSub } from 'jazz-react';
+import {
+  Brand,
+  ISODate,
+  InstagramNotScheduled,
+  InstagramPosted,
+  InstagramScheduleDesired,
+  InstagramScheduled,
+  ListOfImages,
+  Post,
+} from '@/sharedDataModel';
+import { Resolved, useAutoSub } from 'jazz-react';
 import { useParams } from 'react-router-dom';
 import { CoID } from 'cojson';
 import { Button } from './ui/button';
@@ -16,26 +25,41 @@ import {
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
-  const scheduledStates = ['scheduleDesired', 'scheduled'];
+  const scheduledOrPostedStates = ['scheduleDesired', 'scheduled', 'posted'];
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const [activePostID, setActivePostID] = useState<CoID<Post>>();
-  const chronologicalScheduledPosts = [...(brand?.posts || [])]
+  const chronologicalScheduledAndPostedPosts = [...(brand?.posts || [])]
     .filter(
-      (post) =>
-        post && post.instagram && scheduledStates.includes(post.instagram.state)
+      (
+        post
+      ): post is Resolved<
+        Post<InstagramScheduleDesired | InstagramScheduled | InstagramPosted>
+      > =>
+        !!(
+          post &&
+          post.instagram &&
+          scheduledOrPostedStates.includes(post.instagram.state)
+        )
     )
     .sort((a, b) => {
-      console.log('a,b ', a, b);
-
-      return compareDesc(
-        new Date((a?.instagram as { scheduledAt: ISODate }).scheduledAt),
-        new Date((b?.instagram as { scheduledAt: ISODate }).scheduledAt)
+      const dateA = new Date(
+        a.instagram.state === 'posted'
+          ? a.instagram.postedAt
+          : a.instagram.scheduledAt
       );
+      const dateB = new Date(
+        b.instagram.state === 'posted'
+          ? b.instagram.postedAt
+          : b.instagram.scheduledAt
+      );
+
+      return compareDesc(dateA, dateB);
     });
   const activePost = brand?.posts?.find((post) => post?.id === activePostID);
-  const draftPosts = brand?.posts?.filter((post) =>
-    draftStates.includes(post?.instagram.state!)
+  const draftPosts = brand?.posts?.filter(
+    (post): post is Resolved<Post<InstagramNotScheduled>> =>
+      draftStates.includes(post?.instagram.state!)
   );
 
   return (
@@ -46,7 +70,7 @@ export function FeedView() {
     >
       <MainContent>
         <Dialog>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-px">
             <Button
               variant="outline"
               className="aspect-square m-0 p-0 h-auto w-auto col-span-1 rounded-none"
@@ -64,38 +88,37 @@ export function FeedView() {
             >
               +
             </Button>
-            {chronologicalScheduledPosts.map(
+            {chronologicalScheduledAndPostedPosts.map(
               (post) =>
-                post && (
+                post &&
+                post.images?.[0] && (
                   <div className="col-span-1 aspect-square">
-                    {scheduledStates.includes(post.instagram.state) &&
-                      post.images?.[0] && (
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            className="m-0 p-0 h-full w-full hover:outline-dotted outline-pink-500 rounded-none"
-                            onClick={() => setActivePostID(post.id)}
-                          >
-                            <img
-                              key={post?.images[0].id}
-                              className="w-full h-full object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
-                              src={
-                                post.images[0].imageFile?.as(BrowserImage)
-                                  ?.highestResSrcOrPlaceholder
-                              }
-                            />
-                          </Button>
-                        </DialogTrigger>
-                      )}
-                    {post.instagram.state === 'posted' && post.images?.[0] && (
+                    {post.instagram.state === 'posted' ? (
                       <img
                         key={post?.images[0].id}
                         className="w-full h-full object-cover shrink-0 opacity-50 hover:opacity-100 hover:outline-dotted outline-pink-500"
                         src={
-                          post.images[0].imageFile?.as(BrowserImage)
+                          post.images[0].imageFile?.as(BrowserImage(500))
                             ?.highestResSrcOrPlaceholder
                         }
                       />
+                    ) : (
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="flex m-0 p-0 h-full w-full hover:outline-dotted outline-pink-500 rounded-none"
+                          onClick={() => setActivePostID(post.id)}
+                        >
+                          <img
+                            key={post?.images[0].id}
+                            className="block w-full h-full object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
+                            src={
+                              post.images[0].imageFile?.as(BrowserImage(500))
+                                ?.highestResSrcOrPlaceholder
+                            }
+                          />
+                        </Button>
+                      </DialogTrigger>
                     )}
                   </div>
                 )

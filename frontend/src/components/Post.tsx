@@ -56,7 +56,8 @@ export function PostComponent({
                 key={image.id}
                 className="w-40 h-40 object-cover shrink-0"
                 src={
-                  image.imageFile.as(BrowserImage)?.highestResSrcOrPlaceholder
+                  image.imageFile.as(BrowserImage(500))
+                    ?.highestResSrcOrPlaceholder
                 }
               />
             )

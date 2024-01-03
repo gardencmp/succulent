@@ -18,7 +18,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
-    "jazz-browser-media-images": "^0.5.1",
+    "jazz-browser-media-images": "^0.6.0",
     "jazz-react": "^0.5.3",
     "jazz-react-auth-local": "^0.4.17",
     "lucide-react": "^0.284.0",

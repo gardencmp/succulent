@@ -5,29 +5,37 @@ export type Platform = 'Twitter' | 'Instagram' | 'Facebook' | 'TikTok';
 export type ISODate = string;
 
 export type InstagramState =
-  | {
-      state: 'notScheduled';
-    }
-  | {
-      state: 'scheduleDesired';
-      scheduledAt: ISODate;
-    }
-  | {
-      state: 'scheduled';
-      scheduledAt: ISODate;
-    }
-  | {
-      state: 'posted';
-      postedAt: ISODate;
-      postId: string;
-      permalink: string;
-    };
+  | InstagramNotScheduled
+  | InstagramScheduleDesired
+  | InstagramScheduled
+  | InstagramPosted;
 
-export type Post = CoMap<{
+export type InstagramNotScheduled = {
+  state: 'notScheduled';
+};
+
+export type InstagramScheduleDesired = {
+  state: 'scheduleDesired';
+  scheduledAt: ISODate;
+};
+
+export type InstagramScheduled = {
+  state: 'scheduled';
+  scheduledAt: ISODate;
+};
+
+export type InstagramPosted = {
+  state: 'posted';
+  postedAt: ISODate;
+  postId: string;
+  permalink: string;
+};
+
+export type Post<S extends InstagramState = InstagramState> = CoMap<{
   inBrand: Brand['id'];
   content?: string;
   images: ListOfImages['id'];
-  instagram: InstagramState;
+  instagram: S;
 }>;
 
 export type ListOfImages = CoList<Image['id']>;

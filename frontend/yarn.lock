@@ -1407,9 +1407,9 @@ clsx@2.0.0, clsx@^2.0.0:
   integrity sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==
 
 cojson-storage-indexeddb@^0.6.1:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.6.2.tgz#1e882304c24aa83d7851c2a92deb7a0c411ff19e"
-  integrity sha512-W7ui2SjKn7l57zAmd7appojtkyYKICAaLiq8dqBzgTkXasy+1wtnaLhW3Hys3Kora5X254/ETdDkvzmp+kFncA==
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.6.3.tgz#e4b377cacd752b0a1409013e43b764945a632273"
+  integrity sha512-lwxlB0Z12xMQjtvcRQK3ZIvGAjHLOSOtItFQnx4TMLahyn/MoLoT4RQmEcObXInS3d0VpQbKgz4MnDZwCQH3CQ==
   dependencies:
     cojson "^0.6.4"
     typescript "^5.1.6"
@@ -2129,10 +2129,10 @@ jazz-browser-auth-local@^0.5.0:
     jazz-browser "^0.6.0"
     typescript "^5.1.6"
 
-jazz-browser-media-images@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.5.1.tgz#86e1ffd62b5534ff3a4d8d874b8f91f09ee0bb87"
-  integrity sha512-SrPMKagQuav1s6HuSoULtLQ4ucMU1f4akoOIc79L9QUvyxTMnl+6TBCJRks5P7s+9MjqceVTJCmBJ7H1KhP9bQ==
+jazz-browser-media-images@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.6.0.tgz#34c4dd170b3155cd67502dced02c86cd0e206582"
+  integrity sha512-5fjegbcIzXsil1DtfaO0SjBjORxEvf77VCghbi4mDEWiheWs3tWvVl0a8PjzaIS3IA5olusoc0tbtpQDOXdMng==
   dependencies:
     "@types/image-blob-reduce" "^4.1.1"
     cojson "^0.6.0"
