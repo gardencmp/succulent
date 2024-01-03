@@ -22,10 +22,15 @@ import {
   MainContent,
   ResponsiveDrawer,
 } from './ResponsiveDrawer';
+import { cn } from '@/lib/utils';
+import { PostInsights } from './PostInsights';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
   const scheduledOrPostedStates = ['scheduleDesired', 'scheduled', 'posted'];
+  const scheduledStates = ['scheduleDesired', 'scheduled'];
+  const [showInsights, setShowInsights] = useState<boolean>(false);
+  const [hoveredPost, setHoveredPost] = useState<string | false>(false);
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const [activePostID, setActivePostID] = useState<CoID<Post>>();
@@ -62,18 +67,28 @@ export function FeedView() {
       draftStates.includes(post?.instagram.state!)
   );
 
+  console.log('showInsights', showInsights);
+
   return (
     <ResponsiveDrawer
-      className="h-[calc(100dvh-120px)]"
+      className="h-[calc(100dvh-10rem)] relative"
       initialDrawerHeightPercent={30}
       minDrawerHeightPercent={10}
     >
       <MainContent>
+        <Button
+          className="absolute right-0 z-10 text-xs p-1 px-2"
+          variant="outline"
+          size="sm"
+          onClick={() => setShowInsights(!showInsights)}
+        >
+          show insights
+        </Button>
         <Dialog>
           <div className="grid grid-cols-3 gap-px">
             <Button
               variant="outline"
-              className="aspect-square m-0 p-0 h-auto w-auto col-span-1 rounded-none"
+              className="aspect-square m-0 p-0 h-auto w-auto col-span-1 rounded-none z-0"
               onClick={() => {
                 if (!brand) return;
                 const draftPost = brand.meta.group.createMap<Post>({
@@ -96,12 +111,36 @@ export function FeedView() {
                     <DialogTrigger asChild>
                       <Button
                         variant="ghost"
-                        className="flex m-0 p-0 h-full w-full rounded-none"
+                        className="flex m-0 p-0 h-full w-full rounded-none relative"
                         onClick={() => setActivePostID(post.id)}
+                        onMouseOver={() => setHoveredPost(post.id)}
+                        onMouseLeave={() => setHoveredPost(false)}
                       >
+                        {showInsights ||
+                          (post.id === hoveredPost && (
+                            <>
+                              {scheduledStates.includes(
+                                post.instagram.state
+                              ) && (
+                                <div className="absolute">
+                                  scheduled: {post.instagram.scheduledAt}
+                                </div>
+                              )}
+                              {post.instagram.state === 'posted' && (
+                                <PostInsights post={post} />
+                              )}
+                            </>
+                          ))}
                         <img
                           key={post?.images[0].id}
-                          className="block w-full h-full object-cover shrink-0 opacity-50 outline-none hover:opacity-100"
+                          className={cn(
+                            'block w-full h-full object-cover shrink-0 outline-none hover:opacity-100',
+                            {
+                              'opacity-50': scheduledStates.includes(
+                                post.instagram.state
+                              ),
+                            }
+                          )}
                           src={
                             post.images[0].imageFile?.as(BrowserImage(500))
                               ?.highestResSrcOrPlaceholder
