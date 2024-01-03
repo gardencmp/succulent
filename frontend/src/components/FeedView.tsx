@@ -111,8 +111,8 @@ export function FeedView() {
         setSchedulePreview(event.over?.data?.current);
       }}
       onDragEnd={(event) => {
-        if (!event.over?.data.current) return;
         setDraggedPostId(undefined);
+        if (!event.over?.data.current) return;
         console.log(
           'Schedule',
           event.active.id,
