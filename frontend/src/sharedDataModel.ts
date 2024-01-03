@@ -20,6 +20,7 @@ export type InstagramState =
       state: 'posted';
       postedAt: ISODate;
       postId: string;
+      permalink: string;
     };
 
 export type Post = CoMap<{

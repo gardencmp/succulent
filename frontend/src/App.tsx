@@ -29,6 +29,10 @@ const router = createHashRouter([
     path: '/invite/*',
     element: <p>Accepting invite...</p>,
   },
+  {
+    path: '_=_',
+    element: <HomeScreen />,
+  },
 ]);
 
 function App() {
@@ -158,7 +162,8 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
           onClick={() => {
             window.location =
               `https://www.facebook.com/v18.0/dialog/oauth?client_id=${'851322152980071'}&redirect_uri=${encodeURIComponent(
-                process.env.VITE_SUCCULENT_BACKEND_ADDR + '/connectFB'
+                (import.meta.env.VITE_SUCCULENT_BACKEND_ADDR ||
+                  'http://localhost:3331') + '/connectFB'
               )}&state=${brand.id}&scope=${encodeURIComponent(
                 scopes.join(',')
               )}&response_type=code` as string & Location;
