@@ -51,6 +51,8 @@ export function CalendarView() {
               key={post.id}
               post={post}
               onDelete={() => {
+                if (!confirm('Are you sure you want to delete this post?'))
+                  return;
                 post.set('instagram', {
                   state: 'notScheduled',
                 });

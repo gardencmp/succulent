@@ -28,6 +28,9 @@ import {
   useDroppable,
   useDraggable,
   DragOverlay,
+  useSensors,
+  useSensor,
+  PointerSensor,
 } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { cn } from '@/lib/utils';
@@ -90,8 +93,17 @@ export function FeedView() {
     after?: ISODate;
   }>();
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
   return (
     <DndContext
+      sensors={sensors}
       onDragStart={(event) => {
         setDraggedPostId(event.active.id as CoID<Post>);
       }}
@@ -205,7 +217,21 @@ export function FeedView() {
                 <PostComponent post={activePost!} border={false} />
               )}
               {activePost?.instagram.state !== 'posted' && (
-                <DraftPostComponent post={activePost!} border={false} />
+                <DraftPostComponent
+                  post={activePost!}
+                  border={false}
+                  onDelete={() => {
+                    if (!activePost || !brand) return;
+                    if (!confirm('Are you sure you want to delete this post?'))
+                      return;
+                    activePost.set('instagram', {
+                      state: 'notScheduled',
+                    });
+                    brand.posts?.delete(
+                      brand.posts.findIndex((p) => p?.id === activePost.id)
+                    );
+                  }}
+                />
               )}
             </DialogContent>
           </Dialog>
