@@ -1,14 +1,14 @@
 import { cn } from '@/lib/utils';
 import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 
-const ResponsiveDrawerScreenContext = createContext<{
+const ResponsiveDrawerContext = createContext<{
   drawerHeight: number;
   setDragStart: (h: DragStart | undefined) => void;
 } | null>(null);
 
 type DragStart = { initialDrawerHeight: number; dragStartScreenY: number };
 
-export function ResponsiveDrawerScreen(props: {
+export function ResponsiveDrawer(props: {
   className: string;
   children: ReactNode;
   initialDrawerHeightPercent: number;
@@ -39,20 +39,20 @@ export function ResponsiveDrawerScreen(props: {
         setDragStart(undefined);
       }}
     >
-      <ResponsiveDrawerScreenContext.Provider
+      <ResponsiveDrawerContext.Provider
         value={{
           drawerHeight,
           setDragStart,
         }}
       >
         {props.children}
-      </ResponsiveDrawerScreenContext.Provider>
+      </ResponsiveDrawerContext.Provider>
     </div>
   );
 }
 
 export function MainContent(props: { children: ReactNode }) {
-  const ctx = useContext(ResponsiveDrawerScreenContext);
+  const ctx = useContext(ResponsiveDrawerContext);
   if (!ctx)
     throw new Error('MainContent must be used within ResponsiveDrawerScreen');
 
@@ -71,7 +71,7 @@ export function MainContent(props: { children: ReactNode }) {
 }
 
 export function DrawerOrSidebar(props: { children: ReactNode }) {
-  const ctx = useContext(ResponsiveDrawerScreenContext);
+  const ctx = useContext(ResponsiveDrawerContext);
   if (!ctx)
     throw new Error('MainContent must be used within ResponsiveDrawerScreen');
 
@@ -94,7 +94,7 @@ export function DrawerOrSidebar(props: { children: ReactNode }) {
 }
 
 export function DrawerHandle() {
-  const ctx = useContext(ResponsiveDrawerScreenContext);
+  const ctx = useContext(ResponsiveDrawerContext);
   if (!ctx)
     throw new Error('MainContent must be used within ResponsiveDrawerScreen');
 

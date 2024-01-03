@@ -1,6 +1,5 @@
 import {
   Brand,
-  ISODate,
   InstagramNotScheduled,
   InstagramPosted,
   InstagramScheduleDesired,
@@ -20,8 +19,8 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   DrawerOrSidebar,
   MainContent,
-  ResponsiveDrawerScreen,
-} from './ResponsiveDrawerScreen';
+  ResponsiveDrawer,
+} from './ResponsiveDrawer';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -63,7 +62,7 @@ export function FeedView() {
   );
 
   return (
-    <ResponsiveDrawerScreen
+    <ResponsiveDrawer
       className="h-[calc(100dvh-10rem)]"
       initialDrawerHeightPercent={30}
       minDrawerHeightPercent={10}
@@ -149,6 +148,6 @@ export function FeedView() {
         </Button>
         {draftPosts?.map((post) => post && <PostComponent post={post} />)}
       </DrawerOrSidebar>
-    </ResponsiveDrawerScreen>
+    </ResponsiveDrawer>
   );
 }
