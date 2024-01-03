@@ -15,13 +15,13 @@ import { BrowserImage } from 'jazz-browser-media-images';
 import { compareDesc } from 'date-fns';
 import { useState } from 'react';
 import { DraftPostComponent } from './DraftPost';
+import { PostComponent } from './Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   DrawerOrSidebar,
   MainContent,
   ResponsiveDrawer,
 } from './ResponsiveDrawer';
-import { cn } from '@/lib/utils';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -114,7 +114,9 @@ export function FeedView() {
             )}
           </div>
           <DialogContent>
-            <PostComponent post={activePost!} border={false} />
+            {activePost?.instagram.state === 'posted' && (
+              <PostComponent post={activePost!} border={false} />
+            )}
             {activePost?.instagram.state !== 'posted' && (
               <DraftPostComponent post={activePost!} border={false} />
             )}
