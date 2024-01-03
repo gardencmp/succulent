@@ -21,6 +21,7 @@ import {
   MainContent,
   ResponsiveDrawer,
 } from './ResponsiveDrawer';
+import { cn } from '@/lib/utils';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -95,7 +96,10 @@ export function FeedView() {
                     {post.instagram.state === 'posted' ? (
                       <img
                         key={post?.images[0].id}
-                        className="w-full h-full object-cover shrink-0 opacity-50 hover:opacity-100 hover:outline-dotted outline-pink-500"
+                        className={cn(
+                          'w-full h-full object-cover shrink-0 hover:opacity-100 hover:outline-dotted outline-pink-500',
+                          { 'opacity-50': post.instagram.state !== 'posted' }
+                        )}
                         src={
                           post.images[0].imageFile?.as(BrowserImage(500))
                             ?.highestResSrcOrPlaceholder
@@ -124,14 +128,14 @@ export function FeedView() {
             )}
           </div>
           <DialogContent>
-            <PostComponent post={activePost!} />
+            <PostComponent post={activePost!} border={false} />
           </DialogContent>
         </Dialog>
       </MainContent>
       <DrawerOrSidebar>
         <Button
           variant="outline"
-          className="m-6 justify-center"
+          className="mb-6 justify-center"
           onClick={() => {
             if (!brand) return;
             const draftPost = brand.meta.group.createMap<Post>({
@@ -146,7 +150,9 @@ export function FeedView() {
         >
           New Draft
         </Button>
-        {draftPosts?.map((post) => post && <PostComponent post={post} />)}
+        {draftPosts?.map(
+          (post) => post && <PostComponent post={post} styling="mb-3" />
+        )}
       </DrawerOrSidebar>
     </ResponsiveDrawer>
   );

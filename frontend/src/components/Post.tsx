@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
+import { cn } from '@/lib/utils';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -14,9 +15,13 @@ const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
 
 export function PostComponent({
   post,
+  border = true,
+  styling,
   onDelete,
 }: {
   post: Resolved<Post>;
+  border?: boolean;
+  styling?: string;
   onDelete?: () => void;
 }) {
   const { me, localNode } = useJazz<Profile, AccountRoot>();
@@ -46,7 +51,11 @@ export function PostComponent({
   );
 
   return (
-    <div className="border rounded p-4 flex flex-col gap-4">
+    <div
+      className={cn('rounded p-4 flex flex-col gap-4', styling, {
+        'border bg-neutral-900': border,
+      })}
+    >
       <div className="flex gap-2 overflow-x-scroll">
         {post.images?.map(
           (image) =>
