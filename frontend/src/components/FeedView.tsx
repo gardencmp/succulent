@@ -99,12 +99,13 @@ export function FeedView() {
         setSchedulePreview(event.over?.data?.current);
       }}
       onDragEnd={(event) => {
+        if (!event.over?.data.current) return;
         setDraggedPostId(undefined);
         console.log(
           'Schedule',
           event.active.id,
-          event.over?.data?.current?.before,
-          event.over?.data?.current?.after,
+          event.over.data.current.before,
+          event.over.data.current.after,
           smartSchedule(
             event.over?.data?.current as { before?: ISODate; after?: ISODate }
           )
@@ -113,7 +114,7 @@ export function FeedView() {
         post?.set('instagram', {
           state: 'scheduleDesired',
           scheduledAt: smartSchedule(
-            event.over?.data?.current as { before?: ISODate; after?: ISODate }
+            event.over.data.current as { before?: ISODate; after?: ISODate }
           ),
         });
       }}
