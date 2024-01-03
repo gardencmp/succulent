@@ -4,7 +4,9 @@ import { createImage } from 'jazz-browser-media-images';
 
 export async function importPostsHelper(
   brand: Resolved<Brand>,
-  setImportProgress: (progress: { total: number; done: number }) => void
+  setImportProgress: (
+    progress: { total: number; done: number } | undefined
+  ) => void
 ) {
   const importResult = await fetch(
     `https://graph.facebook.com/v11.0/${brand?.instagramPage?.id}/media?fields=caption,media_type,media_url,children{media_url},permalink,timestamp&access_token=` +
@@ -91,4 +93,8 @@ export async function importPostsHelper(
       done,
     });
   }
+
+  setTimeout(() => {
+    setImportProgress(undefined);
+  }, 1000);
 }
