@@ -31,10 +31,14 @@ import {
 } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { cn } from '@/lib/utils';
+import { PostInsights } from './PostInsights';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
   const scheduledOrPostedStates = ['scheduleDesired', 'scheduled', 'posted'];
+  const scheduledStates = ['scheduleDesired', 'scheduled'];
+  const [showInsights, setShowInsights] = useState<boolean>(false);
+  const [hoveredPost, setHoveredPost] = useState<string | false>(false);
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const [activePostID, setActivePostID] = useState<CoID<Post>>();
@@ -111,6 +115,14 @@ export function FeedView() {
         minDrawerHeightPercent={10}
       >
         <MainContent>
+          <Button
+            className="absolute right-0 z-10 text-xs p-1 px-2"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowInsights(!showInsights)}
+          >
+            show insights
+          </Button>
           <Dialog>
             <div className="grid grid-cols-3">
               <div className="aspect-square m-0 p-1 relative">
@@ -147,9 +159,23 @@ export function FeedView() {
                       {/* <DialogTrigger asChild> */}
                       <Button
                         variant="ghost"
-                        className="flex m-0 p-0 h-full w-full rounded-none"
+                        className="flex m-0 p-0 h-full w-full rounded-none relative"
                         onClick={() => setActivePostID?.(post.id)}
+                        onMouseOver={() => setHoveredPost(post.id)}
+                        onMouseLeave={() => setHoveredPost(false)}
                       >
+                        {showInsights ||
+                          (post.id === hoveredPost && (
+                            <>
+                              {post.instagram.state === 'posted' ? (
+                                <PostInsights post={post} />
+                              ) : (
+                                <div className="absolute">
+                                  scheduled: {post.instagram.scheduledAt}
+                                </div>
+                              )}
+                            </>
+                          ))}
                         <PostImage post={post} />
                       </Button>
                       {/* </DialogTrigger> */}
