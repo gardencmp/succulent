@@ -20,6 +20,7 @@ export function BrandScheduleScreen() {
       <ul className="tabs flex mb-3">
         {viewTabs.map((tab) => (
           <li
+            key={tab}
             className={cn('cursor-pointer text-stone-400 pr-3', {
               'text-white font-semibold': activeTab === tab,
             })}
