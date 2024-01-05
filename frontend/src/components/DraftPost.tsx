@@ -56,7 +56,7 @@ export function DraftPostComponent({
         'border bg-neutral-900': border,
       })}
     >
-      <div className="flex gap-2 overflow-x-scroll">
+      <div className="flex gap-2 overflow-x-scroll w-full">
         {post?.images?.map(
           (image) =>
             image &&

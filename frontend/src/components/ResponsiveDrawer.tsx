@@ -24,7 +24,7 @@ export function ResponsiveDrawer(props: {
   return (
     <div
       ref={container}
-      className={cn(props.className, 'md:grid grid-cols-12 gap-4')}
+      className={cn(props.className, 'md:grid grid-cols-12')}
       onPointerMove={(e) => {
         if (dragStart && container.current) {
           const dy = e.screenY - dragStart.dragStartScreenY;
@@ -77,7 +77,10 @@ export function MainContent(props: {
   );
 }
 
-export function DrawerOrSidebar(props: { children: ReactNode }) {
+export function DrawerOrSidebar(props: {
+  children: ReactNode;
+  className?: string;
+}) {
   const ctx = useContext(ResponsiveDrawerContext);
   if (!ctx)
     throw new Error('MainContent must be used within ResponsiveDrawerScreen');
@@ -87,12 +90,17 @@ export function DrawerOrSidebar(props: { children: ReactNode }) {
   return (
     <>
       {isMd ? (
-        <div className="flex md:col-span-4 xl:col-span-6 flex-col overflow-auto">
+        <div
+          className={cn(
+            'flex md:col-span-4 xl:col-span-6 flex-col overflow-auto',
+            props.className
+          )}
+        >
           {props.children}
         </div>
       ) : (
         <div
-          className="flex flex-col overflow-auto"
+          className={cn('flex flex-col overflow-auto', props.className)}
           style={{
             height: ctx.drawerHeight + '%',
           }}
