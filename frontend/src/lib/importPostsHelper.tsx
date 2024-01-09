@@ -8,16 +8,41 @@ export async function importPostsHelper(
     progress: { total: number; done: number } | undefined
   ) => void
 ) {
-  const importResult = await fetch(
-    `https://graph.facebook.com/v11.0/${brand?.instagramPage?.id}/media?fields=caption,media_type,media_url,children{media_url},permalink,timestamp&access_token=` +
-      brand?.instagramAccessToken
-  ).then((response) => response.json());
+  const dataFromPages: ({
+    caption: string;
+    id: string;
+    permalink: string;
+    timestamp: string;
+  } & (
+    | { media_type: 'IMAGE'; media_url: string }
+    | {
+        media_type: 'CAROUSEL_ALBUM';
+        children: { data: { media_url: string }[] };
+      }
+  ))[] = [];
 
-  console.log('importResult', importResult);
+  let paginatingDone = false;
+  let url =
+    `https://graph.facebook.com/v11.0/${brand?.instagramPage?.id}/media?fields=caption,media_type,media_url,children{media_url},permalink,timestamp&access_token=` +
+    brand?.instagramAccessToken;
+
+  while (!paginatingDone) {
+    const dataFromPage = await fetch(url).then((response) => response.json());
+
+    console.log('dataFromPage', dataFromPage);
+
+    dataFromPages.push(...dataFromPage.data);
+
+    if (dataFromPage?.paging.next) {
+      url = dataFromPage.paging.next;
+    } else {
+      paginatingDone = true;
+    }
+  }
 
   let done = 0;
 
-  for (const post of importResult.data) {
+  for (const post of dataFromPages) {
     let imageUrls: string[] = [];
     if (post.media_type === 'IMAGE') {
       imageUrls = [post.media_url];
@@ -26,7 +51,10 @@ export async function importPostsHelper(
         (child: { media_url: string }) => child.media_url
       );
     } else {
-      console.log('Unknown media type, skipping', post.media_type);
+      console.log(
+        'Unknown media type, skipping',
+        (post as { media_type: string }).media_type
+      );
     }
 
     console.log(imageUrls);
@@ -89,7 +117,7 @@ export async function importPostsHelper(
     done++;
 
     setImportProgress({
-      total: importResult.data.length,
+      total: dataFromPages.length,
       done,
     });
   }
