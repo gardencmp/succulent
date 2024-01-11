@@ -37,6 +37,7 @@ import { cn } from '@/lib/utils';
 import { PostInsights } from './PostInsights';
 import { smartSchedule } from '@/lib/smartSchedule';
 import { getPostInsightsHelper } from '@/lib/importPostsHelper';
+import { Input } from './ui/input';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -46,7 +47,16 @@ export function FeedView() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const [activePostID, setActivePostID] = useState<CoID<Post>>();
-  const chronologicalScheduledAndPostedPosts = [...(brand?.posts || [])]
+
+  const [filter, setFilter] = useState<string>();
+  const filteredPosts = brand?.posts?.filter(
+    (post) =>
+      !filter ||
+      (post?.content &&
+        post.content.toLowerCase().includes(filter.toLowerCase()))
+  );
+
+  const chronologicalScheduledAndPostedPosts = [...(filteredPosts || [])]
     .filter(
       (
         post
@@ -73,8 +83,8 @@ export function FeedView() {
 
       return compareDesc(dateA, dateB);
     });
-  const activePost = brand?.posts?.find((post) => post?.id === activePostID);
-  const draftPosts = brand?.posts?.filter(
+  const activePost = filteredPosts?.find((post) => post?.id === activePostID);
+  const draftPosts = filteredPosts?.filter(
     (post): post is Resolved<Post<InstagramNotScheduled>> =>
       draftStates.includes(post?.instagram.state!)
   );
@@ -144,6 +154,12 @@ export function FeedView() {
         minDrawerHeightPercent={10}
       >
         <MainContent className="relative">
+          <Input
+            type="text"
+            placeholder="filter"
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+          />
           <div className="absolute right-0 z-10 text-xs p-1 px-2">
             <Button
               variant="outline"
