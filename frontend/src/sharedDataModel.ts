@@ -36,6 +36,20 @@ export type Post<S extends InstagramState = InstagramState> = CoMap<{
   content?: string;
   images: ListOfImages['id'];
   instagram: S;
+  instagramInsights?: {
+    profileVisits?: number;
+    impressions?: number;
+    totalInteractions?: number;
+    reach?: number;
+    likes?: number;
+    comments?: number;
+    saved?: number;
+    shares?: number;
+    follows?: number;
+    profileActivity?: {
+      [breakdown: string]: number | undefined;
+    };
+  };
 }>;
 
 export type ListOfImages = CoList<Image['id']>;

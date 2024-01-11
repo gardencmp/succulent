@@ -126,3 +126,81 @@ export async function importPostsHelper(
     setImportProgress(undefined);
   }, 1000);
 }
+
+export async function getPostInsightsHelper(brand: Resolved<Brand>) {
+  for (const post of brand.posts || []) {
+    if (post?.instagram?.state === 'posted') {
+      const insights = await fetch(
+        `https://graph.facebook.com/v11.0/${post.instagram.postId}/insights?metric=profile_visits,impressions,total_interactions,reach,likes,comments,saved,shares,follows&access_token=` +
+          brand.instagramAccessToken
+      ).then((response) => response.json());
+
+      console.log('insights', insights);
+      if (!insights.data) continue;
+
+      const profileActivity = await fetch(
+        `https://graph.facebook.com/v11.0/${post.instagram.postId}/insights?metric=profile_activity&breakdown=action_type&access_token=` +
+          brand.instagramAccessToken
+      ).then((response) => response.json());
+
+      console.log('profileActivity', profileActivity);
+      if (profileActivity?.data?.[0].total_value?.value > 0) {
+        console.log(
+          'profileActivity!!',
+          profileActivity?.data?.[0].total_value?.breakdowns[0].results.map(
+            (result: { value: number; dimension_values: string[] }) => [
+              result.dimension_values?.join(','),
+              result.value,
+            ]
+          )
+        );
+      }
+
+      const restructuredProfileActivity = (profileActivity?.data?.[0]
+        .total_value &&
+        Object.fromEntries(
+          profileActivity?.data?.[0].total_value?.breakdowns[0].results.map(
+            (result: { value: number; dimension_values: string[] }) => [
+              result.dimension_values?.join(','),
+              result.value,
+            ]
+          )
+        )) as
+        | undefined
+        | {
+            [breakdown: string]: number | undefined;
+          };
+
+      post.set('instagramInsights', {
+        profileVisits: insights.data.find(
+          (insight: { name: string }) => insight.name === 'profile_visits'
+        )?.values[0].value,
+        impressions: insights.data.find(
+          (insight: { name: string }) => insight.name === 'impressions'
+        )?.values[0].value,
+        totalInteractions: insights.data.find(
+          (insight: { name: string }) => insight.name === 'total_interactions'
+        )?.values[0].value,
+        reach: insights.data.find(
+          (insight: { name: string }) => insight.name === 'reach'
+        )?.values[0].value,
+        likes: insights.data.find(
+          (insight: { name: string }) => insight.name === 'likes'
+        )?.values[0].value,
+        comments: insights.data.find(
+          (insight: { name: string }) => insight.name === 'comments'
+        )?.values[0].value,
+        saved: insights.data.find(
+          (insight: { name: string }) => insight.name === 'saved'
+        )?.values[0].value,
+        shares: insights.data.find(
+          (insight: { name: string }) => insight.name === 'shares'
+        )?.values[0].value,
+        follows: insights.data.find(
+          (insight: { name: string }) => insight.name === 'follows'
+        )?.values[0].value,
+        profileActivity: restructuredProfileActivity,
+      });
+    }
+  }
+}

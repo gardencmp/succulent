@@ -14,7 +14,7 @@ import { CoID } from 'cojson';
 import { Button } from './ui/button';
 import { BrowserImage } from 'jazz-browser-media-images';
 import { compareDesc } from 'date-fns';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { DraftPostComponent } from './DraftPost';
 import { PostComponent } from './Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -36,7 +36,7 @@ import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { cn } from '@/lib/utils';
 import { PostInsights } from './PostInsights';
 import { smartSchedule } from '@/lib/smartSchedule';
-import { GripHorizontal, GripVertical } from 'lucide-react';
+import { getPostInsightsHelper } from '@/lib/importPostsHelper';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -94,6 +94,11 @@ export function FeedView() {
     after?: ISODate;
   }>();
 
+  const getPostInsights = useCallback(async () => {
+    if (!brand) return;
+    await getPostInsightsHelper(brand);
+  }, [brand]);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -139,14 +144,18 @@ export function FeedView() {
         minDrawerHeightPercent={10}
       >
         <MainContent className="relative">
-          <Button
-            className="absolute right-0 z-10 text-xs p-1 px-2"
-            variant="outline"
-            size="sm"
-            onClick={() => setShowInsights(!showInsights)}
-          >
-            show insights
-          </Button>
+          <div className="absolute right-0 z-10 text-xs p-1 px-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowInsights(!showInsights)}
+            >
+              show insights
+            </Button>
+            <Button variant="outline" size="sm" onClick={getPostInsights}>
+              fetch insights
+            </Button>
+          </div>
           <Dialog>
             <div className="grid grid-cols-3">
               <div className="aspect-square m-0 p-1 relative">
@@ -191,7 +200,7 @@ export function FeedView() {
                           {(showInsights || post.id === hoveredPost) && (
                             <>
                               {post.instagram.state === 'posted' ? (
-                                <PostInsights />
+                                <PostInsights post={post} />
                               ) : (
                                 <div className="absolute">
                                   scheduled: {post.instagram.scheduledAt}
@@ -237,7 +246,7 @@ export function FeedView() {
             </DialogContent>
           </Dialog>
         </MainContent>
-        <DrawerOrSidebar className="px-4 md:px-0 md:pl-4">
+        <DrawerOrSidebar>
           <Button
             variant="outline"
             className="mb-6 justify-center"
@@ -258,14 +267,7 @@ export function FeedView() {
           {draftPosts?.map(
             (post) =>
               post && (
-                <div className="relative">
-                  <Draggable
-                    postId={post.id}
-                    className="absolute p-2 -top-2 left-0 right-0 h-8 md:top-0 md:bottom-3 md:-left-2 md:w-8 md:h-auto cursor-grab flex flex-col md:flex-row items-center justify-end opacity-70 hover:opacity-100"
-                  >
-                    <GripVertical size={20} className="hidden md:block" />
-                    <GripHorizontal size={20} className="md:hidden" />
-                  </Draggable>
+                <Draggable postId={post.id}>
                   <DraftPostComponent
                     post={post}
                     styling="mb-3"
@@ -283,7 +285,7 @@ export function FeedView() {
                       );
                     }}
                   />
-                </div>
+                </Draggable>
               )
           )}
         </DrawerOrSidebar>
@@ -372,11 +374,9 @@ function DropGap({ before, after }: { before?: ISODate; after?: ISODate }) {
 function Draggable({
   children,
   postId,
-  className,
 }: {
   children: React.ReactNode;
   postId: CoID<Post>;
-  className: string;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: postId,
@@ -387,7 +387,7 @@ function Draggable({
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className={cn(className, { 'opacity-30': isDragging })}
+      className={isDragging ? 'opacity-30' : ''}
     >
       {children}
     </div>
