@@ -38,6 +38,7 @@ import { PostInsights } from './PostInsights';
 import { smartSchedule } from '@/lib/smartSchedule';
 import { getPostInsightsHelper } from '@/lib/importPostsHelper';
 import { Input } from './ui/input';
+import { GripHorizontal, GripVertical } from 'lucide-react';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -283,7 +284,14 @@ export function FeedView() {
           {draftPosts?.map(
             (post) =>
               post && (
-                <Draggable postId={post.id}>
+                <div className="relative">
+                  <Draggable
+                    postId={post.id}
+                    className="absolute p-2 -top-2 left-0 right-0 h-8 md:top-0 md:bottom-3 md:-left-2 md:w-8 md:h-auto cursor-grab flex flex-col md:flex-row items-center justify-end opacity-70 hover:opacity-100"
+                  >
+                    <GripVertical size={20} className="hidden md:block" />
+                    <GripHorizontal size={20} className="md:hidden" />
+                  </Draggable>
                   <DraftPostComponent
                     post={post}
                     styling="mb-3"
@@ -301,7 +309,7 @@ export function FeedView() {
                       );
                     }}
                   />
-                </Draggable>
+                </div>
               )
           )}
         </DrawerOrSidebar>
@@ -390,9 +398,11 @@ function DropGap({ before, after }: { before?: ISODate; after?: ISODate }) {
 function Draggable({
   children,
   postId,
+  className,
 }: {
   children: React.ReactNode;
   postId: CoID<Post>;
+  className: string;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: postId,
@@ -403,7 +413,7 @@ function Draggable({
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className={isDragging ? 'opacity-30' : ''}
+      className={cn(className, { 'opacity-30': isDragging })}
     >
       {children}
     </div>
