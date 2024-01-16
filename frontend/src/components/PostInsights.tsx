@@ -35,7 +35,10 @@ export function PostInsights(props: { post: Resolved<Post> }) {
   };
 
   const getInsights = (insight: Insights) => {
-    const insightData: typeof props.post.instagramInsights = insights[insight];
+    const insightData:
+      | number
+      | { [breakdown: string]: number | undefined }
+      | undefined = insights[insight];
     if (!insightData) return '0';
     return insightData.toString();
   };
