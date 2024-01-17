@@ -135,7 +135,7 @@ export function DraftPostComponent({
               'Not yet scheduled'
             )
           ) : post.instagram.state === 'scheduleDesired' ? (
-            'Schedule desired'
+            'Schedule UNCONFIRMED'
           ) : post.instagram.state === 'scheduled' ? (
             'Scheduled'
           ) : post.instagram.state === 'posted' ? (

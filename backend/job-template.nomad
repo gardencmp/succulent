@@ -17,6 +17,12 @@ job "succulent-backend$BRANCH_SUFFIX" {
       value     = "mesh"
     }
 
+    constraint {
+      attribute = "${node.datacenter}"
+      operator  = "="
+      value     = "london"
+    }
+
     spread {
       attribute = "${node.datacenter}"
       weight    = 100
