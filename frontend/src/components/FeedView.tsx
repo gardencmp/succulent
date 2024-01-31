@@ -155,13 +155,13 @@ export function FeedView() {
         minDrawerHeightPercent={10}
       >
         <MainContent className="relative">
-          <Input
-            type="text"
-            placeholder="filter"
-            value={filter}
-            onChange={(event) => setFilter(event.target.value)}
-          />
-          <div className="absolute right-0 z-10 text-xs p-1 px-2">
+          <div className="flex">
+            <Input
+              type="text"
+              placeholder="filter"
+              value={filter}
+              onChange={(event) => setFilter(event.target.value)}
+            />
             <Button
               variant="outline"
               size="sm"
