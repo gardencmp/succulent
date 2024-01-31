@@ -39,10 +39,12 @@ jobs:
 
       - name: Docker Build & Push
         uses: docker/build-push-action@v4
+        env:
+          branch_name: '${{github.head_ref || github.ref_name}}'
         with:
           context: ./frontend
           push: true
-          tags: ghcr.io/gardencmp/succulent-frontend:${{github.head_ref || github.ref_name}}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}}
+          tags: ghcr.io/gardencmp/succulent-frontend:${branch_name/\//-}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -66,10 +68,12 @@ jobs:
 
       - name: Docker Build & Push
         uses: docker/build-push-action@v4
+        env:
+          branch_name: '${{github.head_ref || github.ref_name}}'
         with:
           context: ./backend
           push: true
-          tags: ghcr.io/gardencmp/succulent-backend:${{github.head_ref || github.ref_name}}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}}
+          tags: ghcr.io/gardencmp/succulent-backend:${branch_name/\//-}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -88,18 +92,20 @@ jobs:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
       - name: Deploy on Nomad
+        env:
+          branch_name: '${{github.head_ref || github.ref_name}}'
         run: |
           if [ "${{github.ref_name}}" == "main" ]; then
             export BRANCH_SUFFIX="";
             export BRANCH_SUBDOMAIN="";
           else
-            export BRANCH_SUFFIX=-${{github.head_ref || github.ref_name}};
-            export BRANCH_SUBDOMAIN=${{github.head_ref || github.ref_name}}.;
+            export BRANCH_SUFFIX=-${branch_name/\//-};
+            export BRANCH_SUBDOMAIN=${branch_name/\//-}.;
           fi
 
           export DOCKER_USER=gardencmp;
           export DOCKER_PASSWORD=${{ secrets.DOCKER_PULL_PAT }};
-          export DOCKER_TAG=ghcr.io/gardencmp/succulent-frontend:${{github.head_ref || github.ref_name}}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}};
+          export DOCKER_TAG=ghcr.io/gardencmp/succulent-frontend:${branch_name/\//-}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}};
 
           envsubst '${DOCKER_USER} ${DOCKER_PASSWORD} ${DOCKER_TAG} ${BRANCH_SUFFIX} ${BRANCH_SUBDOMAIN}' < job-template.nomad > job-instance.nomad;
           cat job-instance.nomad;
@@ -121,18 +127,20 @@ jobs:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
       - name: Deploy on Nomad
+        env:
+          branch_name: '${{github.head_ref || github.ref_name}}'
         run: |
           if [ "${{github.ref_name}}" == "main" ]; then
             export BRANCH_SUFFIX="";
             export BRANCH_SUBDOMAIN="";
           else
-            export BRANCH_SUFFIX=-${{github.head_ref || github.ref_name}};
-            export BRANCH_SUBDOMAIN=${{github.head_ref || github.ref_name}}.;
+            export BRANCH_SUFFIX=-${branch_name/\//-};
+            export BRANCH_SUBDOMAIN=${branch_name/\//-}.;
           fi
 
           export DOCKER_USER=gardencmp;
           export DOCKER_PASSWORD=${{ secrets.DOCKER_PULL_PAT }};
-          export DOCKER_TAG=ghcr.io/gardencmp/succulent-backend:${{github.head_ref || github.ref_name}}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}};
+          export DOCKER_TAG=ghcr.io/gardencmp/succulent-backend:${branch_name/\//-}-${{github.sha}}-${{github.run_number}}-${{github.run_attempt}};
 
           envsubst '${DOCKER_USER} ${DOCKER_PASSWORD} ${DOCKER_TAG} ${BRANCH_SUFFIX} ${BRANCH_SUBDOMAIN}' < job-template.nomad > job-instance.nomad;
           cat job-instance.nomad;
