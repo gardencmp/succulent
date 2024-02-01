@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { cn } from '@/lib/utils';
+import { toDateTimeLocal } from '@/lib/dates';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -108,13 +109,13 @@ export function DraftPostComponent({
           value={
             post.instagram.state === 'scheduleDesired' ||
             post.instagram.state === 'scheduled'
-              ? toDatetimeLocal(new Date(post.instagram.scheduledAt))
+              ? toDateTimeLocal(post.instagram.scheduledAt)
               : undefined
           }
           onChange={(event) => {
             setDesiredScheduleDate(new Date(event.target.value));
           }}
-          min={toDatetimeLocal(new Date())}
+          min={toDateTimeLocal(new Date().toISOString())}
           className="dark:[color-scheme:dark] max-w-[13rem]"
         />
         <div className="whitespace-nowrap mr-auto">
@@ -164,10 +165,4 @@ export function DraftPostComponent({
       {/* <div className="text-xs">Succulent post id: {post.id}</div> */}
     </div>
   );
-}
-
-function toDatetimeLocal(d: Date) {
-  const copy = new Date(d);
-  copy.setMinutes(copy.getMinutes() - copy.getTimezoneOffset());
-  return copy.toISOString().slice(0, 16);
 }
