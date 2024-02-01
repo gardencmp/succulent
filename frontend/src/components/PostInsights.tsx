@@ -59,31 +59,31 @@ export function PostInsights(props: { post: Resolved<Post> }) {
       icon: <HeartHandshake />,
       data: getInteractionPc(),
     },
-    {
-      title: 'comments',
-      icon: <MessageCircle />,
-      data: getInsights('comments'),
-    },
-    {
-      title: 'saved',
-      icon: <Save />,
-      data: getInsights('saved'),
-    },
-    {
-      title: 'shared',
-      icon: <MessageCircleReply />,
-      data: getInsights('shares'),
-    },
-    {
-      title: 'profileVisits',
-      icon: <View />,
-      data: getInsights('profileVisits'),
-    },
-    {
-      title: 'follows',
-      icon: <UserRoundPlus />,
-      data: getInsights('follows'),
-    },
+    // {
+    //   title: 'comments',
+    //   icon: <MessageCircle />,
+    //   data: getInsights('comments'),
+    // },
+    // {
+    //   title: 'saved',
+    //   icon: <Save />,
+    //   data: getInsights('saved'),
+    // },
+    // {
+    //   title: 'shared',
+    //   icon: <MessageCircleReply />,
+    //   data: getInsights('shares'),
+    // },
+    // {
+    //   title: 'profileVisits',
+    //   icon: <View />,
+    //   data: getInsights('profileVisits'),
+    // },
+    // {
+    //   title: 'follows',
+    //   icon: <UserRoundPlus />,
+    //   data: getInsights('follows'),
+    // },
   ];
 
   return (
