@@ -4,12 +4,12 @@ import { ReactElement } from 'react';
 import {
   Heart,
   HeartHandshake,
-  MessageCircle,
-  MessageCircleReply,
-  Save,
   Smile,
-  UserRoundPlus,
-  View,
+  // MessageCircle,
+  // MessageCircleReply,
+  // Save,
+  // UserRoundPlus,
+  // View,
 } from 'lucide-react';
 
 export function PostInsights(props: { post: Resolved<Post> }) {
