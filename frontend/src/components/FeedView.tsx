@@ -39,6 +39,7 @@ import { smartSchedule } from '@/lib/smartSchedule';
 import { getPostInsightsHelper } from '@/lib/importPostsHelper';
 import { Input } from './ui/input';
 import { GripHorizontal, GripVertical } from 'lucide-react';
+import { toDateString } from '@/lib/dates';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -220,7 +221,7 @@ export function FeedView() {
                                 <PostInsights post={post} />
                               ) : (
                                 <div className="absolute">
-                                  scheduled: {post.instagram.scheduledAt}
+                                  ⏳ {toDateString(post.instagram.scheduledAt)}
                                 </div>
                               )}
                             </>
