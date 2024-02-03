@@ -45,10 +45,8 @@ export function FeedView() {
   const draftStates = ['notScheduled'];
   const scheduledOrPostedStates = ['scheduleDesired', 'scheduled', 'posted'];
   const [showInsights, setShowInsights] = useState<boolean>(false);
-  const [hoveredPost, setHoveredPost] = useState<string | false>(false);
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
-  const [activePostID, setActivePostID] = useState<CoID<Post>>();
 
   const [filter, setFilter] = useState<string>();
   const filteredPosts = brand?.posts?.filter(
@@ -85,7 +83,7 @@ export function FeedView() {
 
       return compareDesc(dateA, dateB);
     });
-  const activePost = filteredPosts?.find((post) => post?.id === activePostID);
+
   const draftPosts = filteredPosts?.filter(
     (post): post is Resolved<Post<InstagramNotScheduled>> =>
       draftStates.includes(post?.instagram.state!)
@@ -174,95 +172,55 @@ export function FeedView() {
               fetch insights
             </Button>
           </div>
-          <Dialog>
-            <div className="grid grid-cols-3">
-              <div className="aspect-square m-0 p-1 relative">
-                <Button
-                  variant="outline"
-                  className="aspect-square m-0 p-0 h-full w-full col-span-1 rounded-none"
-                  onClick={() => {
-                    if (!brand) return;
-                    const draftPost = brand.meta.group.createMap<Post>({
-                      instagram: {
-                        state: 'notScheduled',
-                      },
-                      images: brand.meta.group.createList<ListOfImages>().id,
-                      inBrand: brand.id,
-                    });
-                    brand.posts?.append(draftPost.id);
-                  }}
-                >
-                  +
-                </Button>
-                {draggedPostId && <DropGap after={firstPostDate} />}
-              </div>
 
-              {chronologicalScheduledAndPostedPosts.map((post, i) => {
-                const olderPost = chronologicalScheduledAndPostedPosts[i + 1];
-                const olderPostDate =
-                  olderPost &&
-                  (olderPost.instagram.state === 'posted'
-                    ? olderPost.instagram.postedAt
-                    : olderPost.instagram.scheduledAt);
-                return (
-                  post && (
-                    <div className="col-span-1 aspect-square relative p-1">
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex m-0 p-0 h-full w-full rounded-none relative"
-                          onClick={() => setActivePostID?.(post.id)}
-                          onMouseOver={() => setHoveredPost(post.id)}
-                          onMouseLeave={() => setHoveredPost(false)}
-                        >
-                          {(showInsights || post.id === hoveredPost) && (
-                            <>
-                              {post.instagram.state === 'posted' ? (
-                                <PostInsights post={post} />
-                              ) : (
-                                <div className="absolute">
-                                  ⏳ {toDateString(post.instagram.scheduledAt)}
-                                </div>
-                              )}
-                            </>
-                          )}
-                          <PostImage post={post} />
-                        </Button>
-                      </DialogTrigger>
-                      {post.instagram.state !== 'posted' && draggedPostId && (
-                        <DropGap
-                          before={post.instagram.scheduledAt}
-                          after={olderPostDate}
-                        />
-                      )}
-                    </div>
-                  )
-                );
-              })}
-            </div>
-            <DialogContent>
-              {activePost?.instagram.state === 'posted' && (
-                <PostComponent post={activePost!} border={false} />
-              )}
-              {activePost?.instagram.state !== 'posted' && (
-                <DraftPostComponent
-                  post={activePost!}
-                  border={false}
-                  onDelete={() => {
-                    if (!activePost || !brand) return;
-                    if (!confirm('Are you sure you want to delete this post?'))
-                      return;
-                    activePost.set('instagram', {
+          <div className="grid grid-cols-3">
+            <div className="aspect-square m-0 p-1 relative">
+              <Button
+                variant="outline"
+                className="aspect-square m-0 p-0 h-full w-full col-span-1 rounded-none"
+                onClick={() => {
+                  if (!brand) return;
+                  const draftPost = brand.meta.group.createMap<Post>({
+                    instagram: {
                       state: 'notScheduled',
-                    });
-                    brand.posts?.delete(
-                      brand.posts.findIndex((p) => p?.id === activePost.id)
-                    );
-                  }}
-                />
-              )}
-            </DialogContent>
-          </Dialog>
+                    },
+                    images: brand.meta.group.createList<ListOfImages>().id,
+                    inBrand: brand.id,
+                  });
+                  brand.posts?.append(draftPost.id);
+                }}
+              >
+                +
+              </Button>
+              {draggedPostId && <DropGap after={firstPostDate} />}
+            </div>
+
+            {chronologicalScheduledAndPostedPosts.map((post, i) => {
+              return (
+                post && (
+                  <PostTile
+                    post={post}
+                    olderPost={chronologicalScheduledAndPostedPosts[i + 1]}
+                    alwaysShowInsights={showInsights}
+                    receiveDrags={!!draggedPostId}
+                    onDeleteDraft={() => {
+                      if (!brand) return;
+                      if (
+                        !confirm('Are you sure you want to delete this post?')
+                      )
+                        return;
+                      (post as Resolved<Post>).set('instagram', {
+                        state: 'notScheduled',
+                      });
+                      brand.posts?.delete(
+                        brand.posts.findIndex((p) => p?.id === post.id)
+                      );
+                    }}
+                  />
+                )
+              );
+            })}
+          </div>
         </MainContent>
         <DrawerOrSidebar>
           <Button
@@ -350,6 +308,75 @@ export function FeedView() {
         </DragOverlay>
       </ResponsiveDrawer>
     </DndContext>
+  );
+}
+
+function PostTile({
+  post,
+  olderPost,
+  alwaysShowInsights,
+  receiveDrags,
+  onDeleteDraft,
+}: {
+  post: Resolved<
+    Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>
+  >;
+  olderPost?: Resolved<
+    Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>
+  >;
+  alwaysShowInsights: boolean;
+  receiveDrags: boolean;
+  onDeleteDraft?: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  const olderPostDate =
+    olderPost &&
+    (olderPost.instagram.state === 'posted'
+      ? olderPost.instagram.postedAt
+      : olderPost.instagram.scheduledAt);
+
+  return (
+    <Dialog key={post.id}>
+      <div className="col-span-1 aspect-square relative p-1">
+        <DialogTrigger asChild>
+          <Button
+            variant="ghost"
+            className="flex m-0 p-0 h-full w-full rounded-none relative"
+            onMouseOver={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
+            {(alwaysShowInsights || hovered) && (
+              <>
+                {post.instagram.state === 'posted' ? (
+                  <PostInsights post={post} />
+                ) : (
+                  <div className="absolute">
+                    ⏳ {toDateString(post.instagram.scheduledAt)}
+                  </div>
+                )}
+              </>
+            )}
+            <PostImage post={post} />
+          </Button>
+        </DialogTrigger>
+        {post.instagram.state !== 'posted' && receiveDrags && (
+          <DropGap before={post.instagram.scheduledAt} after={olderPostDate} />
+        )}
+      </div>
+      <DialogContent>
+        {post?.instagram.state === 'posted' && (
+          <PostComponent post={post!} border={false} />
+        )}
+        {post?.instagram.state !== 'posted' && (
+          <DraftPostComponent
+            post={post!}
+            border={false}
+            onDelete={onDeleteDraft}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
