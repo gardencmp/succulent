@@ -3,6 +3,7 @@ import { HomeScreen } from './HomeScreen';
 import { BrandHome } from './BrandHome';
 import { BrandInsightsScreen } from './BrandInsightsScreen';
 import { BrandScheduleScreen } from './BrandScheduleScreen';
+import { Preferences } from './Preferences';
 
 export const router = createHashRouter([
   {
@@ -20,6 +21,10 @@ export const router = createHashRouter([
       {
         path: '/brand/:brandId/schedule',
         element: <BrandScheduleScreen />,
+      },
+      {
+        path: '/brand/:brandId/preferences',
+        element: <Preferences />,
       },
     ],
   },
