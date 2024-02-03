@@ -26,7 +26,6 @@ import {
 import {
   DndContext,
   useDroppable,
-  useDraggable,
   DragOverlay,
   useSensors,
   useSensor,
@@ -40,6 +39,7 @@ import { getPostInsightsHelper } from '@/lib/importPostsHelper';
 import { Input } from './ui/input';
 import { GripHorizontal, GripVertical } from 'lucide-react';
 import { toDateString } from '@/lib/dates';
+import { Draggable } from '@/lib/dragAndDrop';
 
 export function FeedView() {
   const draftStates = ['notScheduled'];
@@ -392,31 +392,6 @@ function DropGap({ before, after }: { before?: ISODate; after?: ISODate }) {
           'bg-pink-500': isOver,
         })}
       />
-    </div>
-  );
-}
-
-function Draggable({
-  children,
-  postId,
-  className,
-}: {
-  children: React.ReactNode;
-  postId: CoID<Post>;
-  className: string;
-}) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: postId,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      className={cn(className, { 'opacity-30': isDragging })}
-    >
-      {children}
     </div>
   );
 }
