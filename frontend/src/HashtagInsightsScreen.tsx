@@ -2,12 +2,165 @@ import { Resolved, useAutoSub } from 'jazz-react';
 import { useParams } from 'react-router-dom';
 import { CoID } from 'cojson';
 import { Brand, Post } from './sharedDataModel';
+import {
+  ColumnDef,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './components/ui/table';
+import { useMemo, useState } from 'react';
+import { Button } from './components/ui/button';
+import { ArrowUpDown } from 'lucide-react';
+
+type Row = {
+  hashtag: string;
+  noOfPosts: number;
+  combinedReach: number;
+  relativeReachQuality: number;
+  avgEngagement: number;
+};
+
+const columns: ColumnDef<Row>[] = [
+  {
+    accessorKey: 'hashtag',
+    header: 'Hashtag',
+  },
+  {
+    accessorKey: 'noOfPosts',
+    header: 'No of posts',
+  },
+  {
+    accessorKey: 'combinedReach',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Combined Reach
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: 'relativeReachQuality',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          "Relative reach quality"
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) =>
+      (row.getValue('relativeReachQuality') as number).toFixed(2),
+  },
+  {
+    accessorKey: 'avgEngagement',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Avg Engagement
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) =>
+      (row.getValue('relativeReachQuality') as number).toFixed(2) + '%',
+  },
+];
 
 export function HashtagInsightsScreen() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
 
   const brand = useAutoSub(brandId);
 
+  const rows: Row[] = useMemo(
+    () => (brand ? collectHashtagRows(brand) : []),
+    [brand]
+  );
+
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'relativeReachQuality', desc: true },
+  ]);
+
+  const table = useReactTable<Row>({
+    data: rows,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+  });
+
+  return (
+    <div>
+      <h1>Hashtag Insights</h1>
+      <Table className="max-w-[70rem] mx-auto">
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+function collectHashtagRows(brand: Resolved<Brand>) {
   const hashtagsAndTheirPosts: { [hashtag: string]: Resolved<Post>[] } = {};
 
   for (const post of brand?.posts || []) {
@@ -51,8 +204,6 @@ export function HashtagInsightsScreen() {
     return [hashtag, avgReachWithHashtag / avgReachWithoutHashtag] as const;
   });
 
-  hashtagsAndTheirQuality.sort((a, b) => b[1] - a[1]);
-
   const hashtagsAndTheirAvgEngagement: { [hashtag: string]: number } =
     Object.fromEntries(
       Object.entries(hashtagsAndTheirPosts).map(([hashtag, posts]) => [
@@ -69,31 +220,12 @@ export function HashtagInsightsScreen() {
       ])
     );
 
-  return (
-    <div>
-      <h1>Hashtag Insights</h1>
-      <table>
-        <thead>
-          <tr>
-            <th className="p-4">Hashtag</th>
-            <th className="p-4">No of posts</th>
-            <th className="p-4">Combined reach</th>
-            <th className="p-4">"Relative reach quality"</th>
-            <th className="p-4">Avg engagement</th>
-          </tr>
-        </thead>
-        <tbody>
-          {hashtagsAndTheirQuality.map(([hashtag, quality]) => (
-            <tr>
-              <td>{hashtag}</td>
-              <td>{hashtagsAndTheirPosts[hashtag].length}</td>
-              <td>{hashtagsAndCombinedReach[hashtag]}</td>
-              <td>{quality.toFixed(2)}</td>
-              <td>{hashtagsAndTheirAvgEngagement[hashtag].toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  const rows: Row[] = hashtagsAndTheirQuality.map(([hashtag, quality]) => ({
+    hashtag,
+    noOfPosts: hashtagsAndTheirPosts[hashtag].length,
+    combinedReach: hashtagsAndCombinedReach[hashtag],
+    relativeReachQuality: quality,
+    avgEngagement: hashtagsAndTheirAvgEngagement[hashtag],
+  }));
+  return rows;
 }
