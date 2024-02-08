@@ -110,7 +110,7 @@ async function runner() {
                   });
                 }
               } else {
-                console.log('one or several images unavailable');
+                console.log('one or several images unavailable', post.value.id);
                 await new Promise((resolve) => setTimeout(resolve, 10_000));
                 post.value.set('instagram', {
                   state: 'scheduleDesired',
@@ -422,7 +422,7 @@ async function loadImageFile(
       const streamInfo = stream.getBinaryChunks();
       if (streamInfo) {
         resolve(streamInfo);
-        unsub();
+        unsub && unsub();
       }
     });
   });
