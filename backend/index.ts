@@ -409,22 +409,25 @@ async function loadImageFile(
     console.error('no resId');
     return undefined;
   }
-  const res = await node.load(resId);
-  if (res === 'unavailable') {
-    console.error('res unavailable');
-    return undefined;
-  }
 
   const streamInfo = await new Promise<
-    BinaryStreamInfo & { chunks: Uint8Array[] }
-  >((resolve) => {
-    const unsub = res.subscribe(async (stream) => {
-      const streamInfo = stream.getBinaryChunks();
+    (BinaryStreamInfo & { chunks: Uint8Array[] }) | undefined
+  >(async (resolve) => {
+    let triesLeft = 10;
+    while (triesLeft > 0) {
+      const res = await node.load(resId);
+      if (res === 'unavailable') {
+        console.error('res unavailable');
+        resolve(undefined);
+        return;
+      }
+      const streamInfo = res.getBinaryChunks();
       if (streamInfo) {
         resolve(streamInfo);
-        unsub && unsub();
+        return;
       }
-    });
+      triesLeft--;
+    }
   });
 
   return streamInfo;
