@@ -19,13 +19,11 @@ export function DraftPostComponent({
   border = true,
   styling,
   onDelete,
-  onDeletePhoto,
 }: {
   post: Resolved<Post>;
   border?: boolean;
   styling?: string;
   onDelete?: () => void;
-  onDeletePhoto: (imageId: string) => void;
 }) {
   const { me, localNode } = useJazz<Profile, AccountRoot>();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
@@ -52,6 +50,11 @@ export function DraftPostComponent({
     },
     [post]
   );
+
+  const onDeletePhoto = (activeImageId: string) => {
+    if (!confirm('Are you sure you want to delete this photo?')) return;
+    post.images?.delete(post.images.findIndex((i) => i?.id === activeImageId));
+  };
 
   return (
     <div

@@ -310,15 +310,6 @@ export function FeedView() {
                         brand.posts.findIndex((p) => p?.id === post.id)
                       );
                     }}
-                    onDeletePhoto={(activeImageId) => {
-                      if (
-                        !confirm('Are you sure you want to delete this photo?')
-                      )
-                        return;
-                      post.images?.delete(
-                        post.images.findIndex((i) => i?.id === activeImageId)
-                      );
-                    }}
                   />
                 </div>
               )
