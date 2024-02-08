@@ -52,6 +52,7 @@ async function runner() {
   });
 
   const actuallyScheduled = new Map<Post['id'], Date>();
+  const currentlyPosting = new Set<Post['id']>();
 
   console.log(
     'root after migration',
@@ -61,36 +62,63 @@ async function runner() {
   autoSub(
     node.account.id as CoID<Account<Profile, WorkerAccountRoot>>,
     node,
-    (account) => {
+    async (account) => {
       console.log('root in autosub', account?.meta.coValue.get('root'));
       if (account?.root?.scheduledPosts) {
         console.log(
           'scheduledPosts',
           account.root.scheduledPosts.id,
           account.root.scheduledPosts.perSession.map((entry) =>
-            entry[1].all.map((post) => post.value?.content)
+            entry[1].all.map((post) => ({
+              id: post.value?.id,
+              content: post.value?.content?.slice(0, 50),
+            }))
           )
         );
 
         for (let perSession of account.root.scheduledPosts.perSession) {
           for (let post of perSession[1].all) {
             if (!post?.value?.instagram?.state) continue;
-            if (post.value.instagram.state === 'scheduleDesired') {
-              actuallyScheduled.set(
-                post.value.id,
-                new Date(post.value.instagram.scheduledAt)
+            if (currentlyPosting.has(post.value.id)) continue;
+            if (
+              post.value.instagram.state === 'scheduleDesired' ||
+              post.value.instagram.state === 'scheduled'
+            ) {
+              if (!post.value.images) {
+                continue;
+              }
+
+              const streams = await Promise.all(
+                post.value.images.map(
+                  (image) =>
+                    image?.imageFile?.id &&
+                    loadImageFile(node, image.imageFile.id)
+                )
               );
-              post.value.set('instagram', {
-                state: 'scheduled',
-                scheduledAt: post.value.instagram.scheduledAt,
-              });
-            } else if (post.value.instagram.state === 'scheduled') {
-              if (!actuallyScheduled.has(post.value.id)) {
-                actuallyScheduled.set(
-                  post.value.id,
-                  new Date(post.value.instagram.scheduledAt)
-                );
-                console.log('re-adding post', post.value.id);
+
+              if (streams.every((stream) => stream)) {
+                if (!actuallyScheduled.has(post.value.id)) {
+                  actuallyScheduled.set(
+                    post.value.id,
+                    new Date(post.value.instagram.scheduledAt)
+                  );
+                }
+                if (post.value.instagram.state === 'scheduleDesired') {
+                  post.value.set('instagram', {
+                    state: 'scheduled',
+                    scheduledAt: post.value.instagram.scheduledAt,
+                  });
+                }
+              } else {
+                console.log('one or several images unavailable');
+                await new Promise((resolve) => setTimeout(resolve, 10_000));
+                post.value.set('instagram', {
+                  state: 'scheduleDesired',
+                  scheduledAt: post.value.instagram.scheduledAt,
+                  notScheduledReason:
+                    'One or several images unavailable as of ' +
+                    new Date().toISOString(),
+                });
               }
             } else if (post.value.instagram.state !== 'posted') {
               if (actuallyScheduled.has(post.value.id)) {
@@ -157,30 +185,12 @@ async function runner() {
         const imageFileId = req.url.split('/image/')[1];
         console.log(imageFileId);
 
-        const image = await node.load(
+        const streamInfo = await loadImageFile(
+          node,
           imageFileId as CoID<Media.ImageDefinition>
         );
-        if (image === 'unavailable') return new Response('unavailable!');
-        const originalRes = image.get('originalSize');
-        if (!originalRes) return new Response('no original res');
-        const resName =
-          `${originalRes[0]}x${originalRes[1]}` as `${number}x${number}`;
-        const resId = image.get(resName);
-        if (!resId) return new Response('no resId');
-        const res = await node.load(resId);
-        if (res === 'unavailable') return new Response('unavailable!');
 
-        const streamInfo = await new Promise<
-          BinaryStreamInfo & { chunks: Uint8Array[] }
-        >((resolve) => {
-          const unsub = res.subscribe(async (stream) => {
-            const streamInfo = stream.getBinaryChunks();
-            if (streamInfo) {
-              resolve(streamInfo);
-              unsub();
-            }
-          });
-        });
+        if (!streamInfo) return new Response('not found', { status: 404 });
 
         return new Response(new Blob(streamInfo.chunks), {
           headers: {
@@ -205,6 +215,7 @@ async function runner() {
       if (scheduledAt < new Date()) {
         console.log('posting', postId);
         actuallyScheduled.delete(postId);
+        currentlyPosting.add(postId);
 
         try {
           const post = await node.load(postId);
@@ -252,7 +263,10 @@ async function runner() {
               const res = await fetch(url, {
                 method: 'POST',
               });
-              res.status !== 200 && console.log(res.status, await res.text());
+              if (res.status !== 200)
+                throw new Error(
+                  'FB API error ' + res.status + ': ' + (await res.text())
+                );
               topContainerId = ((await res.json()) as { id: string }).id;
             } else {
               const containerIds = await Promise.all(
@@ -275,8 +289,10 @@ async function runner() {
                   const res = await fetch(url, {
                     method: 'POST',
                   });
-                  res.status !== 200 &&
-                    console.log(res.status, await res.text());
+                  if (res.status !== 200)
+                    throw new Error(
+                      'FB API error ' + res.status + ': ' + (await res.text())
+                    );
                   const containerId = ((await res.json()) as { id: string }).id;
 
                   image.set('instagramContainerId', containerId);
@@ -297,7 +313,10 @@ async function runner() {
               const res = await fetch(url, {
                 method: 'POST',
               });
-              res.status !== 200 && console.log(res.status, await res.text());
+              if (res.status !== 200)
+                throw new Error(
+                  'FB API error ' + res.status + ': ' + (await res.text())
+                );
               topContainerId = ((await res.json()) as { id: string }).id;
             }
 
@@ -313,7 +332,10 @@ async function runner() {
             const res = await fetch(url, {
               method: 'POST',
             });
-            res.status !== 200 && console.log(res.status, await res.text());
+            if (res.status !== 200)
+              throw new Error(
+                'FB API error ' + res.status + ': ' + (await res.text())
+              );
             const postMediaId = ((await res.json()) as { id: string }).id;
 
             if (!postMediaId) throw new Error('no post media id');
@@ -324,7 +346,11 @@ async function runner() {
             console.log('GET', permalinkReqUrl);
             const permalinkRes = await fetch(permalinkReqUrl);
             permalinkRes.status !== 200 &&
-              console.log(permalinkRes.status, await permalinkRes.text());
+              console.error(
+                'error getting permalink',
+                permalinkRes.status,
+                await permalinkRes.text()
+              );
 
             const postPermalink = (
               (await permalinkRes.json()) as {
@@ -341,12 +367,18 @@ async function runner() {
           } catch (e) {
             console.error('Error posting after post load', postId, e);
             post.set('instagram', {
-              state: 'notScheduled',
+              state: 'scheduleDesired',
+              scheduledAt: scheduledAt.toISOString(),
+              notScheduledReason: e + '',
             });
+          } finally {
+            currentlyPosting.delete(postId);
           }
         } catch (e) {
           console.error('Error posting', postId, e);
           actuallyScheduled.set(postId, scheduledAt);
+        } finally {
+          currentlyPosting.delete(postId);
         }
       }
     }
@@ -354,6 +386,48 @@ async function runner() {
     setTimeout(tryPosting, 10_000);
   };
   setTimeout(tryPosting, 10_000);
+}
+
+async function loadImageFile(
+  node: LocalNode,
+  imageFileId: CoID<Media.ImageDefinition>
+) {
+  const image = await node.load(imageFileId);
+  if (image === 'unavailable') {
+    console.error('image unavailable');
+    return undefined;
+  }
+  const originalRes = image.get('originalSize');
+  if (!originalRes) {
+    console.error('no originalRes');
+    return undefined;
+  }
+  const resName =
+    `${originalRes[0]}x${originalRes[1]}` as `${number}x${number}`;
+  const resId = image.get(resName);
+  if (!resId) {
+    console.error('no resId');
+    return undefined;
+  }
+  const res = await node.load(resId);
+  if (res === 'unavailable') {
+    console.error('res unavailable');
+    return undefined;
+  }
+
+  const streamInfo = await new Promise<
+    BinaryStreamInfo & { chunks: Uint8Array[] }
+  >((resolve) => {
+    const unsub = res.subscribe(async (stream) => {
+      const streamInfo = stream.getBinaryChunks();
+      if (streamInfo) {
+        resolve(streamInfo);
+        unsub();
+      }
+    });
+  });
+
+  return streamInfo;
 }
 
 runner();
