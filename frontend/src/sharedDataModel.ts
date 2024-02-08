@@ -17,6 +17,7 @@ export type InstagramNotScheduled = {
 export type InstagramScheduleDesired = {
   state: 'scheduleDesired';
   scheduledAt: ISODate;
+  notScheduledReason?: string;
 };
 
 export type InstagramScheduled = {
