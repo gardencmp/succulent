@@ -49,6 +49,7 @@ export function FeedView() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const [activePostID, setActivePostID] = useState<CoID<Post>>();
+  const [activeImageId, setActiveImageId] = useState();
 
   const [filter, setFilter] = useState<string>();
   const filteredPosts = brand?.posts?.filter(
@@ -307,6 +308,15 @@ export function FeedView() {
                       });
                       brand.posts?.delete(
                         brand.posts.findIndex((p) => p?.id === post.id)
+                      );
+                    }}
+                    onDeletePhoto={(activeImageId) => {
+                      if (
+                        !confirm('Are you sure you want to delete this photo?')
+                      )
+                        return;
+                      post.images?.delete(
+                        post.images.findIndex((i) => i?.id === activeImageId)
                       );
                     }}
                   />

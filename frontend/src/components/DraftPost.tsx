@@ -19,11 +19,13 @@ export function DraftPostComponent({
   border = true,
   styling,
   onDelete,
+  onDeletePhoto,
 }: {
   post: Resolved<Post>;
   border?: boolean;
   styling?: string;
   onDelete?: () => void;
+  onDeletePhoto: (imageId: string) => void;
 }) {
   const { me, localNode } = useJazz<Profile, AccountRoot>();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
@@ -62,14 +64,25 @@ export function DraftPostComponent({
           (image) =>
             image &&
             image.imageFile && (
-              <img
-                key={image.id}
-                className="w-40 h-40 object-cover shrink-0"
-                src={
-                  image.imageFile.as(BrowserImage(500))
-                    ?.highestResSrcOrPlaceholder
-                }
-              />
+              <div className="relative">
+                <Button
+                  variant="destructive"
+                  className="absolute right-0"
+                  // onDeletePhoto={() => setActiveImageId(image.id)}
+                  onClick={() => image && onDeletePhoto(image.id)}
+                >
+                  x
+                </Button>
+                <img
+                  key={image.id}
+                  className="w-40 h-40 object-cover shrink-0"
+                  src={
+                    image.imageFile.as(BrowserImage(500))
+                      ?.highestResSrcOrPlaceholder
+                  }
+                  id={image.id}
+                />
+              </div>
             )
         )}
         <Input
