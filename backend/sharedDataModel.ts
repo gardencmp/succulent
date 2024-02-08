@@ -7,7 +7,6 @@ type ISODate = string;
 export type InstagramState =
   | {
       state: 'notScheduled';
-      schedulingError?: string;
     }
   | {
       state: 'scheduleDesired';

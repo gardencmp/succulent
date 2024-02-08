@@ -110,7 +110,11 @@ async function runner() {
                   });
                 }
               } else {
-                console.log('one or several images unavailable', post.value.id);
+                console.error(
+                  'One or several images unavailable',
+                  post.value.id,
+                  streams
+                );
                 await new Promise((resolve) => setTimeout(resolve, 10_000));
                 post.value.set('instagram', {
                   state: 'scheduleDesired',
