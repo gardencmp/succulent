@@ -6,7 +6,8 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "dev": "cd frontend && yarn dev"
+    "dev": "cd frontend && yarn dev",
+    "all": "yarn && cd frontend && yarn && ../backend && yarn"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

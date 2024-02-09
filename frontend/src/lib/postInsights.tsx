@@ -1,6 +1,15 @@
 import { Post } from '@/sharedDataModel';
 import { Resolved } from 'jazz-react';
-import { Heart, HeartHandshake, Smile } from 'lucide-react';
+import {
+  Heart,
+  HeartHandshake,
+  MessageCircle,
+  MessageCircleReply,
+  Save,
+  Smile,
+  UserRoundPlus,
+  View,
+} from 'lucide-react';
 import { ReactElement } from 'react';
 
 export function insightConfigForPost(post: Resolved<Post>) {
@@ -8,6 +17,7 @@ export function insightConfigForPost(post: Resolved<Post>) {
   if (!insights) return;
 
   type PostInsight = {
+    id: string;
     title: string;
     icon: ReactElement;
     data: string;
@@ -35,45 +45,59 @@ export function insightConfigForPost(post: Resolved<Post>) {
 
   const insightsConfig: PostInsight[] = [
     {
+      id: 'likes',
       title: 'likes',
       icon: <Heart />,
       data: getInsights('likes'),
     },
     {
-      title: 'smile-plus',
+      id: 'reach',
+      title: 'reach',
       icon: <Smile />,
       data: getInsights('reach'),
     },
     {
+      id: 'totalInteractions',
       title: 'interactionPc',
       icon: <HeartHandshake />,
       data: getInteractionPc(),
     },
-    // {
-    //   title: 'comments',
-    //   icon: <MessageCircle />,
-    //   data: getInsights('comments'),
-    // },
-    // {
-    //   title: 'saved',
-    //   icon: <Save />,
-    //   data: getInsights('saved'),
-    // },
-    // {
-    //   title: 'shared',
-    //   icon: <MessageCircleReply />,
-    //   data: getInsights('shares'),
-    // },
-    // {
-    //   title: 'profileVisits',
-    //   icon: <View />,
-    //   data: getInsights('profileVisits'),
-    // },
-    // {
-    //   title: 'follows',
-    //   icon: <UserRoundPlus />,
-    //   data: getInsights('follows'),
-    // },
+    {
+      id: 'comments',
+      title: 'comments',
+      icon: <MessageCircle />,
+      data: getInsights('comments'),
+    },
+    {
+      id: 'saves',
+      title: 'saves',
+      icon: <Save />,
+      data: getInsights('saved'),
+    },
+    {
+      id: 'shares',
+      title: 'shares',
+      icon: <MessageCircleReply />,
+      data: getInsights('shares'),
+    },
+    {
+      id: 'profileActivity',
+      title: 'profileVisits',
+      icon: <View />,
+      data: getInsights('profileVisits'),
+    },
+    {
+      id: 'follows',
+      title: 'follows',
+      icon: <UserRoundPlus />,
+      data: getInsights('follows'),
+    },
+    {
+      id: 'impressions',
+      title: 'impressions',
+      icon: <UserRoundPlus />,
+      data: getInsights('impressions'),
+    },
   ];
 
   return insightsConfig;

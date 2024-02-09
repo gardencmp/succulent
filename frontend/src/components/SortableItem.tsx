@@ -1,7 +1,11 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-export function SortableItem(props: { id: string; label: string }) {
+export function SortableItem(props: {
+  id: string;
+  label: string;
+  className: string;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id });
 
@@ -11,7 +15,13 @@ export function SortableItem(props: { id: string; label: string }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={props.className}
+    >
       {props.label}
     </div>
   );
