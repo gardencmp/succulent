@@ -1,5 +1,5 @@
 import { Switch } from '@/components/ui/switch';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -32,7 +32,18 @@ export const insightTypes = [
 
 export function Preferences() {
   const [items, setItems] = useState([1, 2, 3]);
-  const [postPreferences, setPostPreferences] = useState(insightTypes);
+  const [postPreferences, setPostPreferences] = useState([]);
+
+  useEffect(() => {
+    const storedPrefs = localStorage.getItem('postPreferences');
+    storedPrefs
+      ? setPostPreferences(JSON.parse(storedPrefs))
+      : setPostPreferences(insightTypes);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('postPreferences', JSON.stringify(postPreferences));
+  }, [postPreferences]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
