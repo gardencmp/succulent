@@ -4,6 +4,7 @@ import { BrandHome } from './BrandHome';
 import { BrandInsightsScreen } from './BrandInsightsScreen';
 import { BrandScheduleScreen } from './BrandScheduleScreen';
 import { Preferences } from './Preferences';
+import { HashtagInsightsScreen } from './HashtagInsightsScreen';
 
 export const router = createHashRouter([
   {
@@ -25,6 +26,10 @@ export const router = createHashRouter([
       {
         path: '/brand/:brandId/preferences',
         element: <Preferences />,
+      },
+      {
+        path: '/brand/:brandId/hashtags',
+        element: <HashtagInsightsScreen />,
       },
     ],
   },
