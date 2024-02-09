@@ -4,6 +4,7 @@ import { Resolved } from 'jazz-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { insightConfigForPost } from '@/lib/postInsights';
 
 // const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
 //   CoStream<Post['id']>
@@ -68,7 +69,15 @@ export function PostComponent({
           {post?.content}
         </p>
       </div>
-      <div className="flex gap-2 items-center flex-wrap"></div>
+      <div className="flex gap-2 items-center flex-wrap">
+        {insightConfigForPost(post)?.map((insight) => (
+          <p>
+            {insight.title} {insight.data}
+          </p>
+        ))}
+      </div>
+      {/* <div className="text-xs">Succulent post id: {post.id}</div> */}
+      {/* <div className="text-xs">Instagram post id: {post.instagram.state === "posted" && post.instagram.postId}</div> */}
     </div>
   );
 }

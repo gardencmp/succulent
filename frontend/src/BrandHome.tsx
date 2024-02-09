@@ -33,6 +33,18 @@ export function BrandHome() {
         >
           Insights
         </Button>
+        <Button
+          onClick={() => router.navigate(`/brand/${brandId}/hashtags`)}
+          variant="ghost"
+        >
+          Hashtags
+        </Button>
+        <Button
+          onClick={() => router.navigate(`/brand/${brandId}/preferences`)}
+          variant="ghost"
+        >
+          Preferences
+        </Button>
       </nav>
       <main className="flex flex-col flex-shrink min-h-0">
         <Outlet />
