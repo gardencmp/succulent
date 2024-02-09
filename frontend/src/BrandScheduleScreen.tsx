@@ -1,5 +1,5 @@
 import { CalendarView } from './components/CalendarView';
-import { FeedView } from './components/FeedView';
+import { FeedView } from './components/feedView/FeedView';
 import { useState } from 'react';
 import { cn } from './lib/utils';
 

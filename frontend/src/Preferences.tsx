@@ -1,16 +1,5 @@
 import { Switch } from '@/components/ui/switch';
-// import {
-//   DndContext,
-//   useDroppable,
-//   useDraggable,
-//   DragOverlay,
-//   useSensors,
-//   useSensor,
-//   PointerSensor,
-// } from '@dnd-kit/core';
-// import { Draggable } from "./lib/dragAndDrop";
-// import { useState } from "react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -43,13 +32,35 @@ export const insightTypes = [
 
 export function Preferences() {
   const [items, setItems] = useState([1, 2, 3]);
-  // const [postPreferences, setPostPreferences] = useState(insightTypes);
+  const [postPreferences, setPostPreferences] = useState([]);
+
+  useEffect(() => {
+    const storedPrefs = localStorage.getItem('postPreferences');
+    storedPrefs
+      ? setPostPreferences(JSON.parse(storedPrefs))
+      : setPostPreferences(insightTypes);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('postPreferences', JSON.stringify(postPreferences));
+  }, [postPreferences]);
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  const handleCheckedChange = (id: string) => {
+    const swithActive = postPreferences.includes(id);
+    if (swithActive) {
+      const filteredPrefs = postPreferences.filter((prefId) => prefId !== id);
+      setPostPreferences(filteredPrefs);
+    } else {
+      setPostPreferences(postPreferences.concat(id));
+    }
+  };
 
   return (
     <div>
@@ -62,10 +73,20 @@ export function Preferences() {
       >
         <SortableContext items={items} strategy={verticalListSortingStrategy}>
           {insightTypes.map((id) => (
-            <>
-              <Switch />
-              <SortableItem key={id} id={id} label={id} />
-            </>
+            <div className="flex">
+              <Switch
+                key={`switch-${id}`}
+                className="m-1"
+                checked={postPreferences.includes(id)}
+                onCheckedChange={() => handleCheckedChange(id)}
+              />
+              <SortableItem
+                key={id}
+                id={id}
+                label={id}
+                className="flex items-center"
+              />
+            </div>
           ))}
         </SortableContext>
       </DndContext>

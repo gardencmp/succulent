@@ -1478,18 +1478,19 @@ clsx@2.0.0, clsx@^2.0.0:
   resolved "https://registry.npmjs.org/clsx/-/clsx-2.0.0.tgz"
   integrity sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==
 
-cojson-storage-indexeddb@^0.6.1:
-  version "0.6.3"
-  resolved "https://registry.npmjs.org/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.6.3.tgz"
-  integrity sha512-lwxlB0Z12xMQjtvcRQK3ZIvGAjHLOSOtItFQnx4TMLahyn/MoLoT4RQmEcObXInS3d0VpQbKgz4MnDZwCQH3CQ==
+cojson-storage-indexeddb@0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.6.4.tgz#e0390f6d03fd713a2949a3008a2971dfd93a1955"
+  integrity sha512-SwOdtKkTZKF0xWQ54Dn+qqi1lk11sfUKanf/apl/8CrPPO5Yzsyx+7q5Okf37HcjGDk7uh4K5SU5Fs/cfDPW/Q==
   dependencies:
-    cojson "^0.6.4"
+    cojson "0.6.7"
+    isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
     typescript "^5.1.6"
 
-cojson@^0.6.0, cojson@^0.6.4, cojson@^0.6.5:
-  version "0.6.5"
-  resolved "https://registry.npmjs.org/cojson/-/cojson-0.6.5.tgz"
-  integrity sha512-2UidPZajzTTEw2yrhQgrPxseT9QFr2ZiUv91ibtIM8ZPZ/6HfmGCcJgv02EeAWyKNQUVK5rLKBsioXov8A64xw==
+cojson@0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.6.7.tgz#bb69fbf5aa4f84b6651c3cee23728748caebdcef"
+  integrity sha512-aW4lF/3C+A48wgmG+D4qTjKQXjoDCYDEjBEfRaqynATTxDDrofuaJQiw6wja5jI16zT3i7G60uMRCsXlsvFltQ==
   dependencies:
     "@hazae41/berith" "^1.2.6"
     "@noble/ciphers" "^0.1.3"
@@ -2183,9 +2184,9 @@ isexe@^2.0.0:
   resolved "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-"isomorphic-streams@https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
+"isomorphic-streams@git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
   version "1.0.3"
-  resolved "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
+  resolved "git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
 jackspeak@^2.3.5:
   version "2.3.6"
@@ -2196,59 +2197,63 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jazz-autosub@^0.6.0, jazz-autosub@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.npmjs.org/jazz-autosub/-/jazz-autosub-0.6.1.tgz"
-  integrity sha512-Gm32vv6V4WJVkv0TlNLc0LYRjvHthVdJH/8hiKV8WtS9d5kYo7flqZNt+DpHHadkwt7s3OC6ksqjZycCFLLZ4w==
+jazz-autosub@0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/jazz-autosub/-/jazz-autosub-0.6.2.tgz#baca946914d98f4ab23db94a31c7a66197136d8a"
+  integrity sha512-YYpeXvlfVF6GuBq9r9iL+7IBo+yVEKKjSbCKUc1doI9LV140Y3+tnwD+2cIT1g13yJGlLb66BeIXvfGJEkK97g==
   dependencies:
-    cojson "^0.6.5"
+    cojson "0.6.7"
 
-jazz-browser-auth-local@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.npmjs.org/jazz-browser-auth-local/-/jazz-browser-auth-local-0.5.0.tgz"
-  integrity sha512-yfVueD26/yrcDns5a3aS7rJZd6i3lPfnQagVQE0Yt5KRXCz/+R/jVUvd9SM4KsGWMbIHfcVJVBIxnOFAk25aNg==
+jazz-browser-auth-local@0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/jazz-browser-auth-local/-/jazz-browser-auth-local-0.5.1.tgz#97652430528ed33c262a70ab7e134b4f514ffa9a"
+  integrity sha512-skvmpIepqta0FHjti4CGkmHPyL6wH8m0LMO1iVfOqs1ERX4bNYPd2e2W6DVdDCjqvWADj7m4C3VIyqjupatwlg==
   dependencies:
-    jazz-browser "^0.6.0"
+    cojson "0.6.7"
+    jazz-browser "0.6.4"
     typescript "^5.1.6"
 
-jazz-browser-media-images@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/jazz-browser-media-images/-/jazz-browser-media-images-0.6.0.tgz"
-  integrity sha512-5fjegbcIzXsil1DtfaO0SjBjORxEvf77VCghbi4mDEWiheWs3tWvVl0a8PjzaIS3IA5olusoc0tbtpQDOXdMng==
+jazz-browser-media-images@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.6.1.tgz#47e3a83ba645cf469b16a4519237f80e536f46ca"
+  integrity sha512-tMoNxnd51Y9KWD6j7z55f7OZPiuEktM6eEhLaXiCIuDu3UDuUxGiD7Z9DWn9kRdRW+FxAlP+H8B0kmmZ34DUEw==
   dependencies:
     "@types/image-blob-reduce" "^4.1.1"
-    cojson "^0.6.0"
+    cojson "0.6.7"
     image-blob-reduce "^4.1.0"
-    jazz-autosub "^0.6.0"
-    jazz-browser "^0.6.0"
+    jazz-autosub "0.6.2"
+    jazz-browser "0.6.4"
+    pica "^9.0.1"
     typescript "^5.1.6"
 
-jazz-browser@^0.6.0, jazz-browser@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.npmjs.org/jazz-browser/-/jazz-browser-0.6.2.tgz"
-  integrity sha512-e6hJJT5zf6zzZiBNRsaKL2UPYWaoP6V2lSj5B0xN40ixJXDxG5ByWDLqWitZbtRbwqH8RvA/GJrBVRJz5ij5wg==
+jazz-browser@0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.6.4.tgz#e04a775c97fec14d78f3f7a8a0f7bd9b9a1b2462"
+  integrity sha512-gkO2+8yJ1uOHfFYgru2wffEiJmJwjcC4mZq2spfnQcS/zU9MmebXgcLMTjRLG7a5mpSj3y0xyHbYAr+S3ihAUg==
   dependencies:
-    cojson "^0.6.5"
-    cojson-storage-indexeddb "^0.6.1"
-    jazz-autosub "^0.6.1"
+    cojson "0.6.7"
+    cojson-storage-indexeddb "0.6.4"
+    isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
+    jazz-autosub "0.6.2"
     typescript "^5.1.6"
 
-jazz-react-auth-local@^0.4.17:
-  version "0.4.17"
-  resolved "https://registry.npmjs.org/jazz-react-auth-local/-/jazz-react-auth-local-0.4.17.tgz"
-  integrity sha512-Vmf2jXtE2HCEOYd+WKvLCQf8mWnXcQV+lvOAbRbZ9LZWMLkl1jdUrx0+cGLI6BaG4UeHr1ddYa3iiIw6QBsHAw==
+jazz-react-auth-local@^0.4.18:
+  version "0.4.18"
+  resolved "https://registry.yarnpkg.com/jazz-react-auth-local/-/jazz-react-auth-local-0.4.18.tgz#8d225caa4b6a21e6963c08d15772c8ddb6387268"
+  integrity sha512-Ga7bjTZ1XKQmTH1UBOdC4QA9Wngx3DtGPVv9B/glX/RHpM1aZx5yZhySYQdBr1VnmzbWyTpRkEAAqaJwfjxERg==
   dependencies:
-    jazz-browser-auth-local "^0.5.0"
-    jazz-react "^0.5.1"
+    jazz-browser-auth-local "0.5.1"
+    jazz-react "0.5.5"
     typescript "^5.1.6"
 
-jazz-react@^0.5.1, jazz-react@^0.5.3:
-  version "0.5.3"
-  resolved "https://registry.npmjs.org/jazz-react/-/jazz-react-0.5.3.tgz"
-  integrity sha512-bIeJfrDeEiHi1kv2ynl3JtEnbRCy0qY7au5mgVB0LRPSMY32vPZdpgrSkwKanyVZIU4N1zLPtApI2Td1VP3GdA==
+jazz-react@0.5.5, jazz-react@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.5.5.tgz#66510b5c30e082330097462adddbaa92ff64bf7a"
+  integrity sha512-8eKc5p1KvjwCwHpiGXxdqc7g/KE1PQ212wReNbnMkSZNMBmYCe+ZbzwhHk/Wz/jLopf+FnT9fBivFB/9Kb0dLw==
   dependencies:
-    cojson "^0.6.5"
-    jazz-browser "^0.6.2"
+    cojson "0.6.7"
+    jazz-autosub "0.6.2"
+    jazz-browser "0.6.4"
     typescript "^5.1.6"
 
 jiti@^1.19.1:
@@ -2540,7 +2545,7 @@ path-type@^4.0.0:
   resolved "https://registry.npmjs.org/path-type/-/path-type-4.0.0.tgz"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-pica@^9.0.0:
+pica@^9.0.0, pica@^9.0.1:
   version "9.0.1"
   resolved "https://registry.npmjs.org/pica/-/pica-9.0.1.tgz"
   integrity sha512-v0U4vY6Z3ztz9b4jBIhCD3WYoecGXCQeCsYep+sXRefViL+mVVoTL+wqzdPeE+GpBFsRUtQZb6dltvAt2UkMtQ==
