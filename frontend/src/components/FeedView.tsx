@@ -49,7 +49,6 @@ export function FeedView() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const [activePostID, setActivePostID] = useState<CoID<Post>>();
-  const [activeImageId, setActiveImageId] = useState();
 
   const [filter, setFilter] = useState<string>();
   const filteredPosts = brand?.posts?.filter(
