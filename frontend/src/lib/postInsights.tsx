@@ -17,6 +17,7 @@ export function insightConfigForPost(post: Resolved<Post>) {
   if (!insights) return;
 
   type PostInsight = {
+    id: string;
     title: string;
     icon: ReactElement;
     data: string;
@@ -44,44 +45,58 @@ export function insightConfigForPost(post: Resolved<Post>) {
 
   const insightsConfig: PostInsight[] = [
     {
+      id: 'likes',
       title: 'likes',
       icon: <Heart />,
       data: getInsights('likes'),
     },
     {
-      title: 'smile-plus',
+      id: 'reach',
+      title: 'reach',
       icon: <Smile />,
       data: getInsights('reach'),
     },
     {
+      id: 'totalInteractions',
       title: 'interactionPc',
       icon: <HeartHandshake />,
       data: getInteractionPc(),
     },
     {
+      id: 'comments',
       title: 'comments',
       icon: <MessageCircle />,
       data: getInsights('comments'),
     },
     {
-      title: 'saved',
+      id: 'saves',
+      title: 'saves',
       icon: <Save />,
       data: getInsights('saved'),
     },
     {
-      title: 'shared',
+      id: 'shares',
+      title: 'shares',
       icon: <MessageCircleReply />,
       data: getInsights('shares'),
     },
     {
+      id: 'profileActivity',
       title: 'profileVisits',
       icon: <View />,
       data: getInsights('profileVisits'),
     },
     {
+      id: 'follows',
       title: 'follows',
       icon: <UserRoundPlus />,
       data: getInsights('follows'),
+    },
+    {
+      id: 'impressions',
+      title: 'impressions',
+      icon: <UserRoundPlus />,
+      data: getInsights('impressions'),
     },
   ];
 
