@@ -10,6 +10,7 @@ import { compareDesc } from 'date-fns';
 
 const scheduledOrPostedStates = ['scheduleDesired', 'scheduled', 'posted'];
 const draftStates = ['notScheduled'];
+const allDraftStates = ['notScheduled', 'scheduleDesired', 'scheduled'];
 
 export function filterAndSortScheduledAndPostedPosts(
   posts?: (Resolved<Post> | undefined)[]
@@ -46,5 +47,19 @@ export function filterAndSortScheduledAndPostedPosts(
 export function filterDraftPosts(posts?: (Resolved<Post> | undefined)[]) {
   return posts?.filter((post): post is Resolved<Post<InstagramNotScheduled>> =>
     draftStates.includes(post?.instagram.state as string)
+  );
+}
+
+export function filterDraftAndScheduledPosts(
+  posts?: (Resolved<Post> | undefined)[]
+) {
+  return posts?.filter(
+    (
+      post
+    ): post is Resolved<
+      Post<
+        InstagramNotScheduled | InstagramScheduleDesired | InstagramScheduled
+      >
+    > => allDraftStates.includes(post?.instagram.state as string)
   );
 }

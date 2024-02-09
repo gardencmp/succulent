@@ -11,6 +11,7 @@ export type InstagramState =
   | {
       state: 'scheduleDesired';
       scheduledAt: ISODate;
+      notScheduledReason?: string;
     }
   | {
       state: 'scheduled';
