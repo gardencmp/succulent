@@ -2185,8 +2185,7 @@ isexe@^2.0.0:
 
 "isomorphic-streams@https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
   version "1.0.3"
-  resolved "git+ssh://git@github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
-  integrity sha512-9zQxKaft1Wp1Ibd26l/+3aWCW4v9DvTKs10pZJ089HUBIz/2v9tRw+2aqPXwZNnjplopX6YaTYuRYss/c3PtDA==
+  resolved "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
 jackspeak@^2.3.5:
   version "2.3.6"
