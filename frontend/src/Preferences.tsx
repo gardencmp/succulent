@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 // } from '@dnd-kit/core';
 // import { Draggable } from "./lib/dragAndDrop";
 // import { useState } from "react";
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -18,6 +18,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -42,7 +43,7 @@ export const insightTypes = [
 
 export function Preferences() {
   const [items, setItems] = useState([1, 2, 3]);
-  const [postPreferences, setPostPreferences] = useState(insightTypes);
+  // const [postPreferences, setPostPreferences] = useState(insightTypes);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -71,13 +72,15 @@ export function Preferences() {
     </div>
   );
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+
+    if (!over || !active) return;
 
     if (active.id !== over.id) {
       setItems((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
+        const oldIndex = items.indexOf(Number(active.id));
+        const newIndex = items.indexOf(Number(over.id));
 
         return arrayMove(items, oldIndex, newIndex);
       });

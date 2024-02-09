@@ -51,6 +51,11 @@ export function DraftPostComponent({
     [post]
   );
 
+  const onDeletePhoto = (activeImageId: string) => {
+    if (!confirm('Are you sure you want to delete this photo?')) return;
+    post.images?.delete(post.images.findIndex((i) => i?.id === activeImageId));
+  };
+
   return (
     <div
       className={cn('rounded p-4 flex flex-col gap-4', styling, {
@@ -62,14 +67,25 @@ export function DraftPostComponent({
           (image) =>
             image &&
             image.imageFile && (
-              <img
-                key={image.id}
-                className="w-40 h-40 object-cover shrink-0"
-                src={
-                  image.imageFile.as(BrowserImage(500))
-                    ?.highestResSrcOrPlaceholder
-                }
-              />
+              <div className="relative">
+                <Button
+                  variant="destructive"
+                  className="absolute right-0"
+                  // onDeletePhoto={() => setActiveImageId(image.id)}
+                  onClick={() => image && onDeletePhoto(image.id)}
+                >
+                  x
+                </Button>
+                <img
+                  key={image.id}
+                  className="w-40 h-40 object-cover shrink-0"
+                  src={
+                    image.imageFile.as(BrowserImage(500))
+                      ?.highestResSrcOrPlaceholder
+                  }
+                  id={image.id}
+                />
+              </div>
             )
         )}
         <Input
@@ -136,7 +152,10 @@ export function DraftPostComponent({
               'Not yet scheduled'
             )
           ) : post.instagram.state === 'scheduleDesired' ? (
-            'Schedule UNCONFIRMED'
+            'Schedule desired' +
+            (post.instagram.notScheduledReason
+              ? ' (⚠️ ' + post.instagram.notScheduledReason + ')'
+              : ' (✈️ offline)')
           ) : post.instagram.state === 'scheduled' ? (
             'Scheduled'
           ) : post.instagram.state === 'posted' ? (

@@ -346,13 +346,29 @@ function PostTile({
             onMouseOver={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >
-            {(alwaysShowInsights || hovered) && (
+            {(alwaysShowInsights ||
+              hovered ||
+              post.instagram.state === 'scheduleDesired') && (
               <>
                 {post.instagram.state === 'posted' ? (
                   <PostInsights post={post} />
                 ) : (
-                  <div className="absolute">
-                    ⏳ {toDateString(post.instagram.scheduledAt)}
+                  <div
+                    className={cn('absolute', {
+                      'text-orange-400':
+                        post.instagram.state === 'scheduleDesired' &&
+                        post.instagram.notScheduledReason,
+                      'text-blue-500':
+                        post.instagram.state === 'scheduleDesired' &&
+                        !post.instagram.notScheduledReason,
+                    })}
+                  >
+                    {post.instagram.state === 'scheduleDesired'
+                      ? post.instagram.notScheduledReason
+                        ? '⚠️'
+                        : '✈️'
+                      : '⏳'}{' '}
+                    {toDateString(post.instagram.scheduledAt)}
                   </div>
                 )}
               </>
