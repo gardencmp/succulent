@@ -114,7 +114,7 @@ export function HashtagInsightsScreen() {
 
   return (
     <div className="overflow-scroll">
-      <h1>Hashtag Insights</h1>
+      {/* <h1>Hashtag Insights</h1> */}
       <Table className="max-w-[70rem] mx-auto max-h-auto">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
