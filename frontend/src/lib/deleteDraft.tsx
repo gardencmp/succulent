@@ -2,7 +2,7 @@ import { Brand, Post } from '@/sharedDataModel';
 import { Resolved, ResolvedCoMap } from 'jazz-react';
 import { useCallback } from 'react';
 
-export const deleteDraft = (brand: ResolvedCoMap<Brand> | undefined) =>
+export const useDeleteDraft = (brand: ResolvedCoMap<Brand> | undefined) =>
   useCallback(
     (post: Resolved<Post>) => {
       if (!brand) return;

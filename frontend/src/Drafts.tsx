@@ -4,7 +4,7 @@ import { CoID } from 'cojson';
 import { Brand } from './sharedDataModel';
 import { filterDraftAndScheduledPosts } from './lib/filterAndSortPosts';
 import { DraftPostList } from './components/feedView/DraftPostList';
-import { deleteDraft } from './lib/deleteDraft';
+import { useDeleteDraft } from './lib/deleteDraft';
 
 export function Drafts() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
@@ -14,7 +14,7 @@ export function Drafts() {
 
   return (
     <div>
-      <DraftPostList posts={posts} deleteDraft={deleteDraft(brand)} />
+      <DraftPostList posts={posts} deleteDraft={useDeleteDraft(brand)} />
     </div>
   );
 }
