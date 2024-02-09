@@ -199,6 +199,7 @@ export function FeedView() {
               return (
                 post && (
                   <PostTile
+                    key={post.id}
                     post={post}
                     olderPost={chronologicalScheduledAndPostedPosts[i + 1]}
                     alwaysShowInsights={showInsights}
@@ -243,7 +244,7 @@ export function FeedView() {
           {draftPosts?.map(
             (post) =>
               post && (
-                <div className="relative">
+                <div className="relative" key={`container-${post.id}`}>
                   <Draggable
                     postId={post.id}
                     className="absolute p-2 -top-2 left-0 right-0 h-8 md:top-0 md:bottom-3 md:-left-2 md:w-8 md:h-auto cursor-grab flex flex-col md:flex-row items-center justify-end opacity-70 hover:opacity-100"
@@ -252,6 +253,7 @@ export function FeedView() {
                     <GripHorizontal size={20} className="md:hidden" />
                   </Draggable>
                   <DraftPostComponent
+                    key={`drafts-${post.id}`}
                     post={post}
                     styling="mb-3"
                     onDelete={() => {
