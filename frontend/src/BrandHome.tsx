@@ -21,6 +21,7 @@ export function BrandHome() {
           <Button
             onClick={() => router.navigate(`/brand/${brandId}/${item}`)}
             variant="ghost"
+            key={item}
           >
             {item}
           </Button>
