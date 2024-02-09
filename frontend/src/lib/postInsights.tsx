@@ -1,6 +1,15 @@
 import { Post } from '@/sharedDataModel';
 import { Resolved } from 'jazz-react';
-import { Heart, HeartHandshake, Smile } from 'lucide-react';
+import {
+  Heart,
+  HeartHandshake,
+  MessageCircle,
+  MessageCircleReply,
+  Save,
+  Smile,
+  UserRoundPlus,
+  View,
+} from 'lucide-react';
 import { ReactElement } from 'react';
 
 export function insightConfigForPost(post: Resolved<Post>) {
@@ -49,31 +58,31 @@ export function insightConfigForPost(post: Resolved<Post>) {
       icon: <HeartHandshake />,
       data: getInteractionPc(),
     },
-    // {
-    //   title: 'comments',
-    //   icon: <MessageCircle />,
-    //   data: getInsights('comments'),
-    // },
-    // {
-    //   title: 'saved',
-    //   icon: <Save />,
-    //   data: getInsights('saved'),
-    // },
-    // {
-    //   title: 'shared',
-    //   icon: <MessageCircleReply />,
-    //   data: getInsights('shares'),
-    // },
-    // {
-    //   title: 'profileVisits',
-    //   icon: <View />,
-    //   data: getInsights('profileVisits'),
-    // },
-    // {
-    //   title: 'follows',
-    //   icon: <UserRoundPlus />,
-    //   data: getInsights('follows'),
-    // },
+    {
+      title: 'comments',
+      icon: <MessageCircle />,
+      data: getInsights('comments'),
+    },
+    {
+      title: 'saved',
+      icon: <Save />,
+      data: getInsights('saved'),
+    },
+    {
+      title: 'shared',
+      icon: <MessageCircleReply />,
+      data: getInsights('shares'),
+    },
+    {
+      title: 'profileVisits',
+      icon: <View />,
+      data: getInsights('profileVisits'),
+    },
+    {
+      title: 'follows',
+      icon: <UserRoundPlus />,
+      data: getInsights('follows'),
+    },
   ];
 
   return insightsConfig;
