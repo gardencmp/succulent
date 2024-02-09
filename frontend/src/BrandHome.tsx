@@ -9,42 +9,23 @@ export function BrandHome() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
 
+  const navItems = ['schedule', 'insights', 'drafts', 'preferences'];
+
   return (
     <div className="flex flex-col-reverse lg:flex-col max-h-[100dvh] py-2">
       <nav className="flex-none flex gap-6 px-8 w-full items-center">
         <h1 className="text-stone-300 pl-6 flex flex-shrink-0">
           <div className="tracking-wider">🪴</div> / {brand?.name}
         </h1>
-        <Button
-          onClick={() => router.navigate('/brand/' + brandId)}
-          variant="ghost"
-        >
-          Home
-        </Button>
-        <Button
-          onClick={() => router.navigate(`/brand/${brandId}/schedule`)}
-          variant="ghost"
-        >
-          Schedule
-        </Button>
-        <Button
-          onClick={() => router.navigate(`/brand/${brandId}/insights`)}
-          variant="ghost"
-        >
-          Insights
-        </Button>
-        <Button
-          onClick={() => router.navigate(`/brand/${brandId}/hashtags`)}
-          variant="ghost"
-        >
-          Hashtags
-        </Button>
-        <Button
-          onClick={() => router.navigate(`/brand/${brandId}/preferences`)}
-          variant="ghost"
-        >
-          Preferences
-        </Button>
+        {navItems.map((item) => (
+          <Button
+            onClick={() => router.navigate(`/brand/${brandId}/${item}`)}
+            variant="ghost"
+            key={item}
+          >
+            {item}
+          </Button>
+        ))}
       </nav>
       <main className="flex flex-col flex-shrink min-h-0">
         <Outlet />

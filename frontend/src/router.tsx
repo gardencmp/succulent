@@ -4,7 +4,7 @@ import { BrandHome } from './BrandHome';
 import { BrandInsightsScreen } from './BrandInsightsScreen';
 import { BrandScheduleScreen } from './BrandScheduleScreen';
 import { Preferences } from './Preferences';
-import { HashtagInsightsScreen } from './HashtagInsightsScreen';
+import { Drafts } from './Drafts';
 
 export const router = createHashRouter([
   {
@@ -24,12 +24,12 @@ export const router = createHashRouter([
         element: <BrandScheduleScreen />,
       },
       {
-        path: '/brand/:brandId/preferences',
-        element: <Preferences />,
+        path: '/brand/:brandId/drafts',
+        element: <Drafts />,
       },
       {
-        path: '/brand/:brandId/hashtags',
-        element: <HashtagInsightsScreen />,
+        path: '/brand/:brandId/preferences',
+        element: <Preferences />,
       },
     ],
   },

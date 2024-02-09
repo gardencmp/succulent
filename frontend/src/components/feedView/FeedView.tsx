@@ -9,6 +9,7 @@ import {
   filterDraftPosts,
   filterAndSortScheduledAndPostedPosts,
 } from '@/lib/filterAndSortPosts';
+import { deleteDraft } from '@/lib/deleteDraft';
 
 import {
   DrawerOrSidebar,
@@ -43,18 +44,6 @@ export function FeedView() {
     brand.posts?.append(draftPost.id);
   }, [brand]);
 
-  const deleteDraft = useCallback(
-    (post: Resolved<Post>) => {
-      if (!brand) return;
-      if (!confirm('Are you sure you want to delete this post?')) return;
-      (post as Resolved<Post>).set('instagram', {
-        state: 'notScheduled',
-      });
-      brand.posts?.delete(brand.posts.findIndex((p) => p?.id === post.id));
-    },
-    [brand]
-  );
-
   return (
     brand && (
       <DragToScheduleContext brand={brand}>
@@ -76,7 +65,7 @@ export function FeedView() {
               posts={filterAndSortScheduledAndPostedPosts(filteredPosts)}
               showInsights={showInsights}
               createDraft={createDraft}
-              deleteDraft={deleteDraft}
+              deleteDraft={deleteDraft(brand)}
             />
           </MainContent>
           <DrawerOrSidebar>
@@ -90,7 +79,7 @@ export function FeedView() {
 
             <DraftPostList
               posts={filterDraftPosts(filteredPosts)}
-              deleteDraft={deleteDraft}
+              deleteDraft={deleteDraft(brand)}
             />
           </DrawerOrSidebar>
         </ResponsiveDrawer>
