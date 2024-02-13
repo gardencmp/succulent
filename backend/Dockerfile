@@ -34,4 +34,4 @@ COPY --from=prerelease /usr/src/app/package.json .
 
 USER bun
 ENV NODE_ENV production
-ENTRYPOINT [ "bun", "run", "index.ts" ]
+ENTRYPOINT [ "bun", "run", "src/index.ts" ]
