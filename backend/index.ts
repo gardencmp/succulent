@@ -29,7 +29,7 @@ async function runner() {
   const { localNode: node, worker } = await createOrResumeWorker({
     workerName: 'SucculentScheduler',
     migration: async (account, profile) => {
-      console.log(account.toJSON());
+      console.log(new Date(), account.toJSON());
       if (!account.get('root')) {
         const scheduledPostsGroup = account.createGroup();
         scheduledPostsGroup.addMember('everyone', 'writer');
@@ -37,7 +37,11 @@ async function runner() {
         const scheduledPosts =
           scheduledPostsGroup.createStream<ScheduledPosts>();
 
-        console.log('scheduledPosts in migration', scheduledPosts.id);
+        console.log(
+          new Date(),
+          'scheduledPosts in migration',
+          scheduledPosts.id
+        );
 
         const after = account.set(
           'root',
@@ -46,7 +50,7 @@ async function runner() {
           }).id
         );
 
-        console.log(after.toJSON());
+        console.log(new Date(), after.toJSON());
       }
     },
   });
@@ -55,6 +59,7 @@ async function runner() {
   const currentlyPosting = new Set<Post['id']>();
 
   console.log(
+    new Date(),
     'root after migration',
     (node.account as ControlledAccount<Profile, WorkerAccountRoot>).get('root')
   );
@@ -63,15 +68,23 @@ async function runner() {
     node.account.id as CoID<Account<Profile, WorkerAccountRoot>>,
     node,
     async (account) => {
-      console.log('root in autosub', account?.meta.coValue.get('root'));
+      console.log(
+        new Date(),
+        'root in autosub',
+        account?.meta.coValue.get('root')
+      );
       if (account?.root?.scheduledPosts) {
         console.log(
+          new Date(),
           'scheduledPosts',
           account.root.scheduledPosts.id,
           account.root.scheduledPosts.perSession.map((entry) =>
             entry[1].all.map((post) => ({
               id: post.value?.id,
               content: post.value?.content?.slice(0, 50),
+              imageFiles: post.value?.images?.map(
+                (image) => image?.imageFile?.id
+              ),
             }))
           )
         );
@@ -84,19 +97,17 @@ async function runner() {
               post.value.instagram.state === 'scheduleDesired' ||
               post.value.instagram.state === 'scheduled'
             ) {
-              if (!post.value.images) {
-                continue;
-              }
+              const streams =
+                post.value.images &&
+                (await Promise.all(
+                  post.value.images.map(
+                    (image) =>
+                      image?.imageFile?.id &&
+                      loadImageFile(node, image.imageFile.id)
+                  )
+                ));
 
-              const streams = await Promise.all(
-                post.value.images.map(
-                  (image) =>
-                    image?.imageFile?.id &&
-                    loadImageFile(node, image.imageFile.id)
-                )
-              );
-
-              if (streams.every((stream) => stream)) {
+              if (streams && streams.every((stream) => stream)) {
                 if (!actuallyScheduled.has(post.value.id)) {
                   actuallyScheduled.set(
                     post.value.id,
@@ -111,6 +122,7 @@ async function runner() {
                 }
               } else {
                 console.error(
+                  new Date(),
                   'One or several images unavailable',
                   post.value.id,
                   streams
@@ -126,7 +138,7 @@ async function runner() {
               }
             } else if (post.value.instagram.state !== 'posted') {
               if (actuallyScheduled.has(post.value.id)) {
-                console.log('removing post', post.value.id);
+                console.log(new Date(), 'removing post', post.value.id);
                 actuallyScheduled.delete(post.value.id);
               }
             }
@@ -154,7 +166,7 @@ async function runner() {
           )
         ).json();
 
-        console.log('shortLivedResult', shortLivedResult);
+        console.log(new Date(), 'shortLivedResult', shortLivedResult);
 
         const longLivedResult = await (
           await fetch(
@@ -162,7 +174,7 @@ async function runner() {
           )
         ).json();
 
-        console.log('longLivedResult', longLivedResult);
+        console.log(new Date(), 'longLivedResult', longLivedResult);
 
         const brandId = new URL(req.url).searchParams.get('state');
 
@@ -178,16 +190,16 @@ async function runner() {
           Date.now() + longLivedResult.expires_in * 1000
         );
 
-        console.log(brand.toJSON());
+        console.log(new Date(), brand.toJSON());
 
         // redirect to frontend
         return Response.redirect(
           process.env.SUCCULENT_FRONTEND_ADDR || 'http://localhost:3889/'
         );
       } else if (req.url.includes('/image/')) {
-        console.log(req.url);
+        console.log(new Date(), req.url);
         const imageFileId = req.url.split('/image/')[1];
-        console.log(imageFileId);
+        console.log(new Date(), imageFileId);
 
         const streamInfo = await loadImageFile(
           node,
@@ -208,16 +220,26 @@ async function runner() {
     port: 3331,
   });
 
+  let lastActuallyScheduled = new Map<Post['id'], Date>();
+
   const tryPosting = async () => {
-    console.log('actuallyScheduled', actuallyScheduled);
+    // log actually scheduled if different from last time
+    if (
+      JSON.stringify(Array.from(actuallyScheduled)) !==
+      JSON.stringify(Array.from(lastActuallyScheduled))
+    ) {
+      console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
+      lastActuallyScheduled = new Map(actuallyScheduled);
+    }
+
     if (process.env.NODE_ENV === 'development') {
-      console.log('not actually scheduling in dev mode');
+      console.log(new Date(), 'not actually scheduling in dev mode');
       return;
     }
 
     for (let [postId, scheduledAt] of actuallyScheduled.entries()) {
       if (scheduledAt < new Date()) {
-        console.log('posting', postId);
+        console.log(new Date(), 'posting', postId);
         actuallyScheduled.delete(postId);
         currentlyPosting.add(postId);
 
@@ -263,7 +285,7 @@ async function runner() {
                   '/image/' +
                   images[0].get('imageFile')
               )}&access_token=${brand.get('instagramAccessToken')}`;
-              console.log('POST', url);
+              console.log(new Date(), 'POST', url);
               const res = await fetch(url, {
                 method: 'POST',
               });
@@ -288,7 +310,7 @@ async function runner() {
                       image.get('imageFile')
                   )}&access_token=${brand.get('instagramAccessToken')}`;
 
-                  console.log('POST', url);
+                  console.log(new Date(), 'POST', url);
 
                   const res = await fetch(url, {
                     method: 'POST',
@@ -313,7 +335,7 @@ async function runner() {
               )}&media_type=CAROUSEL&children=${containerIds.join(
                 '%2C'
               )}&access_token=${brand.get('instagramAccessToken')}`;
-              console.log('POST', url);
+              console.log(new Date(), 'POST', url);
               const res = await fetch(url, {
                 method: 'POST',
               });
@@ -332,7 +354,7 @@ async function runner() {
               ?.id}/media_publish?creation_id=${topContainerId}&access_token=${brand.get(
               'instagramAccessToken'
             )}`;
-            console.log('POST', url);
+            console.log(new Date(), 'POST', url);
             const res = await fetch(url, {
               method: 'POST',
             });
@@ -347,10 +369,11 @@ async function runner() {
             const permalinkReqUrl = `https://graph.facebook.com/v18.0/${postMediaId}?fields=permalink&access_token=${brand.get(
               'instagramAccessToken'
             )}`;
-            console.log('GET', permalinkReqUrl);
+            console.log(new Date(), 'GET', permalinkReqUrl);
             const permalinkRes = await fetch(permalinkReqUrl);
             permalinkRes.status !== 200 &&
               console.error(
+                new Date(),
                 'error getting permalink',
                 permalinkRes.status,
                 await permalinkRes.text()
@@ -369,7 +392,12 @@ async function runner() {
               permalink: postPermalink,
             });
           } catch (e) {
-            console.error('Error posting after post load', postId, e);
+            console.error(
+              new Date(),
+              'Error posting after post load',
+              postId,
+              e
+            );
             post.set('instagram', {
               state: 'scheduleDesired',
               scheduledAt: scheduledAt.toISOString(),
@@ -379,7 +407,7 @@ async function runner() {
             currentlyPosting.delete(postId);
           }
         } catch (e) {
-          console.error('Error posting', postId, e);
+          console.error(new Date(), 'Error posting', postId, e);
           actuallyScheduled.set(postId, scheduledAt);
         } finally {
           currentlyPosting.delete(postId);
@@ -398,19 +426,19 @@ async function loadImageFile(
 ) {
   const image = await node.load(imageFileId);
   if (image === 'unavailable') {
-    console.error('image unavailable');
+    console.error(new Date(), 'image unavailable');
     return undefined;
   }
   const originalRes = image.get('originalSize');
   if (!originalRes) {
-    console.error('no originalRes');
+    console.error(new Date(), 'no originalRes');
     return undefined;
   }
   const resName =
     `${originalRes[0]}x${originalRes[1]}` as `${number}x${number}`;
   const resId = image.get(resName);
   if (!resId) {
-    console.error('no resId');
+    console.error(new Date(), 'no resId');
     return undefined;
   }
 
@@ -421,7 +449,7 @@ async function loadImageFile(
     while (triesLeft > 0) {
       const res = await node.load(resId);
       if (res === 'unavailable') {
-        console.error('res unavailable');
+        console.error(new Date(), 'res unavailable');
         resolve(undefined);
         return;
       }
