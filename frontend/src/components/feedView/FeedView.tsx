@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CoID } from 'cojson';
-import { Resolved, useAutoSub } from 'jazz-react';
+import { useAutoSub } from 'jazz-react';
 import { Button } from '@/components/ui/button';
 
 import { Brand, ListOfImages, Post } from '@/sharedDataModel';
@@ -9,7 +9,7 @@ import {
   filterDraftPosts,
   filterAndSortScheduledAndPostedPosts,
 } from '@/lib/filterAndSortPosts';
-import { deleteDraft } from '@/lib/deleteDraft';
+import { useDeleteDraft } from '@/lib/deleteDraft';
 
 import {
   DrawerOrSidebar,
@@ -44,6 +44,8 @@ export function FeedView() {
     brand.posts?.append(draftPost.id);
   }, [brand]);
 
+  const deleteDraft = useDeleteDraft(brand);
+
   return (
     brand && (
       <DragToScheduleContext brand={brand}>
@@ -65,7 +67,7 @@ export function FeedView() {
               posts={filterAndSortScheduledAndPostedPosts(filteredPosts)}
               showInsights={showInsights}
               createDraft={createDraft}
-              deleteDraft={deleteDraft(brand)}
+              deleteDraft={deleteDraft}
             />
           </MainContent>
           <DrawerOrSidebar>
@@ -79,7 +81,7 @@ export function FeedView() {
 
             <DraftPostList
               posts={filterDraftPosts(filteredPosts)}
-              deleteDraft={deleteDraft(brand)}
+              deleteDraft={deleteDraft}
             />
           </DrawerOrSidebar>
         </ResponsiveDrawer>

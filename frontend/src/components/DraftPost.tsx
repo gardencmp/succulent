@@ -123,10 +123,12 @@ export function DraftPostComponent({
         <Input
           type="datetime-local"
           value={
-            post.instagram.state === 'scheduleDesired' ||
-            post.instagram.state === 'scheduled'
-              ? toDateTimeLocal(post.instagram.scheduledAt)
-              : undefined
+            desiredScheduleDate
+              ? toDateTimeLocal(desiredScheduleDate.toISOString())
+              : post.instagram.state === 'scheduleDesired' ||
+                  post.instagram.state === 'scheduled'
+                ? toDateTimeLocal(post.instagram.scheduledAt)
+                : undefined
           }
           onChange={(event) => {
             setDesiredScheduleDate(new Date(event.target.value));
@@ -157,13 +159,33 @@ export function DraftPostComponent({
               ? ' (⚠️ ' + post.instagram.notScheduledReason + ')'
               : ' (✈️ offline)')
           ) : post.instagram.state === 'scheduled' ? (
-            'Scheduled'
+            <>
+              Scheduled
+              {desiredScheduleDate &&
+                post.instagram.scheduledAt !==
+                  desiredScheduleDate.toISOString() && (
+                  <Button
+                    onClick={() => {
+                      if (!desiredScheduleDate) return;
+                      console.log(
+                        'Rescheduling for ' + desiredScheduleDate.toISOString()
+                      );
+                      schedule(desiredScheduleDate);
+                    }}
+                    className="ml-2"
+                  >
+                    Reschedule
+                  </Button>
+                )}
+            </>
           ) : post.instagram.state === 'posted' ? (
             'Posted'
           ) : (
             'loading'
           )}
         </div>
+      </div>
+      <div className="flex gap-2">
         {(post.instagram.state === 'scheduleDesired' ||
           post.instagram.state === 'scheduled') && (
           <Button

@@ -78,7 +78,7 @@ export function BrandInsightsScreen() {
   }, [brand?.instagramAccessToken, brand?.instagramInsights]);
 
   return (
-    <div className="flex flex-col gap-6 px-8 flex-shrink min-h-0">
+    <div className="flex flex-col gap-6 px-8 flex-shrink min-h-[100vh]">
       {/* <h1 className="text-l">{brand?.name} Insights</h1> */}
       {/* <Button
         onClick={() => {
