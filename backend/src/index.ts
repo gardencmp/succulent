@@ -81,17 +81,20 @@ async function runner() {
           new Date(),
           'scheduledPosts',
           account.root.scheduledPosts.id,
-          JSON.stringify(
-            account.root.scheduledPosts.perSession.map((entry) =>
-              entry[1].all.map((post) => ({
-                id: post.value?.id,
-                content: post.value?.content?.slice(0, 50),
-                imageFileIds: post.value?.images?.map(
-                  (image) => image?.imageFile?.id
-                ),
-              }))
+
+          account.root.scheduledPosts.perSession
+            .flatMap((entry) =>
+              entry[1].all.map((post) =>
+                JSON.stringify({
+                  id: post.value?.id,
+                  content: post.value?.content?.slice(0, 50),
+                  imageFileIds: post.value?.images?.map(
+                    (image) => image?.imageFile?.id
+                  ),
+                })
+              )
             )
-          )
+            .join('\n')
         );
 
         for (let perSession of account.root.scheduledPosts.perSession) {
@@ -252,10 +255,13 @@ async function runner() {
 
   const tryPosting = async () => {
     if (
-      JSON.stringify(previouslyScheduled) !== JSON.stringify(actuallyScheduled)
+      JSON.stringify(new Array(previouslyScheduled)) !==
+      JSON.stringify(new Array(actuallyScheduled))
     ) {
       console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
     }
+    previouslyScheduled = new Map(actuallyScheduled);
+
     if (process.env.NODE_ENV === 'development') {
       console.log(new Date(), 'not actually scheduling in dev mode');
       return;

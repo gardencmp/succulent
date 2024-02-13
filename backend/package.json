@@ -12,6 +12,6 @@
     "bun-types": "^1.0.18"
   },
   "overrides": {
-    "cojson": "^0.6.6"
+    "cojson": "^0.6.7"
   }
 }
