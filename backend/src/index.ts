@@ -156,6 +156,11 @@ async function runner() {
                   post.value.id,
                   streams
                 );
+                if (
+                  post.value.instagram.state === 'scheduleDesired' &&
+                  post.value.instagram.notScheduledReason
+                )
+                  return;
                 await new Promise((resolve) => setTimeout(resolve, 10_000));
                 post.value.set('instagram', {
                   state: 'scheduleDesired',
