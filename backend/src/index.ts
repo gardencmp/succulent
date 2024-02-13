@@ -76,11 +76,6 @@ async function runner() {
     node.account.id as CoID<Account<Profile, WorkerAccountRoot>>,
     node,
     async (account) => {
-      console.log(
-        new Date(),
-        'root in autosub',
-        account?.meta.coValue.get('root')
-      );
       if (account?.root?.scheduledPosts) {
         console.log(
           new Date(),
