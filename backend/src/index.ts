@@ -86,14 +86,16 @@ async function runner() {
           new Date(),
           'scheduledPosts',
           account.root.scheduledPosts.id,
-          account.root.scheduledPosts.perSession.map((entry) =>
-            entry[1].all.map((post) => ({
-              id: post.value?.id,
-              content: post.value?.content?.slice(0, 50),
-              imageFileIds: post.value?.images?.map(
-                (image) => image?.imageFile?.id
-              ),
-            }))
+          JSON.stringify(
+            account.root.scheduledPosts.perSession.map((entry) =>
+              entry[1].all.map((post) => ({
+                id: post.value?.id,
+                content: post.value?.content?.slice(0, 50),
+                imageFileIds: post.value?.images?.map(
+                  (image) => image?.imageFile?.id
+                ),
+              }))
+            )
           )
         );
 
