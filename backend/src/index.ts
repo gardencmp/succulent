@@ -72,6 +72,8 @@ async function runner() {
     (node.account as ControlledAccount<Profile, WorkerAccountRoot>).get('root')
   );
 
+  const postErrorTimeouts = new Map<Post['id'], NodeJS.Timeout>();
+
   autoSub(
     node.account.id as CoID<Account<Profile, WorkerAccountRoot>>,
     node,
@@ -109,6 +111,11 @@ async function runner() {
               continue;
             }
 
+            console.log(
+              new Date(),
+              'Update, deleting from actually scheduled',
+              post.value.id
+            );
             actuallyScheduled.delete(post.value.id);
 
             if (
@@ -138,6 +145,11 @@ async function runner() {
                     chunks: stream!.chunks!,
                   });
                 }
+                console.log(
+                  new Date(),
+                  'images loaded, adding to actually scheduled',
+                  post.value.id
+                );
                 actuallyScheduled.set(post.value.id, {
                   state: 'ready',
                   content: post.value.content || '',
@@ -159,19 +171,27 @@ async function runner() {
                   post.value.id,
                   streams
                 );
-                if (
-                  post.value.instagram.state === 'scheduleDesired' &&
-                  post.value.instagram.notScheduledReason
-                )
-                  return;
-                await new Promise((resolve) => setTimeout(resolve, 10_000));
-                post.value.set('instagram', {
-                  state: 'scheduleDesired',
-                  scheduledAt: post.value.instagram.scheduledAt,
-                  notScheduledReason:
-                    'One or several images unavailable as of ' +
-                    new Date().toISOString(),
-                });
+                const erroredPost = post.value;
+                if (postErrorTimeouts.get(erroredPost.id)) {
+                  clearTimeout(postErrorTimeouts.get(erroredPost.id)!);
+                }
+                postErrorTimeouts.set(
+                  erroredPost.id,
+                  setTimeout(() => {
+                    if (
+                      erroredPost.instagram.state === 'notScheduled' ||
+                      erroredPost.instagram.state === 'posted'
+                    )
+                      return;
+                    erroredPost.set('instagram', {
+                      state: 'scheduleDesired',
+                      scheduledAt: erroredPost.instagram.scheduledAt,
+                      notScheduledReason:
+                        'One or several images unavailable as of ' +
+                        new Date().toISOString(),
+                    });
+                  }, 1_000)
+                );
               }
             }
           }
@@ -251,7 +271,7 @@ async function runner() {
     port: 3331,
   });
 
-  let previouslyScheduled: typeof actuallyScheduled = new Map();
+  let previouslyScheduled: typeof actuallyScheduled | undefined = undefined;
 
   const tryPosting = async () => {
     if (
