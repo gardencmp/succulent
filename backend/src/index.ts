@@ -305,7 +305,13 @@ async function runner() {
     //   JSON.stringify(new Array(previouslyScheduled)) !==
     //   JSON.stringify(new Array(actuallyScheduled))
     // ) {
-    console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
+    console.log(
+      new Date(),
+      'actuallyScheduled',
+      actuallyScheduled,
+      JSON.stringify(new Array(actuallyScheduled)),
+      JSON.stringify(new Array(previouslyScheduled))
+    );
     // }
     previouslyScheduled = new Map(actuallyScheduled);
 
