@@ -298,16 +298,13 @@ async function runner() {
     port: 3331,
   });
 
-  let previouslyScheduled: typeof actuallyScheduled | undefined = undefined;
+  let tryN = 0;
 
   const tryPosting = async () => {
-    if (
-      JSON.stringify(new Array(previouslyScheduled)) !==
-      JSON.stringify(new Array(actuallyScheduled))
-    ) {
+    if (tryN % 10 === 0) {
       console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
     }
-    previouslyScheduled = new Map(actuallyScheduled);
+    tryN++;
 
     if (process.env.NODE_ENV === 'development') {
       console.log(new Date(), 'not actually scheduling in dev mode');
