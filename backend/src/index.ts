@@ -301,18 +301,12 @@ async function runner() {
   let previouslyScheduled: typeof actuallyScheduled | undefined = undefined;
 
   const tryPosting = async () => {
-    // if (
-    //   JSON.stringify(new Array(previouslyScheduled)) !==
-    //   JSON.stringify(new Array(actuallyScheduled))
-    // ) {
-    console.log(
-      new Date(),
-      'actuallyScheduled',
-      actuallyScheduled,
-      JSON.stringify(new Array(actuallyScheduled)),
-      JSON.stringify(new Array(previouslyScheduled))
-    );
-    // }
+    if (
+      JSON.stringify(new Array(previouslyScheduled)) !==
+      JSON.stringify(new Array(actuallyScheduled))
+    ) {
+      console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
+    }
     previouslyScheduled = new Map(actuallyScheduled);
 
     if (process.env.NODE_ENV === 'development') {
@@ -528,11 +522,8 @@ async function loadImageFile(
   const streamInfo = await new Promise<
     (BinaryStreamInfo & { chunks: Uint8Array[] }) | undefined
   >(async (resolve) => {
-    let triesLeft = 10;
-    while (triesLeft > 0) {
-      const res = await node.load(resId);
+    const unsub = node.subscribe(resId, async (res) => {
       if (res === 'unavailable') {
-        console.error(new Date(), 'res unavailable');
         resolve(undefined);
         return;
       }
@@ -541,8 +532,12 @@ async function loadImageFile(
         resolve(streamInfo);
         return;
       }
-      triesLeft--;
-    }
+    });
+
+    setTimeout(() => {
+      unsub();
+      resolve(undefined);
+    }, 10_000);
   });
 
   return streamInfo;
