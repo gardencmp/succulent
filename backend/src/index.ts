@@ -301,12 +301,12 @@ async function runner() {
   let previouslyScheduled: typeof actuallyScheduled | undefined = undefined;
 
   const tryPosting = async () => {
-    if (
-      JSON.stringify(new Array(previouslyScheduled)) !==
-      JSON.stringify(new Array(actuallyScheduled))
-    ) {
-      console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
-    }
+    // if (
+    //   JSON.stringify(new Array(previouslyScheduled)) !==
+    //   JSON.stringify(new Array(actuallyScheduled))
+    // ) {
+    console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
+    // }
     previouslyScheduled = new Map(actuallyScheduled);
 
     if (process.env.NODE_ENV === 'development') {
