@@ -84,19 +84,25 @@ async function runner() {
           'scheduledPosts',
           account.root.scheduledPosts.id,
 
-          account.root.scheduledPosts.perSession
-            .flatMap((entry) =>
-              entry[1].all.map((post) =>
-                JSON.stringify({
-                  id: post.value?.id,
-                  content: post.value?.content?.slice(0, 50),
-                  imageFileIds: post.value?.images?.map(
-                    (image) => image?.imageFile?.id
-                  ),
-                })
+          '\n\t' +
+            account.root.scheduledPosts.perSession
+              .flatMap((entry) =>
+                entry[1].all.map((post) =>
+                  JSON.stringify({
+                    id: post.value?.id,
+                    state: post.value?.instagram?.state,
+                    scheduledAt:
+                      post.value &&
+                      'scheduledAt' in post.value.instagram &&
+                      post.value?.instagram?.scheduledAt,
+                    content: post.value?.content?.slice(0, 50),
+                    imageFileIds: post.value?.images?.map(
+                      (image) => image?.imageFile?.id
+                    ),
+                  })
+                )
               )
-            )
-            .join('\n')
+              .join('\n\t')
         );
 
         for (let perSession of account.root.scheduledPosts.perSession) {
@@ -122,6 +128,7 @@ async function runner() {
               post.value.instagram.state === 'scheduleDesired' ||
               post.value.instagram.state === 'scheduled'
             ) {
+              console.log(new Date(), 'loading images', post.value.id);
               const streams =
                 post.value.images &&
                 (await Promise.all(
@@ -165,7 +172,7 @@ async function runner() {
                   });
                 }
               } else {
-                console.error(
+                console.log(
                   new Date(),
                   'One or several images unavailable',
                   post.value.id,
