@@ -117,17 +117,37 @@ async function runner() {
               continue;
             }
 
-            console.log(
-              new Date(),
-              'Update, deleting from actually scheduled',
-              post.value.id
-            );
-            actuallyScheduled.delete(post.value.id);
-
-            if (
-              post.value.instagram.state === 'scheduleDesired' ||
-              post.value.instagram.state === 'scheduled'
-            ) {
+            if (post.value.instagram.state === 'scheduled') {
+              const actuallyScheduledPost = actuallyScheduled.get(
+                post.value.id
+              );
+              if (
+                actuallyScheduledPost?.state !== 'ready' ||
+                post.value.content !== actuallyScheduledPost.content ||
+                post.value.images
+                  ?.map((image) => image?.imageFile?.id)
+                  .join() !== actuallyScheduledPost.imageFileIds.join() ||
+                post.value.instagram.scheduledAt !==
+                  actuallyScheduledPost.scheduledAt.toISOString()
+              ) {
+                console.log(
+                  new Date(),
+                  'Got previously scheduled post, or scheduled post that changed, resetting to scheduleDesired',
+                  post.value.id
+                );
+                actuallyScheduled.delete(post.value.id);
+                post.value.set('instagram', {
+                  state: 'scheduleDesired',
+                  scheduledAt: post.value.instagram.scheduledAt,
+                });
+              }
+            } else if (post.value.instagram.state === 'scheduleDesired') {
+              console.log(
+                new Date(),
+                'Update, deleting from actually scheduled',
+                post.value.id
+              );
+              actuallyScheduled.delete(post.value.id);
               console.log(new Date(), 'loading images', post.value.id);
               const streams =
                 post.value.images &&
