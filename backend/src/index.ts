@@ -464,6 +464,8 @@ async function runner() {
               postId: postMediaId,
               permalink: postPermalink,
             });
+
+            actuallyScheduled.delete(postId);
           } catch (e) {
             console.error(
               new Date(),
