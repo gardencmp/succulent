@@ -154,30 +154,18 @@ export function DraftPostComponent({
               'Not yet scheduled'
             )
           ) : post.instagram.state === 'scheduleDesired' ? (
-            'Schedule desired' +
-            (post.instagram.notScheduledReason
-              ? ' (⚠️ ' + post.instagram.notScheduledReason + ')'
-              : ' (✈️ offline)')
-          ) : post.instagram.state === 'scheduled' ? (
             <>
-              Scheduled
-              {desiredScheduleDate &&
-                post.instagram.scheduledAt !==
-                  desiredScheduleDate.toISOString() && (
-                  <Button
-                    onClick={() => {
-                      if (!desiredScheduleDate) return;
-                      console.log(
-                        'Rescheduling for ' + desiredScheduleDate.toISOString()
-                      );
-                      schedule(desiredScheduleDate);
-                    }}
-                    className="ml-2"
-                  >
-                    Reschedule
-                  </Button>
-                )}
+              Schedule desired{' '}
+              {post.instagram.notScheduledReason ? (
+                <span className="text-[0.6em] text-orange-500">
+                  (⚠️ {post.instagram.notScheduledReason})
+                </span>
+              ) : (
+                ' (✈️ offline)'
+              )}
             </>
+          ) : post.instagram.state === 'scheduled' ? (
+            'Scheduled'
           ) : post.instagram.state === 'posted' ? (
             'Posted'
           ) : (
@@ -188,16 +176,34 @@ export function DraftPostComponent({
       <div className="flex gap-2">
         {(post.instagram.state === 'scheduleDesired' ||
           post.instagram.state === 'scheduled') && (
-          <Button
-            variant="outline"
-            onClick={() => {
-              post.set('instagram', {
-                state: 'notScheduled',
-              });
-            }}
-          >
-            Unschedule
-          </Button>
+          <>
+            {desiredScheduleDate &&
+              post.instagram.scheduledAt !==
+                desiredScheduleDate.toISOString() && (
+                <Button
+                  onClick={() => {
+                    if (!desiredScheduleDate) return;
+                    console.log(
+                      'Rescheduling for ' + desiredScheduleDate.toISOString()
+                    );
+                    schedule(desiredScheduleDate);
+                  }}
+                  className="ml-2"
+                >
+                  Reschedule
+                </Button>
+              )}
+            <Button
+              variant="outline"
+              onClick={() => {
+                post.set('instagram', {
+                  state: 'notScheduled',
+                });
+              }}
+            >
+              Unschedule
+            </Button>
+          </>
         )}
         <Button variant="destructive" onClick={onDelete}>
           Delete Post
