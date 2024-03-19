@@ -80,6 +80,13 @@ export async function importPostsHelper(
             brand.posts.findIndex((p) => p?.id === existingPost?.id)
           );
         }
+
+        existingPosts[0]!.instagram = {
+          state: 'posted',
+          postId: post.id,
+          postedAt: post.timestamp,
+          permalink: post.permalink,
+        };
       }
 
       if (existingPosts.length === 0) {
