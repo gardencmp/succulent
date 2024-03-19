@@ -1,5 +1,11 @@
-import { Brand, Post, ListOfImages, Image } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
+import {
+  Brand,
+  Post,
+  ListOfImages,
+  Image,
+  InstagramPosted,
+} from '@/sharedDataModel';
+import { Resolved, ResolvedCoMap } from 'jazz-react';
 import { createImage } from 'jazz-browser-media-images';
 
 export async function importPostsHelper(
@@ -135,7 +141,13 @@ export async function importPostsHelper(
 }
 
 export async function getPostInsightsHelper(brand: Resolved<Brand>) {
-  for (const post of brand.posts || []) {
+  const posts = (
+    [...(brand.posts || [])].filter(
+      (p) => p?.instagram?.state === 'posted'
+    ) as ResolvedCoMap<Post<InstagramPosted>>[]
+  ).sort((a, b) => (a.instagram.postedAt > b.instagram.postedAt ? -1 : 1));
+
+  for (const post of posts) {
     if (post?.instagram?.state === 'posted') {
       const insights = await fetch(
         `https://graph.facebook.com/v11.0/${post.instagram.postId}/insights?metric=profile_visits,impressions,total_interactions,reach,likes,comments,saved,shares,follows&access_token=` +
