@@ -219,7 +219,7 @@ async function runner() {
           console.log(
             new Date(),
             postId,
-            state,
+            JSON.stringify(state),
             'not actually posting in unarmed mode'
           );
         }
