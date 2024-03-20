@@ -212,8 +212,17 @@ async function runner() {
     for (let [postId, state] of actuallyScheduled.entries()) {
       if (state.state === 'ready' && state.scheduledAt < new Date()) {
         console.log(new Date(), 'posting', postId);
-        actuallyScheduled.set(postId, { state: 'posting' });
-        await actuallyPost(node, postId, actuallyScheduled, state);
+        if (process.env.ARMED === 'true') {
+          actuallyScheduled.set(postId, { state: 'posting' });
+          await actuallyPost(node, postId, actuallyScheduled, state);
+        } else {
+          console.log(
+            new Date(),
+            postId,
+            state,
+            'not actually posting in unarmed mode'
+          );
+        }
       }
     }
 
