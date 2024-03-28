@@ -1,7 +1,7 @@
 import { AccountRoot } from '@/dataModel';
 import { Post, Image } from '@/sharedDataModel';
 import { Profile, CoStream, CoID } from 'cojson';
-import { BrowserImage, createImage } from 'jazz-browser-media-images';
+import { createImage } from 'jazz-browser-media-images';
 import { Resolved, useJazz } from 'jazz-react';
 import { useCallback, useState } from 'react';
 import { Button } from './ui/button';
@@ -9,6 +9,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { cn } from '@/lib/utils';
 import { toDateTimeLocal } from '@/lib/dates';
+import { DraftPostImage } from './DraftPostImage';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -65,27 +66,8 @@ export function DraftPostComponent({
       <div className="flex gap-2 overflow-x-scroll w-full">
         {post?.images?.map(
           (image) =>
-            image &&
-            image.imageFile && (
-              <div className="relative">
-                <Button
-                  variant="destructive"
-                  className="absolute right-0"
-                  // onDeletePhoto={() => setActiveImageId(image.id)}
-                  onClick={() => image && onDeletePhoto(image.id)}
-                >
-                  x
-                </Button>
-                <img
-                  key={image.id}
-                  className="w-40 h-40 object-cover shrink-0"
-                  src={
-                    image.imageFile.as(BrowserImage(500))
-                      ?.highestResSrcOrPlaceholder
-                  }
-                  id={image.id}
-                />
-              </div>
+            image && (
+              <DraftPostImage image={image} onDeletePhoto={onDeletePhoto} />
             )
         )}
         <Input
