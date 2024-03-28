@@ -1,15 +1,14 @@
 import { AccountRoot } from '@/dataModel';
-import { Post, Image } from '@/sharedDataModel';
+import { Post } from '@/sharedDataModel';
 import { Profile, CoStream, CoID } from 'cojson';
-import { createImage } from 'jazz-browser-media-images';
 import { Resolved, useJazz } from 'jazz-react';
 import { useCallback, useState } from 'react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { cn } from '@/lib/utils';
 import { DraftPostImage } from './DraftPostImage';
 import { DraftPostScheduler } from './DraftPostScheduler';
+import { ImageUploader } from './ImageUploader';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -70,27 +69,7 @@ export function DraftPostComponent({
               <DraftPostImage image={image} onDeletePhoto={onDeletePhoto} />
             )
         )}
-        <Input
-          type="file"
-          className="w-40 h-40 shrink-0 border relative after:content-['+'] after:absolute after:inset-0 after:bg-white dark:after:bg-black after:cursor-pointer after:z-10 after:text-5xl after:flex after:items-center after:justify-center"
-          onChange={(event) => {
-            if (!post) return;
-
-            const files = [...(event.target.files || [])];
-
-            Promise.all(
-              files.map((file) =>
-                createImage(file, post.meta.group).then((image) => {
-                  post.images?.append(
-                    post.meta.group.createMap<Image>({
-                      imageFile: image.id,
-                    }).id
-                  );
-                })
-              )
-            );
-          }}
-        />
+        <ImageUploader post={post} />
       </div>
       <Textarea
         className="text-lg min-h-[5rem]"

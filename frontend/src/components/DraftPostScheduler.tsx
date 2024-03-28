@@ -2,6 +2,7 @@ import { Post } from '@/sharedDataModel';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toDateTimeLocal } from '@/lib/dates';
+import { Resolved } from 'jazz-react';
 
 // postState: 'scheduleDesired' | 'scheduled' | 'notScheduled' | 'posted'
 
@@ -12,11 +13,13 @@ export function DraftPostScheduler({
   unschedulePost,
   schedulePost,
 }: {
-  post: Post;
-  desiredScheduleDate: Date;
-  setDesiredScheduleDate: React.Dispatch<React.SetStateAction<Date>>;
-  unschedulePost: CallableFunction;
-  schedulePost: CallableFunction;
+  post: Resolved<Post>;
+  desiredScheduleDate: Date | undefined;
+  setDesiredScheduleDate: React.Dispatch<
+    React.SetStateAction<Date | undefined>
+  >;
+  unschedulePost: () => void;
+  schedulePost: (date: Date) => void;
 }) {
   if (!post) return;
 

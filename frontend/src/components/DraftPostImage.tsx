@@ -1,13 +1,14 @@
 import { Image } from '@/sharedDataModel';
 import { Button } from './ui/button';
 import { BrowserImage } from 'jazz-browser-media-images';
+import { Resolved } from 'jazz-react';
 
 export function DraftPostImage({
   image,
   onDeletePhoto,
 }: {
-  image?: Image;
-  onDeletePhoto: Function;
+  image?: Resolved<Image>;
+  onDeletePhoto: (id: Image['id']) => void;
 }) {
   if (!image?.imageFile) return;
 

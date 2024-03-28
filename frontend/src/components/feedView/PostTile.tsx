@@ -54,7 +54,12 @@ export function PostTile({
               post.instagram.state === 'scheduleDesired') && (
               <>
                 {post.instagram.state === 'posted' ? (
-                  <PostInsights post={post} />
+                  <>
+                    <div className="absolute top-0 left-0">
+                      {new Date(post.instagram.postedAt).toLocaleString()}
+                    </div>
+                    <PostInsights post={post} />
+                  </>
                 ) : (
                   <div
                     className={cn('absolute', {
