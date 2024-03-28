@@ -1,5 +1,5 @@
 import { Image } from '@/sharedDataModel';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { BrowserImage } from 'jazz-browser-media-images';
 import { Resolved } from 'jazz-react';
 

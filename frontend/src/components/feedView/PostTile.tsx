@@ -7,7 +7,7 @@ import {
 import { Resolved } from 'jazz-react';
 import { Button } from '../ui/button';
 import { useState } from 'react';
-import { DraftPostComponent } from '../DraftPost';
+import { DraftPostComponent } from '../draftPost/DraftPost';
 import { PostComponent } from '../Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';

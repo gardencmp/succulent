@@ -1,7 +1,7 @@
 import { Post, Image } from '@/sharedDataModel';
 import { createImage } from 'jazz-browser-media-images';
 import { Resolved } from 'jazz-react';
-import { Input } from './ui/input';
+import { Input } from '../ui/input';
 
 export function ImageUploader({ post }: { post: Resolved<Post> }) {
   return (
