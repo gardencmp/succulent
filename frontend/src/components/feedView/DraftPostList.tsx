@@ -1,4 +1,9 @@
-import { InstagramNotScheduled, Post } from '@/sharedDataModel';
+import {
+  InstagramNotScheduled,
+  InstagramScheduleDesired,
+  InstagramScheduled,
+  Post,
+} from '@/sharedDataModel';
 import { Resolved } from 'jazz-react';
 import { DraftPostComponent } from '../DraftPost';
 import { GripHorizontal, GripVertical } from 'lucide-react';
@@ -8,7 +13,9 @@ export function DraftPostList({
   posts,
   deleteDraft,
 }: {
-  posts?: Resolved<Post<InstagramNotScheduled>>[];
+  posts?: Resolved<
+    Post<InstagramNotScheduled | InstagramScheduleDesired | InstagramScheduled>
+  >[];
   deleteDraft: (post: Resolved<Post>) => void;
 }) {
   return posts?.map(

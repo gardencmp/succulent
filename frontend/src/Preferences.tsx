@@ -28,17 +28,19 @@ export const insightTypes = [
   'shares',
   'follows',
   'profileActivity',
-];
+] as const;
 
 export function Preferences() {
   const [items, setItems] = useState([1, 2, 3]);
-  const [postPreferences, setPostPreferences] = useState([]);
+  const [postPreferences, setPostPreferences] = useState<
+    (typeof insightTypes)[number][]
+  >([]);
 
   useEffect(() => {
     const storedPrefs = localStorage.getItem('postPreferences');
     storedPrefs
       ? setPostPreferences(JSON.parse(storedPrefs))
-      : setPostPreferences(insightTypes);
+      : setPostPreferences([...insightTypes]);
   }, []);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export function Preferences() {
     })
   );
 
-  const handleCheckedChange = (id: string) => {
+  const handleCheckedChange = (id: (typeof insightTypes)[number]) => {
     const swithActive = postPreferences.includes(id);
     if (swithActive) {
       const filteredPrefs = postPreferences.filter((prefId) => prefId !== id);

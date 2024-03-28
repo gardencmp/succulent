@@ -1,13 +1,10 @@
 import {
   LocalNode,
-  cojsonReady,
   ControlledAccount,
-  AccountID,
   CoMap,
   CoStream,
   Account,
   Profile,
-  BinaryCoStream,
   CoID,
   Media,
   BinaryStreamInfo,
@@ -15,9 +12,8 @@ import {
 import 'dotenv/config';
 
 import { createOrResumeWorker, autoSub } from 'jazz-nodejs';
-import { autoSubResolution, Resolved } from 'jazz-autosub';
 
-import { Brand, Image, Post } from './sharedDataModel';
+import { Brand, Image, Post } from '../sharedDataModel';
 
 type WorkerAccountRoot = CoMap<{
   scheduledPosts: ScheduledPosts['id'];
@@ -29,7 +25,7 @@ async function runner() {
   const { localNode: node, worker } = await createOrResumeWorker({
     workerName: 'SucculentScheduler',
     migration: async (account, profile) => {
-      console.log(account.toJSON());
+      console.log(new Date(), account.toJSON());
       if (!account.get('root')) {
         const scheduledPostsGroup = account.createGroup();
         scheduledPostsGroup.addMember('everyone', 'writer');
@@ -37,7 +33,11 @@ async function runner() {
         const scheduledPosts =
           scheduledPostsGroup.createStream<ScheduledPosts>();
 
-        console.log('scheduledPosts in migration', scheduledPosts.id);
+        console.log(
+          new Date(),
+          'scheduledPosts in migration',
+          scheduledPosts.id
+        );
 
         const after = account.set(
           'root',
@@ -46,15 +46,28 @@ async function runner() {
           }).id
         );
 
-        console.log(after.toJSON());
+        console.log(new Date(), after.toJSON());
       }
     },
   });
 
-  const actuallyScheduled = new Map<Post['id'], Date>();
-  const currentlyPosting = new Set<Post['id']>();
+  const actuallyScheduled = new Map<
+    Post['id'],
+    | { state: 'posting' }
+    | {
+        state: 'ready';
+        content: string;
+        imageFileIds: CoID<Media.ImageDefinition>[];
+        scheduledAt: Date;
+      }
+  >();
+  const loadedImages = new Map<
+    Media.ImageDefinition['id'],
+    { mimeType?: string; chunks: Uint8Array[] }
+  >();
 
   console.log(
+    new Date(),
     'root after migration',
     (node.account as ControlledAccount<Profile, WorkerAccountRoot>).get('root')
   );
@@ -63,46 +76,73 @@ async function runner() {
     node.account.id as CoID<Account<Profile, WorkerAccountRoot>>,
     node,
     async (account) => {
-      console.log('root in autosub', account?.meta.coValue.get('root'));
       if (account?.root?.scheduledPosts) {
         console.log(
+          new Date(),
           'scheduledPosts',
           account.root.scheduledPosts.id,
-          account.root.scheduledPosts.perSession.map((entry) =>
-            entry[1].all.map((post) => ({
-              id: post.value?.id,
-              content: post.value?.content?.slice(0, 50),
-            }))
+          JSON.stringify(
+            account.root.scheduledPosts.perSession.map((entry) =>
+              entry[1].all.map((post) => ({
+                id: post.value?.id,
+                content: post.value?.content?.slice(0, 50),
+                imageFileIds: post.value?.images?.map(
+                  (image) => image?.imageFile?.id
+                ),
+              }))
+            )
           )
         );
 
         for (let perSession of account.root.scheduledPosts.perSession) {
           for (let post of perSession[1].all) {
-            if (!post?.value?.instagram?.state) continue;
-            if (currentlyPosting.has(post.value.id)) continue;
+            if (!post?.value?.instagram?.state || !post.value.id) continue;
+            if (actuallyScheduled.get(post.value.id)?.state === 'posting') {
+              console.log(
+                new Date(),
+                'ignoring update to currently posting post',
+                post.value.id
+              );
+              continue;
+            }
+
+            actuallyScheduled.delete(post.value.id);
+
             if (
               post.value.instagram.state === 'scheduleDesired' ||
               post.value.instagram.state === 'scheduled'
             ) {
-              if (!post.value.images) {
-                continue;
-              }
+              const streams =
+                post.value.images &&
+                (await Promise.all(
+                  post.value.images.map(
+                    async (image) =>
+                      image?.imageFile?.id && {
+                        id: image.imageFile.id,
+                        ...(await loadImageFile(node, image.imageFile.id)),
+                      }
+                  )
+                ));
 
-              const streams = await Promise.all(
-                post.value.images.map(
-                  (image) =>
-                    image?.imageFile?.id &&
-                    loadImageFile(node, image.imageFile.id)
-                )
-              );
-
-              if (streams.every((stream) => stream)) {
-                if (!actuallyScheduled.has(post.value.id)) {
-                  actuallyScheduled.set(
-                    post.value.id,
-                    new Date(post.value.instagram.scheduledAt)
-                  );
+              if (
+                streams &&
+                streams.length > 0 &&
+                streams.every((stream) => stream)
+              ) {
+                for (let stream of streams) {
+                  loadedImages.set(stream!.id, {
+                    mimeType: stream!.mimeType,
+                    chunks: stream!.chunks!,
+                  });
                 }
+                actuallyScheduled.set(post.value.id, {
+                  state: 'ready',
+                  content: post.value.content || '',
+                  imageFileIds: post.value.images!.map(
+                    (image) => image!.imageFile!.id
+                  ),
+                  scheduledAt: new Date(post.value.instagram.scheduledAt),
+                });
                 if (post.value.instagram.state === 'scheduleDesired') {
                   post.value.set('instagram', {
                     state: 'scheduled',
@@ -111,10 +151,16 @@ async function runner() {
                 }
               } else {
                 console.error(
+                  new Date(),
                   'One or several images unavailable',
                   post.value.id,
                   streams
                 );
+                if (
+                  post.value.instagram.state === 'scheduleDesired' &&
+                  post.value.instagram.notScheduledReason
+                )
+                  return;
                 await new Promise((resolve) => setTimeout(resolve, 10_000));
                 post.value.set('instagram', {
                   state: 'scheduleDesired',
@@ -123,11 +169,6 @@ async function runner() {
                     'One or several images unavailable as of ' +
                     new Date().toISOString(),
                 });
-              }
-            } else if (post.value.instagram.state !== 'posted') {
-              if (actuallyScheduled.has(post.value.id)) {
-                console.log('removing post', post.value.id);
-                actuallyScheduled.delete(post.value.id);
               }
             }
           }
@@ -154,7 +195,7 @@ async function runner() {
           )
         ).json();
 
-        console.log('shortLivedResult', shortLivedResult);
+        console.log(new Date(), 'shortLivedResult', shortLivedResult);
 
         const longLivedResult = await (
           await fetch(
@@ -162,7 +203,7 @@ async function runner() {
           )
         ).json();
 
-        console.log('longLivedResult', longLivedResult);
+        console.log(new Date(), 'longLivedResult', longLivedResult);
 
         const brandId = new URL(req.url).searchParams.get('state');
 
@@ -178,19 +219,18 @@ async function runner() {
           Date.now() + longLivedResult.expires_in * 1000
         );
 
-        console.log(brand.toJSON());
+        console.log(new Date(), brand.toJSON());
 
         // redirect to frontend
         return Response.redirect(
           process.env.SUCCULENT_FRONTEND_ADDR || 'http://localhost:3889/'
         );
       } else if (req.url.includes('/image/')) {
-        console.log(req.url);
+        console.log(new Date(), req.url);
         const imageFileId = req.url.split('/image/')[1];
-        console.log(imageFileId);
+        console.log(new Date(), imageFileId);
 
-        const streamInfo = await loadImageFile(
-          node,
+        const streamInfo = loadedImages.get(
           imageFileId as CoID<Media.ImageDefinition>
         );
 
@@ -198,7 +238,7 @@ async function runner() {
 
         return new Response(new Blob(streamInfo.chunks), {
           headers: {
-            'Content-Type': streamInfo.mimeType,
+            'Content-Type': streamInfo.mimeType || 'application/octet-stream',
           },
         });
       } else {
@@ -208,18 +248,23 @@ async function runner() {
     port: 3331,
   });
 
+  let previouslyScheduled: typeof actuallyScheduled = new Map();
+
   const tryPosting = async () => {
-    console.log('actuallyScheduled', actuallyScheduled);
+    if (
+      JSON.stringify(previouslyScheduled) !== JSON.stringify(actuallyScheduled)
+    ) {
+      console.log(new Date(), 'actuallyScheduled', actuallyScheduled);
+    }
     if (process.env.NODE_ENV === 'development') {
-      console.log('not actually scheduling in dev mode');
+      console.log(new Date(), 'not actually scheduling in dev mode');
       return;
     }
 
-    for (let [postId, scheduledAt] of actuallyScheduled.entries()) {
-      if (scheduledAt < new Date()) {
-        console.log('posting', postId);
-        actuallyScheduled.delete(postId);
-        currentlyPosting.add(postId);
+    for (let [postId, state] of actuallyScheduled.entries()) {
+      if (state.state === 'ready' && state.scheduledAt < new Date()) {
+        console.log(new Date(), 'posting', postId);
+        actuallyScheduled.set(postId, { state: 'posting' });
 
         try {
           const post = await node.load(postId);
@@ -263,7 +308,7 @@ async function runner() {
                   '/image/' +
                   images[0].get('imageFile')
               )}&access_token=${brand.get('instagramAccessToken')}`;
-              console.log('POST', url);
+              console.log(new Date(), 'POST', url);
               const res = await fetch(url, {
                 method: 'POST',
               });
@@ -288,7 +333,7 @@ async function runner() {
                       image.get('imageFile')
                   )}&access_token=${brand.get('instagramAccessToken')}`;
 
-                  console.log('POST', url);
+                  console.log(new Date(), 'POST', url);
 
                   const res = await fetch(url, {
                     method: 'POST',
@@ -313,7 +358,7 @@ async function runner() {
               )}&media_type=CAROUSEL&children=${containerIds.join(
                 '%2C'
               )}&access_token=${brand.get('instagramAccessToken')}`;
-              console.log('POST', url);
+              console.log(new Date(), 'POST', url);
               const res = await fetch(url, {
                 method: 'POST',
               });
@@ -332,7 +377,7 @@ async function runner() {
               ?.id}/media_publish?creation_id=${topContainerId}&access_token=${brand.get(
               'instagramAccessToken'
             )}`;
-            console.log('POST', url);
+            console.log(new Date(), 'POST', url);
             const res = await fetch(url, {
               method: 'POST',
             });
@@ -347,10 +392,11 @@ async function runner() {
             const permalinkReqUrl = `https://graph.facebook.com/v18.0/${postMediaId}?fields=permalink&access_token=${brand.get(
               'instagramAccessToken'
             )}`;
-            console.log('GET', permalinkReqUrl);
+            console.log(new Date(), 'GET', permalinkReqUrl);
             const permalinkRes = await fetch(permalinkReqUrl);
             permalinkRes.status !== 200 &&
               console.error(
+                new Date(),
                 'error getting permalink',
                 permalinkRes.status,
                 await permalinkRes.text()
@@ -369,20 +415,26 @@ async function runner() {
               permalink: postPermalink,
             });
           } catch (e) {
-            console.error('Error posting after post load', postId, e);
+            console.error(
+              new Date(),
+              'Error posting after post load',
+              postId,
+              e
+            );
             post.set('instagram', {
               state: 'scheduleDesired',
-              scheduledAt: scheduledAt.toISOString(),
+              scheduledAt: state.scheduledAt.toISOString(),
               notScheduledReason: e + '',
             });
-          } finally {
-            currentlyPosting.delete(postId);
           }
         } catch (e) {
-          console.error('Error posting', postId, e);
-          actuallyScheduled.set(postId, scheduledAt);
-        } finally {
-          currentlyPosting.delete(postId);
+          console.error(
+            new Date(),
+            'Error posting - no post info at all',
+            postId,
+            e
+          );
+          actuallyScheduled.delete(postId);
         }
       }
     }
@@ -398,19 +450,19 @@ async function loadImageFile(
 ) {
   const image = await node.load(imageFileId);
   if (image === 'unavailable') {
-    console.error('image unavailable');
+    console.error(new Date(), 'image unavailable');
     return undefined;
   }
   const originalRes = image.get('originalSize');
   if (!originalRes) {
-    console.error('no originalRes');
+    console.error(new Date(), 'no originalRes');
     return undefined;
   }
   const resName =
     `${originalRes[0]}x${originalRes[1]}` as `${number}x${number}`;
   const resId = image.get(resName);
   if (!resId) {
-    console.error('no resId');
+    console.error(new Date(), 'no resId');
     return undefined;
   }
 
@@ -421,7 +473,7 @@ async function loadImageFile(
     while (triesLeft > 0) {
       const res = await node.load(resId);
       if (res === 'unavailable') {
-        console.error('res unavailable');
+        console.error(new Date(), 'res unavailable');
         resolve(undefined);
         return;
       }
