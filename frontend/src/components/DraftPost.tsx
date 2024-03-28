@@ -8,8 +8,8 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { cn } from '@/lib/utils';
-import { toDateTimeLocal } from '@/lib/dates';
 import { DraftPostImage } from './DraftPostImage';
+import { DraftPostScheduler } from './DraftPostScheduler';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -102,63 +102,17 @@ export function DraftPostComponent({
         placeholder="Post content"
       />
       <div className="flex gap-2 items-center flex-wrap">
-        <Input
-          type="datetime-local"
-          value={
-            post.instagram.state === 'scheduleDesired' ||
-            post.instagram.state === 'scheduled'
-              ? toDateTimeLocal(post.instagram.scheduledAt)
-              : undefined
-          }
-          onChange={(event) => {
-            setDesiredScheduleDate(new Date(event.target.value));
+        <DraftPostScheduler
+          post={post}
+          desiredScheduleDate={desiredScheduleDate}
+          setDesiredScheduleDate={setDesiredScheduleDate}
+          unschedulePost={() => {
+            post.set('instagram', {
+              state: 'notScheduled',
+            });
           }}
-          min={toDateTimeLocal(new Date().toISOString())}
-          className="dark:[color-scheme:dark] max-w-[13rem]"
+          schedulePost={schedule}
         />
-        <div className="whitespace-nowrap mr-auto">
-          {post.instagram.state === 'notScheduled' ? (
-            desiredScheduleDate ? (
-              <Button
-                onClick={() => {
-                  if (!desiredScheduleDate) return;
-                  console.log(
-                    'Scheduling for ' + desiredScheduleDate.toISOString()
-                  );
-                  schedule(desiredScheduleDate);
-                }}
-              >
-                Schedule
-              </Button>
-            ) : (
-              'Not yet scheduled'
-            )
-          ) : post.instagram.state === 'scheduleDesired' ? (
-            'Schedule desired' +
-            (post.instagram.notScheduledReason
-              ? ' (⚠️ ' + post.instagram.notScheduledReason + ')'
-              : ' (✈️ offline)')
-          ) : post.instagram.state === 'scheduled' ? (
-            'Scheduled'
-          ) : post.instagram.state === 'posted' ? (
-            'Posted'
-          ) : (
-            'loading'
-          )}
-        </div>
-        {(post.instagram.state === 'scheduleDesired' ||
-          post.instagram.state === 'scheduled') && (
-          <Button
-            variant="outline"
-            onClick={() => {
-              post.set('instagram', {
-                state: 'notScheduled',
-              });
-            }}
-          >
-            Unschedule
-          </Button>
-        )}
         <Button variant="destructive" onClick={onDelete}>
           Delete Post
         </Button>
