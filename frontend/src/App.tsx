@@ -26,7 +26,7 @@ function App() {
   });
 
   return (
-    <div className="flex-col max-h-[100dvh]">
+    <div>
       <RouterProvider router={router} />
       <Toaster />
     </div>
