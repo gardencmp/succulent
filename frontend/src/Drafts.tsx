@@ -10,7 +10,6 @@ export function Drafts() {
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const posts = filterDraftAndScheduledPosts(brand?.posts);
-  console.log('posts', posts);
 
   return (
     <div>
