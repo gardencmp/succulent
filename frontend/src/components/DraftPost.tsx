@@ -1,5 +1,5 @@
 import { AccountRoot } from '@/dataModel';
-import { Post, Image } from '@/sharedDataModel';
+import { Post, Image, Location, Tag } from '@/sharedDataModel';
 import { Profile, CoStream, CoID } from 'cojson';
 import { BrowserImage, createImage } from 'jazz-browser-media-images';
 import { Resolved, useJazz } from 'jazz-react';
@@ -9,6 +9,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { cn } from '@/lib/utils';
 import { toDateTimeLocal } from '@/lib/dates';
+import { AtSign, MapPin, X, Plus } from 'lucide-react';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -27,6 +28,7 @@ export function DraftPostComponent({
 }) {
   const { me, localNode } = useJazz<Profile, AccountRoot>();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
+  const [addTag, setAddTag] = useState<Boolean>(false);
   const schedule = useCallback(
     async (scheduleAt: Date) => {
       post.set('instagram', {
@@ -51,9 +53,93 @@ export function DraftPostComponent({
     [post]
   );
 
+  const testTags = [{ id: 12234, name: 'test1', x: 0, y: 0 }];
+
+  const testPost = {
+    ...post,
+    location: {
+      name: 'London',
+      id: 1234,
+    },
+    tags: testTags,
+  };
+
   const onDeletePhoto = (activeImageId: string) => {
     if (!confirm('Are you sure you want to delete this photo?')) return;
     post.images?.delete(post.images.findIndex((i) => i?.id === activeImageId));
+  };
+
+  const Location = (location: Location) => {
+    const testLocation = location.location;
+
+    return (
+      <div className="flex align-middle">
+        <MapPin className="align-self-middle mr-4" />
+        {/* render with a cross to delete input value submitted */}
+        {testLocation.name && (
+          <div className="flex align-middle text-middle">
+            <p className="mr-4 flex text-baseline">{testLocation.name}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                console.log('delete post location', testLocation.name)
+              }
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+        {/* style input, full width, prompt text*/}
+        {!testLocation.name && <Input placeholder="Enter location" />}
+      </div>
+    );
+  };
+
+  const Tags = (tags: Tag[]) => {
+    const testTags = tags.tags;
+
+    return (
+      <div className="flex">
+        <AtSign className="mr-4" />
+        {/* list through tags, render in pills with 'x' to delete */}
+        {testTags.length &&
+          testTags.map((tag: Tag) => (
+            <p className="outline rounded-md pl-3">
+              {tag.name}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => console.log('delete tag', tag.name)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </p>
+          ))}
+        {/* change to plus button which expands to an input on click, and goes back to plus on form submit */}
+        {testTags.length && (
+          <div className="flex">
+            {!addTag && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mx-2"
+                onClick={() => setAddTag(true)}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            )}
+            {addTag && (
+              <Input
+                placeholder="Enter tag"
+                className="ml-3"
+                onClick={() => setAddTag(false)}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -205,10 +291,14 @@ export function DraftPostComponent({
             </Button>
           </>
         )}
-        <Button variant="destructive" onClick={onDelete}>
-          Delete Post
-        </Button>
       </div>
+      <Location location={testPost.location} />
+      <div>
+        <Tags tags={testPost.tags} />
+      </div>
+      <Button variant="destructive" onClick={onDelete}>
+        Delete Post
+      </Button>
       {/* <div className="text-xs">Succulent post id: {post.id}</div> */}
     </div>
   );
