@@ -16,12 +16,9 @@ export const PostLocation = ({
     }
   };
 
-  console.log('location', location);
-
   return (
     <div className="flex align-middle">
       <MapPin className="align-self-middle mr-4" />
-      {/* render with a cross to delete input value submitted */}
       {locationName && (
         <div className="flex align-middle text-middle">
           <p className="mr-4 flex text-baseline">{locationName}</p>
