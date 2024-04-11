@@ -3,7 +3,7 @@ import { Post, Image, Tag } from '@/sharedDataModel';
 import { Profile, CoStream, CoID } from 'cojson';
 import { BrowserImage, createImage } from 'jazz-browser-media-images';
 import { Resolved, ResolvedCoMap, useJazz } from 'jazz-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -58,16 +58,6 @@ export function DraftPostComponent({
     },
     [post]
   );
-
-  useEffect(() => {
-    setTags(testTags);
-    // setLocation(testPost.location)
-  }, []);
-
-  const testTags = [
-    { id: 12234, name: 'test1', x: 0, y: 0 },
-    { id: 65780, name: 'test2', x: 20, y: 0 },
-  ];
 
   const onDeletePhoto = (activeImageId: string) => {
     if (!confirm('Are you sure you want to delete this photo?')) return;
