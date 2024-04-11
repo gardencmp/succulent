@@ -65,7 +65,7 @@ export function Preferences() {
   };
 
   return (
-    <div>
+    <>
       <p>😒</p>
       <h3>Post Prefs:</h3>
       <DndContext
@@ -92,7 +92,7 @@ export function Preferences() {
           ))}
         </SortableContext>
       </DndContext>
-    </div>
+    </>
   );
 
   function handleDragEnd(event: DragEndEvent) {

@@ -12,8 +12,8 @@ export function Drafts() {
   const posts = filterDraftAndScheduledPosts(brand?.posts);
 
   return (
-    <div>
+    <>
       <DraftPostList posts={posts} deleteDraft={useDeleteDraft(brand)} />
-    </div>
+    </>
   );
 }
