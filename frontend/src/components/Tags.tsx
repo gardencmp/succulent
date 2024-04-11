@@ -18,11 +18,12 @@ export const Tags = ({
   };
 
   const handleAddTags = (e) => {
+    const activeTags = tags || [];
     if (!e.target.value.length) return;
     if (e.key === 'Enter') {
       e.preventDefault();
       setTags([
-        ...tags,
+        ...activeTags,
         {
           id: 0,
           name: e.target.value,
@@ -34,14 +35,11 @@ export const Tags = ({
     }
   };
 
-  if (!tags) return;
-
   return (
     <div className="flex">
       <AtSign className="mr-4" />
-      {/* list through tags, render in pills with 'x' to delete */}
       {tags?.length &&
-        tags.map((tag: Tag, index: number) => (
+        tags?.map((tag: Tag, index: number) => (
           <p className="outline rounded-md pl-3 mr-3" key={tag.name}>
             {tag.name}
             <Button
@@ -53,28 +51,19 @@ export const Tags = ({
             </Button>
           </p>
         ))}
-      {/* change to plus button which expands to an input on click, and goes back to plus on form submit */}
-      {tags.length && (
-        <div className="flex">
-          {!addTag && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="mx-2"
-              onClick={() => setAddTag(true)}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          )}
-          {addTag && (
-            <Input
-              placeholder="Enter tag"
-              // onClick={() => setAddTag(false)}
-              onKeyDown={handleAddTags}
-            />
-          )}
-        </div>
-      )}
+      <div className="flex">
+        {!addTag && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="mx-2"
+            onClick={() => setAddTag(true)}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        )}
+        {addTag && <Input placeholder="Enter tag" onKeyDown={handleAddTags} />}
+      </div>
     </div>
   );
 };
