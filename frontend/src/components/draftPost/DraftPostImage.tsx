@@ -9,7 +9,7 @@ export function DraftPostImage({
   onClickPhoto,
   imageSize = 500,
 }: {
-  image?: Resolved<Image>;
+  image?: Resolved<Image> | undefined;
   onDeletePhoto?: (id: Image['id']) => void;
   onClickPhoto?: () => void;
   imageSize?: number;
