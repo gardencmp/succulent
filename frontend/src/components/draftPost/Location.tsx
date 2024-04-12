@@ -6,13 +6,13 @@ export const PostLocation = ({
   locationName,
   setLocationName,
 }: {
-  locationName: string;
-  setLocationName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  locationName: string | null;
+  setLocationName: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
-  const handleLocation = (e) => {
+  const handleLocation = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      setLocationName(e.target.value);
+      setLocationName(e.currentTarget.value);
     }
   };
 
@@ -25,7 +25,7 @@ export const PostLocation = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setLocationName(undefined)}
+            onClick={() => setLocationName(null)}
           >
             <X className="h-4 w-4" />
           </Button>
