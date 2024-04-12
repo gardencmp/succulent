@@ -1,8 +1,8 @@
 import { Tag } from '@/sharedDataModel';
 import { AtSign, Plus, X } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { useState } from 'react';
-import { Input } from './ui/input';
+import { Input } from '../ui/input';
 
 export const Tags = ({
   tags,
@@ -36,7 +36,7 @@ export const Tags = ({
   };
 
   return (
-    <div className="flex">
+    <div className="flex m-w-100">
       <AtSign className="mr-4" />
       {tags?.length &&
         tags?.map((tag: Tag, index: number) => (
