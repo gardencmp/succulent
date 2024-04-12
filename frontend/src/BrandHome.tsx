@@ -1,7 +1,13 @@
 import { ResolvedCoMap, useAutoSub, useJazz } from 'jazz-react';
-import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useOutletContext,
+  useParams,
+} from 'react-router-dom';
 import { CoID } from 'cojson';
-import { Brand } from './sharedDataModel';
+import { Brand, Post } from './sharedDataModel';
 import { Button } from './components/ui/button';
 import { router } from './router';
 import {
@@ -13,6 +19,12 @@ import {
 import { useEffect, useState } from 'react';
 import { Profile } from 'cojson';
 import { AccountRoot } from './dataModel';
+import { X } from 'lucide-react';
+import { DraftPostComponent } from './components/DraftPost';
+
+type ContextType = {
+  post: Post | null;
+};
 
 export function BrandHome() {
   const { me } = useJazz<Profile, AccountRoot>();
@@ -20,6 +32,8 @@ export function BrandHome() {
   const brand = useAutoSub(brandId);
   const [currentPage, setCurrentPage] = useState('schedule');
   const navItems = ['schedule', 'insights', 'drafts', 'preferences'];
+  const [activeDraftPost, setActiveDraftPost] =
+    useState<ResolvedCoMap<Post | null>>(null);
   const isMobile = true;
   let location = useLocation();
 
@@ -31,6 +45,8 @@ export function BrandHome() {
   const selectBrand = (brand: ResolvedCoMap<Brand>) => {
     console.log('brand', brand);
   };
+
+  console.log('activeDraftPost', activeDraftPost);
 
   useEffect(() => {
     const path = location.pathname.split('/');
@@ -94,8 +110,20 @@ export function BrandHome() {
         )}
       </nav>
       <main className="flex flex-col flex-shrink min-h-0 lg:my-3 overflow-scroll">
-        <Outlet />
+        <Outlet context={[activeDraftPost, setActiveDraftPost]} />
+        {activeDraftPost && (
+          <div className="z-30 min-w-[100dvw] min-h-[100dvh] flex justify-center align-middle">
+            <Button onClick={() => setActiveDraftPost(null)}>
+              <X />
+            </Button>
+            {/* <DraftPostComponent post={activeDraftPost} /> */}
+          </div>
+        )}
       </main>
     </div>
   );
+}
+
+export function useActiveDraftPost() {
+  return useOutletContext<ContextType>();
 }
