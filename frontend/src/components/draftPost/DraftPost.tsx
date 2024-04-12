@@ -1,7 +1,7 @@
 import { AccountRoot } from '@/dataModel';
-import { Post } from '@/sharedDataModel';
+import { Post, Tag } from '@/sharedDataModel';
 import { Profile, CoStream, CoID } from 'cojson';
-import { Resolved, useJazz } from 'jazz-react';
+import { Resolved, ResolvedCoMap, useJazz } from 'jazz-react';
 import { useCallback, useState } from 'react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
@@ -9,6 +9,9 @@ import { cn } from '@/lib/utils';
 import { DraftPostImage } from './DraftPostImage';
 import { DraftPostScheduler } from './DraftPostScheduler';
 import { ImageUploader } from './ImageUploader';
+import { useOutletContext } from 'react-router-dom';
+import { PostLocation } from './Location';
+import { Tags } from './Tags';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -27,6 +30,10 @@ export function DraftPostComponent({
 }) {
   const { me, localNode } = useJazz<Profile, AccountRoot>();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
+  const [locationName, setLocationName] = useState<string | undefined>();
+  const [tags, setTags] = useState<Tag[]>();
+  const [activeDraftPost, setActiveDraftPost] = useOutletContext();
+
   const schedule = useCallback(
     async (scheduleAt: Date) => {
       post.set('instagram', {
@@ -56,6 +63,10 @@ export function DraftPostComponent({
     post.images?.delete(post.images.findIndex((i) => i?.id === activeImageId));
   };
 
+  const onClickPhoto = async (post: ResolvedCoMap<Post>) => {
+    setActiveDraftPost(post);
+  };
+
   return (
     <div
       className={cn('rounded p-4 flex flex-col gap-4', styling, {
@@ -66,7 +77,12 @@ export function DraftPostComponent({
         {post?.images?.map(
           (image) =>
             image && (
-              <DraftPostImage image={image} onDeletePhoto={onDeletePhoto} />
+              <DraftPostImage
+                image={image}
+                onDeletePhoto={onDeletePhoto}
+                onClickPhoto={() => onClickPhoto(post)}
+                key={image.id}
+              />
             )
         )}
         <ImageUploader post={post} />
@@ -92,6 +108,11 @@ export function DraftPostComponent({
           }}
           schedulePost={schedule}
         />
+        <PostLocation
+          locationName={locationName}
+          setLocationName={setLocationName}
+        />
+        <Tags tags={tags} setTags={setTags} />
         <Button variant="destructive" onClick={onDelete}>
           Delete Post
         </Button>
