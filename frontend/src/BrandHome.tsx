@@ -1,4 +1,4 @@
-import { ResolvedCoMap, useAutoSub, useJazz } from 'jazz-react';
+import { Resolved, ResolvedCoMap, useAutoSub, useJazz } from 'jazz-react';
 import {
   Link,
   Outlet,
@@ -31,8 +31,7 @@ export function BrandHome() {
   const brand = useAutoSub(brandId);
   const [currentPage, setCurrentPage] = useState('schedule');
   const navItems = ['schedule', 'insights', 'drafts', 'preferences'];
-  const [activeDraftPost, setActiveDraftPost] =
-    useState<ResolvedCoMap<Post | null>>(null);
+  const [activeDraftPost, setActiveDraftPost] = useState<Post | null>(null);
   const isMobile = true;
   let location = useLocation();
 
@@ -71,7 +70,7 @@ export function BrandHome() {
               {me.root?.brands?.map((brand) => (
                 <DropdownMenuItem
                   key={`mobile-${brand}`}
-                  onClick={() => selectBrand(brand)}
+                  onClick={() => brand && selectBrand(brand)}
                 >
                   {brand?.name}
                 </DropdownMenuItem>
@@ -113,7 +112,7 @@ export function BrandHome() {
         {activeDraftPost && (
           <ImageTagView
             activeDraftPost={activeDraftPost}
-            setActiveDraft={setActiveDraftPost}
+            setActiveDraftPost={setActiveDraftPost}
           />
         )}
       </main>
