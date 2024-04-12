@@ -1,11 +1,11 @@
 import { Post, Tag } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
 import { Button } from '../ui/button';
 import { X } from 'lucide-react';
 import { DraftPostImage } from './DraftPostImage';
 import { PostLocation } from './Location';
 import { Tags } from './Tags';
 import { useState } from 'react';
+import { Resolved } from 'jazz-react';
 
 export function ImageTagView({
   activeDraftPost,
@@ -15,9 +15,7 @@ export function ImageTagView({
   setActiveDraftPost: React.Dispatch<React.SetStateAction<Post | null>>;
 }) {
   const [locationName, setLocationName] = useState<string | null>('London');
-  const [tags, setTags] = useState<Tag | null>(null);
-
-  console.log('🐡🐠🐬 activeDraftPost', activeDraftPost);
+  const [tags, setTags] = useState<Tag[] | null>(null);
 
   return (
     <div className=" relative z-30 min-w-[100dvw] min-h-[100dvh] flex justify-center items-center flex-col bg-stone-800/50">
