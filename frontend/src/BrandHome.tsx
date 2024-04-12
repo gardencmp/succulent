@@ -19,8 +19,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Profile } from 'cojson';
 import { AccountRoot } from './dataModel';
-import { X } from 'lucide-react';
-import { DraftPostComponent } from './components/DraftPost';
+import { ImageTagView } from './components/draftPost/ImageTagView';
 
 type ContextType = {
   post: Post | null;
@@ -112,12 +111,10 @@ export function BrandHome() {
       <main className="flex flex-col flex-shrink min-h-0 lg:my-3 overflow-scroll">
         <Outlet context={[activeDraftPost, setActiveDraftPost]} />
         {activeDraftPost && (
-          <div className="z-30 min-w-[100dvw] min-h-[100dvh] flex justify-center align-middle">
-            <Button onClick={() => setActiveDraftPost(null)}>
-              <X />
-            </Button>
-            {/* <DraftPostComponent post={activeDraftPost} /> */}
-          </div>
+          <ImageTagView
+            activeDraftPost={activeDraftPost}
+            setActiveDraft={setActiveDraftPost}
+          />
         )}
       </main>
     </div>
