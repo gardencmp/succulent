@@ -7,7 +7,7 @@ import {
 import { Resolved } from 'jazz-react';
 import { Button } from '../ui/button';
 import { useState } from 'react';
-import { DraftPostComponent } from '../DraftPost';
+import { DraftPostComponent } from '../draftPost/DraftPost';
 import { PostComponent } from '../Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
@@ -54,7 +54,12 @@ export function PostTile({
               post.instagram.state === 'scheduleDesired') && (
               <>
                 {post.instagram.state === 'posted' ? (
-                  <PostInsights post={post} />
+                  <>
+                    <div className="absolute top-0 left-0">
+                      {new Date(post.instagram.postedAt).toLocaleString()}
+                    </div>
+                    <PostInsights post={post} />
+                  </>
                 ) : (
                   <div
                     className={cn('absolute', {
