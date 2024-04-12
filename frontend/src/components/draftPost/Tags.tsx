@@ -8,13 +8,13 @@ export const Tags = ({
   tags,
   setTags,
 }: {
-  tags: Tag[];
-  setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
+  tags: Tag[] | null;
+  setTags: React.Dispatch<React.SetStateAction<Tag[] | null>>;
 }) => {
   const [addTag, setAddTag] = useState<Boolean>(false);
 
   const handleRemoveTags = (index: number) => {
-    setTags(tags.filter((_t, i) => i != index));
+    tags && setTags(tags.filter((_t, i) => i != index));
   };
 
   const handleAddTags = (e) => {
