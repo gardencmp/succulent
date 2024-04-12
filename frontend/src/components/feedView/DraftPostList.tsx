@@ -5,7 +5,7 @@ import {
   Post,
 } from '@/sharedDataModel';
 import { Resolved } from 'jazz-react';
-import { DraftPostComponent } from '../DraftPost';
+import { DraftPostComponent } from '../draftPost/DraftPost';
 import { GripHorizontal, GripVertical } from 'lucide-react';
 import { Draggable } from '@/lib/dragAndDrop';
 

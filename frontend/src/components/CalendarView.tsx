@@ -2,7 +2,7 @@ import { Brand, Post, ListOfImages } from '@/sharedDataModel';
 import { useAutoSub } from 'jazz-react';
 import { Button } from '../components/ui/button';
 import { useParams } from 'react-router-dom';
-import { DraftPostComponent } from './DraftPost';
+import { DraftPostComponent } from './draftPost/DraftPost';
 import { CoID } from 'cojson';
 import { useCallback, useState } from 'react';
 import { importPostsHelper } from '../lib/importPostsHelper';

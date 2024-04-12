@@ -13,7 +13,7 @@ export function Drafts() {
   console.log('posts', posts);
 
   return (
-    <div>
+    <div className="m-4">
       <DraftPostList posts={posts} deleteDraft={useDeleteDraft(brand)} />
     </div>
   );
