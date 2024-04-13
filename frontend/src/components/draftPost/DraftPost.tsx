@@ -12,6 +12,7 @@ import { ImageUploader } from './ImageUploader';
 import { useOutletContext } from 'react-router-dom';
 import { PostLocation } from './Location';
 import { Tags } from './Tags';
+import { useActiveDraftPost } from '@/BrandHome';
 
 const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
   CoStream<Post['id']>
@@ -32,7 +33,7 @@ export function DraftPostComponent({
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
   const [locationName, setLocationName] = useState<string | null>(null);
   const [tags, setTags] = useState<Tag[] | null>(null);
-  const [activeDraftPost, setActiveDraftPost] = useOutletContext();
+  const { setActiveDraftPost } = useActiveDraftPost();
 
   const schedule = useCallback(
     async (scheduleAt: Date) => {

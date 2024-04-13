@@ -22,7 +22,8 @@ import { AccountRoot } from './dataModel';
 import { ImageTagView } from './components/draftPost/ImageTagView';
 
 type ContextType = {
-  post: ResolvedCoMap<Post> | null;
+  activeDraftPost: ResolvedCoMap<Post> | null;
+  setActiveDraftPost: (newPost: ResolvedCoMap<Post>) => void;
 };
 
 export function BrandHome() {
@@ -109,7 +110,11 @@ export function BrandHome() {
         )}
       </nav>
       <main className="flex flex-col flex-shrink min-h-0 lg:my-3 overflow-scroll">
-        <Outlet context={[activeDraftPost, setActiveDraftPost]} />
+        <Outlet
+          context={
+            { activeDraftPost, setActiveDraftPost } satisfies ContextType
+          }
+        />
         {activeDraftPost && (
           <ImageTagView
             activeDraftPost={activeDraftPost}
