@@ -30,6 +30,7 @@ export type Post = CoMap<{
   images: ListOfImages['id'];
   instagram: InstagramState;
   location: Location;
+  tags: Tag[];
 }>;
 
 export type ListOfImages = CoList<Image['id']>;
