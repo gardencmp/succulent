@@ -5,14 +5,16 @@ import { DraftPostImage } from './DraftPostImage';
 import { PostLocation } from './Location';
 import { Tags } from './Tags';
 import { useState } from 'react';
-import { Resolved } from 'jazz-react';
+import { ResolvedCoMap } from 'jazz-react';
 
 export function ImageTagView({
   activeDraftPost,
   setActiveDraftPost,
 }: {
-  activeDraftPost: Resolved<Post>;
-  setActiveDraftPost: React.Dispatch<React.SetStateAction<Post | null>>;
+  activeDraftPost: ResolvedCoMap<Post>;
+  setActiveDraftPost: React.Dispatch<
+    React.SetStateAction<ResolvedCoMap<Post> | null>
+  >;
 }) {
   const [locationName, setLocationName] = useState<string | null>('London');
   const [tags, setTags] = useState<Tag[] | null>(null);
@@ -37,7 +39,6 @@ export function ImageTagView({
         </div>
         <Tags tags={tags} setTags={setTags} />
       </div>
-      {/* <DraftPostComponent post={activeDraftPost} /> */}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Resolved, ResolvedCoMap, useAutoSub, useJazz } from 'jazz-react';
+import { ResolvedCoMap, useAutoSub, useJazz } from 'jazz-react';
 import {
   Link,
   Outlet,
@@ -22,7 +22,7 @@ import { AccountRoot } from './dataModel';
 import { ImageTagView } from './components/draftPost/ImageTagView';
 
 type ContextType = {
-  post: Post | null;
+  post: ResolvedCoMap<Post> | null;
 };
 
 export function BrandHome() {
@@ -31,7 +31,8 @@ export function BrandHome() {
   const brand = useAutoSub(brandId);
   const [currentPage, setCurrentPage] = useState('schedule');
   const navItems = ['schedule', 'insights', 'drafts', 'preferences'];
-  const [activeDraftPost, setActiveDraftPost] = useState<Post | null>(null);
+  const [activeDraftPost, setActiveDraftPost] =
+    useState<ResolvedCoMap<Post> | null>(null);
   const isMobile = true;
   let location = useLocation();
 
