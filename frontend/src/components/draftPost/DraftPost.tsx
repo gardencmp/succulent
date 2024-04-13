@@ -30,8 +30,8 @@ export function DraftPostComponent({
 }) {
   const { me, localNode } = useJazz<Profile, AccountRoot>();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
-  const [locationName, setLocationName] = useState<string | undefined>();
-  const [tags, setTags] = useState<Tag[]>();
+  const [locationName, setLocationName] = useState<string | null>(null);
+  const [tags, setTags] = useState<Tag[] | null>(null);
   const [activeDraftPost, setActiveDraftPost] = useOutletContext();
 
   const schedule = useCallback(
