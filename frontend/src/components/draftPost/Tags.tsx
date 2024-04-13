@@ -17,16 +17,16 @@ export const Tags = ({
     tags && setTags(tags.filter((_t, i) => i != index));
   };
 
-  const handleAddTags = (e) => {
+  const handleAddTags = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const activeTags = tags || [];
-    if (!e.target.value.length) return;
+    if (!e.currentTarget.value.length) return;
     if (e.key === 'Enter') {
       e.preventDefault();
       setTags([
         ...activeTags,
         {
           id: 0,
-          name: e.target.value,
+          name: e.currentTarget.value,
           x: 0,
           y: 0,
         },
