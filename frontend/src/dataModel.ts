@@ -1,17 +1,36 @@
-import { CoMap, AccountMigration } from 'cojson';
-import { ListOfBrands } from './sharedDataModel';
+import { Co, Profile } from 'jazz-tools';
+import { Brand, ListOfBrands } from './sharedDataModel';
+import { CoList } from 'jazz-tools';
 
-export type AccountRoot = CoMap<{
-  brands: ListOfBrands['id'];
-}>;
+export class AccountRoot extends Co.Map<AccountRoot> {
+  declare brands: CoList<Brand | null> | null;
 
-export const accountMigration: AccountMigration = (account) => {
-  if (!account.get('root')) {
-    account.set(
-      'root',
-      account.createMap<AccountRoot>({
-        brands: account.createList<ListOfBrands>().id,
-      }).id
-    );
+  static {
+    this.define({
+      brands: { ref: () => Co.List<Brand | null>({ ref: () => Brand }) },
+    });
   }
-};
+}
+
+export class SucculentAccount extends Co.Account<SucculentAccount> {
+  declare profile: Profile;
+  declare root: AccountRoot;
+
+  static {
+    this.define({
+      profile: { ref: () => Profile },
+      root: { ref: () => AccountRoot },
+    });
+  }
+
+  migrate = () => {
+    if (!this._refs.root) {
+      this.root = new AccountRoot(
+        {
+          brands: new ListOfBrands([], { owner: this }),
+        },
+        { owner: this }
+      );
+    }
+  };
+}

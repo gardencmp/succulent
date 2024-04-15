@@ -1,4 +1,4 @@
-import { CoMap, CoList, Media } from 'cojson';
+import { Co, CoList, indexSignature } from 'jazz-tools';
 
 export type Platform = 'Twitter' | 'Instagram' | 'Facebook' | 'TikTok';
 
@@ -32,12 +32,14 @@ export type InstagramPosted = {
   permalink: string;
 };
 
-export type Post<S extends InstagramState = InstagramState> = CoMap<{
-  inBrand: Brand['id'];
-  content?: string;
-  images: ListOfImages['id'];
-  instagram: S;
-  instagramInsights?: {
+export class Post<S extends InstagramState = InstagramState> extends Co.Map<
+  Post<InstagramState>
+> {
+  declare inBrand: Brand | null;
+  declare content?: string;
+  declare images: CoList<Image | null> | null;
+  declare instagram: S;
+  declare instagramInsights?: {
     profileVisits?: number;
     impressions?: number;
     totalInteractions?: number;
@@ -51,33 +53,72 @@ export type Post<S extends InstagramState = InstagramState> = CoMap<{
       [breakdown: string]: number | undefined;
     };
   };
-}>;
 
-export type ListOfImages = CoList<Image['id']>;
+  static {
+    this.define({
+      inBrand: { ref: () => Brand },
+      content: 'json',
+      images: { ref: () => ListOfImages },
+      instagram: 'json',
+      instagramInsights: 'json',
+    });
+  }
+}
 
-export type Image = CoMap<{
-  imageFile: Media.ImageDefinition['id'];
-  instagramContainerId?: string;
-}>;
+export class Image extends Co.Map<Image> {
+  declare imageFile: Co.media.ImageDef | null;
+  declare instagramContainerId?: string;
 
-export type ListOfPosts = CoList<Post['id']>;
+  static {
+    this.define({
+      imageFile: { ref: () => Co.media.ImageDef },
+      instagramContainerId: 'json',
+    });
+  }
+}
 
-export type Brand = CoMap<{
-  name: string;
-  instagramAccessToken?: string;
-  instagramAccessTokenValidUntil?: number;
-  instagramInsights?: InstagramInsights['id'];
-  instagramPage?: { id: string; name: string };
-  posts: ListOfPosts['id'];
-}>;
+export class ListOfImages extends Co.List<Image | null>({ ref: () => Image }) {}
 
-export type InstagramInsights = CoMap<{
-  [day: string]: {
-    impressions?: number;
-    reach?: number;
-    profileViews?: number;
-    accountsEngaged?: number;
-  };
-}>;
+export class Brand extends Co.Map<Brand> {
+  declare name: string;
+  declare instagramAccessToken?: string;
+  declare instagramAccessTokenValidUntil?: number;
+  declare instagramInsights?: BrandInstagramInsights | null;
+  declare instagramPage?: { id: string; name: string };
+  declare posts: ListOfPosts | null;
 
-export type ListOfBrands = CoList<Brand['id']>;
+  static {
+    this.define({
+      name: 'json',
+      instagramAccessToken: 'json',
+      instagramAccessTokenValidUntil: 'json',
+      instagramInsights: { ref: () => BrandInstagramInsights },
+      instagramPage: 'json',
+      posts: { ref: () => ListOfPosts },
+    });
+  }
+}
+
+export class ListOfBrands extends Co.List<Brand | null>({ ref: () => Brand }) {}
+
+export class ListOfPosts extends Co.List<Post | null>({ ref: () => Post }) {}
+
+export type DayInsights = {
+  impressions?: number;
+  reach?: number;
+  profileViews?: number;
+  accountsEngaged?: number;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export class BrandInstagramInsights extends Co.Map<BrandInstagramInsights> {
+  declare [indexSignature]: DayInsights;
+
+  static {
+    this.define({
+      [indexSignature]: 'json',
+    });
+  }
+}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface BrandInstagramInsights extends Record<string, DayInsights> {}
