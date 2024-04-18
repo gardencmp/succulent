@@ -1,36 +1,35 @@
 import { Tag } from '@/sharedDataModel';
-import { AtSign, Plus, X } from 'lucide-react';
+import { AtSign, X } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useState } from 'react';
 import { Input } from '../ui/input';
+import { Resolved } from 'jazz-react';
+import { Post } from '@/sharedDataModel';
+import { handleTags } from '../../../../backend/src/handleTags'
 
-export const Tags = ({
-  tags,
-  setTags,
-}: {
-  tags: Tag[] | null;
-  setTags: React.Dispatch<React.SetStateAction<Tag[] | null>>;
-}) => {
-  const [addTag, setAddTag] = useState<Boolean>(false);
-
-  const handleRemoveTags = (index: number) => {
-    tags && setTags(tags.filter((_t, i) => i != index));
+export const Tags = ({ post }: { post: Resolved<Post> }) => {
+  const tags = post.tags || [];
+  const handleRemoveTags = async (index: number) => {
+    const allTags = tags.filter((_t, i) => i != index);
+    const rolledTags = handleTags({ tags: allTags });
+    post.set('tags', rolledTags)
   };
 
-  const handleAddTags = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleAddTags = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     const activeTags = tags || [];
     if (!e.currentTarget.value.length) return;
     if (e.key === 'Enter') {
       e.preventDefault();
-      setTags([
+      const allTags = [
         ...activeTags,
         {
           id: 0,
-          name: e.currentTarget.value,
+          username: e.currentTarget.value,
           x: 0,
           y: 0,
         },
-      ]);
+      ];
+      const rolledTags = handleTags({ tags: allTags });
+      post.set('tags', rolledTags)
       e.currentTarget.value = '';
     }
   };
@@ -38,10 +37,9 @@ export const Tags = ({
   return (
     <div className="flex m-w-100">
       <AtSign className="mr-4" />
-      {tags?.length &&
-        tags?.map((tag: Tag, index: number) => (
-          <p className="outline rounded-md pl-3 mr-3" key={tag.name}>
-            {tag.name}
+      {!!tags && tags?.map((tag: Tag, index: number) => (
+          <p className="outline rounded-md pl-3 mr-3" key={tag.username}>
+            {tag.username}
             <Button
               variant="outline"
               size="sm"
@@ -52,6 +50,7 @@ export const Tags = ({
           </p>
         ))}
       <div className="flex">
+      {/* <div className="flex">
         {!addTag && (
           <Button
             variant="outline"
@@ -62,7 +61,8 @@ export const Tags = ({
             <Plus className="h-4 w-4" />
           </Button>
         )}
-        {addTag && <Input placeholder="Enter tag" onKeyDown={handleAddTags} />}
+        {addTag && <Input placeholder="Enter tag" onKeyDown={handleAddTags} />} */}
+        <Input placeholder="Enter tag" onKeyDown={handleAddTags} />
       </div>
     </div>
   );

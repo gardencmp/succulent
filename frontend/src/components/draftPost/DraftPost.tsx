@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import { DraftPostImage } from './DraftPostImage';
 import { DraftPostScheduler } from './DraftPostScheduler';
 import { ImageUploader } from './ImageUploader';
-import { useOutletContext } from 'react-router-dom';
 import { PostLocation } from './Location';
 import { Tags } from './Tags';
 import { useActiveDraftPost } from '@/BrandHome';
@@ -32,7 +31,6 @@ export function DraftPostComponent({
   const { me, localNode } = useJazz<Profile, AccountRoot>();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
   const [locationName, setLocationName] = useState<string | null>(null);
-  const [tags, setTags] = useState<Tag[] | null>(null);
   const { setActiveDraftPost } = useActiveDraftPost();
 
   const schedule = useCallback(
@@ -67,6 +65,12 @@ export function DraftPostComponent({
   const onClickPhoto = async (post: ResolvedCoMap<Post>) => {
     setActiveDraftPost(post);
   };
+  
+  // console.log("post.tags", post.tags);
+  // useEffect(() => {
+  //   if (!location) return
+  //   post.set('location', location)
+  // }, [location])
 
   return (
     <div
@@ -113,7 +117,8 @@ export function DraftPostComponent({
           locationName={locationName}
           setLocationName={setLocationName}
         />
-        <Tags tags={tags} setTags={setTags} />
+        {/* <Tags tags={tags} setTags={setTags} /> */}
+        <Tags post={post} />
         <Button variant="destructive" onClick={onDelete}>
           Delete Post
         </Button>
