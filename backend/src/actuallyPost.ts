@@ -60,7 +60,10 @@ export async function actuallyPost(
           (process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331') +
             '/image/' +
             images[0].get('imageFile')
-        )}&access_token=${brand.get('instagramAccessToken')}`;
+        )}&access_token=${brand.get('instagramAccessToken'
+        )}&user_tags=${encodeURIComponent(
+          JSON.stringify(post.get('tags') || [])
+        )}`;
         console.log(new Date(), 'POST', url);
         const res = await fetch(url, {
           method: 'POST',

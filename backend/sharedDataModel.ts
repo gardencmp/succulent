@@ -68,8 +68,7 @@ export type Location = {
 };
 
 export type Tag = {
-  id: number;
-  name: string;
+  username: string;
   x: number;
   y: number;
 };
