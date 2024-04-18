@@ -54,7 +54,7 @@ export function BrandHome() {
   }, []);
 
   return (
-    <div className="flex flex-col-reverse lg:flex-col max-h-[100dvh]">
+    <div className="flex flex-col-reverse lg:flex-col max-h-[100dvh] min-h-[100vh]">
       <nav className="flex-none flex gap-6 px-0 py-2 lg:py-3 w-full max-w-[100vw] items-center bg-stone-950 z-10 sm:sticky sm:bottom-0 lg:mt-1">
         <h1 className="text-stone-300 pl-6 flex flex-shrink-0">
           <Link to="/" className="tracking-wider flex align-middle">
@@ -109,7 +109,7 @@ export function BrandHome() {
           </DropdownMenu>
         )}
       </nav>
-      <main className="flex flex-col flex-shrink min-h-0 lg:my-3 overflow-scroll">
+      <main className="flex flex-col flex-shrink lg:my-3 overflow-scroll min-h-[93vh] p-2">
         <Outlet
           context={
             { activeDraftPost, setActiveDraftPost } satisfies ContextType
