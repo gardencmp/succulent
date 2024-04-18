@@ -1,5 +1,5 @@
 import { AccountRoot } from '@/dataModel';
-import { Post, Tag } from '@/sharedDataModel';
+import { Post } from '@/sharedDataModel';
 import { Profile, CoStream, CoID } from 'cojson';
 import { Resolved, ResolvedCoMap, useJazz } from 'jazz-react';
 import { useCallback, useState } from 'react';
@@ -65,12 +65,6 @@ export function DraftPostComponent({
   const onClickPhoto = async (post: ResolvedCoMap<Post>) => {
     setActiveDraftPost(post);
   };
-  
-  // console.log("post.tags", post.tags);
-  // useEffect(() => {
-  //   if (!location) return
-  //   post.set('location', location)
-  // }, [location])
 
   return (
     <div
