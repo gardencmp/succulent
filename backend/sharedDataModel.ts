@@ -64,7 +64,6 @@ export type ListOfBrands = CoList<Brand['id']>;
 
 export type Location = {
   id: number;
-  name: string;
 };
 
 export type Tag = {

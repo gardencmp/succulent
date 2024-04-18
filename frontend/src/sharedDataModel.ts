@@ -37,7 +37,7 @@ export type Post<S extends InstagramState = InstagramState> = CoMap<{
   content?: string;
   images: ListOfImages['id'];
   instagram: S;
-  location: string | undefined;
+  location: Location | null;
   tags: Tag[];
   instagramInsights?: {
     profileVisits?: number;
@@ -85,7 +85,7 @@ export type InstagramInsights = CoMap<{
 export type ListOfBrands = CoList<Brand['id']>;
 
 export type Location = {
-  id: number;
+  id?: number;
   name: string;
 };
 

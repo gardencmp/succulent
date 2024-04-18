@@ -63,6 +63,8 @@ export async function actuallyPost(
         )}&access_token=${brand.get('instagramAccessToken'
         )}&user_tags=${encodeURIComponent(
           JSON.stringify(post.get('tags') || [])
+        )}&location_id=${encodeURIComponent(
+          JSON.stringify(post.get('location')?.id)
         )}`;
         console.log(new Date(), 'POST', url);
         const res = await fetch(url, {

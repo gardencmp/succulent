@@ -30,7 +30,6 @@ export function DraftPostComponent({
 }) {
   const { me, localNode } = useJazz<Profile, AccountRoot>();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
-  const [locationName, setLocationName] = useState<string | null>(null);
   const { setActiveDraftPost } = useActiveDraftPost();
 
   const schedule = useCallback(
@@ -107,11 +106,7 @@ export function DraftPostComponent({
           }}
           schedulePost={schedule}
         />
-        <PostLocation
-          locationName={locationName}
-          setLocationName={setLocationName}
-        />
-        {/* <Tags tags={tags} setTags={setTags} /> */}
+        <PostLocation post={post} />
         <Tags post={post} />
         <Button variant="destructive" onClick={onDelete}>
           Delete Post

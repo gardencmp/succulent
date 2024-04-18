@@ -1,38 +1,40 @@
 import { MapPin, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Resolved } from 'jazz-react';
+import { Post } from '@/sharedDataModel';
+import { handleLocation } from '../../../../backend/src/handleLocation';
 
-export const PostLocation = ({
-  locationName,
-  setLocationName,
-}: {
-  locationName: string | null;
-  setLocationName: React.Dispatch<React.SetStateAction<string | null>>;
+export const PostLocation = ({post}: {
+  post: Resolved<Post>
 }) => {
-  const handleLocation = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const location = post.location || null;
+  const locationEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      setLocationName(e.currentTarget.value);
+      const location = { name: e.currentTarget.value}
+      const rolledLocation = handleLocation({location});
+      post.set('location', rolledLocation);
     }
   };
 
   return (
     <div className="flex align-middle">
       <MapPin className="align-self-middle mr-4" />
-      {locationName && (
+      {location?.name && (
         <div className="flex align-middle text-middle">
-          <p className="mr-4 flex text-baseline">{locationName}</p>
+          <p className="mr-4 flex text-baseline">{location.name}</p>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setLocationName(null)}
+            onClick={() => post.set('location', null)}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
       )}
-      {!locationName && (
-        <Input placeholder="Enter location" onKeyDown={handleLocation} />
+      {!location?.name && (
+        <Input placeholder="Enter location" onKeyDown={locationEnter} />
       )}
     </div>
   );
