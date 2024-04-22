@@ -1,15 +1,15 @@
-import { useAutoSub } from 'jazz-react';
-import { CoID } from 'cojson';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Brand, BrandInstagramInsights } from './sharedDataModel';
 import { InsightsChartView } from './insightsView/InsightsChartView';
 import { cn } from './lib/utils';
 import { HashtagInsightsScreen } from './HashtagInsightsScreen';
+import { useCoState } from './main';
+import { ID } from 'jazz-tools';
 
 export function BrandInsightsScreen() {
-  const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
-  const brand = useAutoSub(brandId);
+  const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
+  const brand = useCoState(Brand, brandId);
 
   type viewTypes = 'posts' | 'hashtags' | 'profile';
   const viewTabs = ['posts', 'hashtags', 'profile'];
@@ -18,9 +18,9 @@ export function BrandInsightsScreen() {
   useEffect(() => {
     if (!brand) return;
 
-    if (!brand.meta.coValue.get('instagramInsights')) {
-      const insights = brand.meta.group.createMap<BrandInstagramInsights>();
-      brand.set('instagramInsights', insights.id);
+    if (!brand._refs.instagramInsights) {
+      const insights = new BrandInstagramInsights({}, { owner: brand._owner });
+      brand.instagramInsights = insights;
 
       console.log('FETCHING INSIGHTS');
 
@@ -71,7 +71,7 @@ export function BrandInsightsScreen() {
           console.log('insightsPerDay', insightsPerDay);
 
           for (const day of Object.keys(insightsPerDay)) {
-            insights.set(day, insightsPerDay[day]);
+            insights[day] = insightsPerDay[day];
           }
         });
     }

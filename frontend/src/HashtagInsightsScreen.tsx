@@ -1,6 +1,4 @@
-import { Resolved, useAutoSub } from 'jazz-react';
 import { useParams } from 'react-router-dom';
-import { CoID } from 'cojson';
 import { Brand, Post } from './sharedDataModel';
 import {
   ColumnDef,
@@ -21,6 +19,8 @@ import {
 import { useMemo, useState } from 'react';
 import { Button } from './components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
+import { ID } from 'jazz-tools';
+import { useCoState } from './main';
 
 type Row = {
   hashtag: string;
@@ -88,9 +88,9 @@ const columns: ColumnDef<Row>[] = [
 ];
 
 export function HashtagInsightsScreen() {
-  const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
+  const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
 
-  const brand = useAutoSub(brandId);
+  const brand = useCoState(Brand, brandId);
 
   const rows: Row[] = useMemo(
     () => (brand ? collectHashtagRows(brand) : []),
@@ -157,8 +157,8 @@ export function HashtagInsightsScreen() {
     </Table>
   );
 }
-function collectHashtagRows(brand: Resolved<Brand>) {
-  const hashtagsAndTheirPosts: { [hashtag: string]: Resolved<Post>[] } = {};
+function collectHashtagRows(brand: Brand) {
+  const hashtagsAndTheirPosts: { [hashtag: string]: Post[] } = {};
 
   for (const post of brand?.posts || []) {
     if (!post?.content) continue;

@@ -1,7 +1,5 @@
 import { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { CoID } from 'cojson';
-import { useAutoSub } from 'jazz-react';
 import { Button } from '@/components/ui/button';
 
 import { Brand, ListOfImages, Post } from '@/sharedDataModel';
@@ -20,28 +18,35 @@ import { DragToScheduleContext } from './DragToScheduleContext';
 import { PostGrid } from './PostGrid';
 import { DraftPostList } from './DraftPostList';
 import { Toolbar } from './Toolbar';
+import { ID } from 'jazz-tools';
+import { useCoState } from '@/main';
 
 export function FeedView() {
   const [showInsights, setShowInsights] = useState<boolean>(false);
-  const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
-  const brand = useAutoSub(brandId);
+  const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
+  const brand = useCoState(Brand, brandId);
 
   const [filter, setFilter] = useState<string>();
   const filteredPosts = brand?.posts?.filter(
-    (post) =>
-      !filter || post?.content?.toLowerCase().includes(filter.toLowerCase())
+    (post): post is NonNullable<Post> =>
+      !filter ||
+      post?.content?.toLowerCase().includes(filter.toLowerCase()) ||
+      false
   );
 
   const createDraft = useCallback(() => {
     if (!brand) return;
-    const draftPost = brand.meta.group.createMap<Post>({
-      instagram: {
-        state: 'notScheduled',
+    const draftPost = new Post(
+      {
+        instagram: {
+          state: 'notScheduled',
+        },
+        images: new ListOfImages([], { owner: brand._owner }),
+        inBrand: brand,
       },
-      images: brand.meta.group.createList<ListOfImages>().id,
-      inBrand: brand.id,
-    });
-    brand.posts?.append(draftPost.id);
+      { owner: brand._owner }
+    );
+    brand.posts?.push(draftPost);
   }, [brand]);
 
   const deleteDraft = useDeleteDraft(brand);

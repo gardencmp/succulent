@@ -1,6 +1,4 @@
-import { AccountRoot } from '@/dataModel';
 import { Post } from '@/sharedDataModel';
-import { Profile, CoStream, CoID } from 'cojson';
 import { useCallback, useState } from 'react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
@@ -11,9 +9,11 @@ import { ImageUploader } from './ImageUploader';
 import { PostLocation } from './Location';
 import { Tags } from './Tags';
 import { useActiveDraftPost } from '@/BrandHome';
+import { useAccount } from '@/main';
+import { CoStream, ID, co } from 'jazz-tools';
 
-const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
-  CoStream<Post['id']>
+const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as ID<
+  CoStream<Post | null>
 >;
 
 export function DraftPostComponent({
@@ -22,34 +22,37 @@ export function DraftPostComponent({
   styling,
   onDelete,
 }: {
-  post: Resolved<Post>;
+  post: Post;
   border?: boolean;
   styling?: string;
   onDelete?: () => void;
 }) {
-  const { me, localNode } = useJazz<Profile, AccountRoot>();
+  const { me } = useAccount();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
   const { setActiveDraftPost } = useActiveDraftPost();
 
   const schedule = useCallback(
     async (scheduleAt: Date) => {
-      post.set('instagram', {
+      post.instagram = {
         state: 'scheduleDesired',
         scheduledAt: scheduleAt.toISOString(),
-      });
+      };
 
-      const scheduledPostsStream = await localNode.load(scheduledPostsStreamId);
+      const scheduledPostsStream = await CoStream.Of(co.ref(Post)).load(
+        scheduledPostsStreamId,
+        { as: me }
+      );
 
-      if (scheduledPostsStream === 'unavailable') {
+      if (!scheduledPostsStream) {
         throw new Error('scheduledPostsStream unavailable');
       }
 
       if (
-        ![...scheduledPostsStream.itemsBy(me.id)].some(
+        ![...scheduledPostsStream.byMe.all].some(
           (entry) => entry.value === post.id
         )
       ) {
-        scheduledPostsStream.push(post.id);
+        scheduledPostsStream.push(post);
       }
     },
     [post]
@@ -57,7 +60,10 @@ export function DraftPostComponent({
 
   const onDeletePhoto = (activeImageId: string) => {
     if (!confirm('Are you sure you want to delete this photo?')) return;
-    post.images?.delete(post.images.findIndex((i) => i?.id === activeImageId));
+    post.images?.slice(
+      post.images.findIndex((i) => i?.id === activeImageId),
+      1
+    );
   };
 
   const onClickPhoto = async (post: Post) => {
@@ -88,7 +94,7 @@ export function DraftPostComponent({
         value={post?.content}
         onChange={(event) => {
           if (!post) return;
-          post.set('content', event.target.value);
+          post.content = event.target.value;
         }}
         placeholder="Post content"
       />
@@ -98,9 +104,9 @@ export function DraftPostComponent({
           desiredScheduleDate={desiredScheduleDate}
           setDesiredScheduleDate={setDesiredScheduleDate}
           unschedulePost={() => {
-            post.set('instagram', {
+            post.instagram = {
               state: 'notScheduled',
-            });
+            };
           }}
           schedulePost={schedule}
         />

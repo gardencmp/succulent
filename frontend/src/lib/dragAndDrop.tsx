@@ -1,7 +1,7 @@
 import { useDraggable } from '@dnd-kit/core';
-import { CoID } from 'cojson';
 import { Post } from '@/sharedDataModel';
 import { cn } from './utils';
+import { ID } from 'jazz-tools';
 
 export function Draggable({
   children,
@@ -9,7 +9,7 @@ export function Draggable({
   className,
 }: {
   children: React.ReactNode;
-  postId: CoID<Post>;
+  postId: ID<Post>;
   className: string;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({

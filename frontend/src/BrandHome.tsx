@@ -1,4 +1,3 @@
-import { ResolvedCoMap, useAutoSub, useJazz } from 'jazz-react';
 import {
   Link,
   Outlet,
@@ -6,7 +5,6 @@ import {
   useOutletContext,
   useParams,
 } from 'react-router-dom';
-import { CoID } from 'cojson';
 import { Brand, Post } from './sharedDataModel';
 import { Button } from './components/ui/button';
 import { router } from './router';
@@ -17,32 +15,31 @@ import {
   DropdownMenuTrigger,
 } from './components/ui/dropdown-menu';
 import { useEffect, useState } from 'react';
-import { Profile } from 'cojson';
-import { AccountRoot } from './dataModel';
 import { ImageTagView } from './components/draftPost/ImageTagView';
+import { useAccount, useCoState } from './main';
+import { ID } from 'jazz-tools';
 
 type ContextType = {
-  activeDraftPost: ResolvedCoMap<Post> | null;
-  setActiveDraftPost: (newPost: ResolvedCoMap<Post>) => void;
+  activeDraftPost: Post | null;
+  setActiveDraftPost: (newPost: Post) => void;
 };
 
 export function BrandHome() {
-  const { me } = useJazz<Profile, AccountRoot>();
-  const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
-  const brand = useAutoSub(brandId);
+  const { me } = useAccount();
+  const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
+  const brand = useCoState(Brand, brandId);
   const [currentPage, setCurrentPage] = useState('schedule');
   const navItems = ['schedule', 'insights', 'drafts', 'preferences'];
-  const [activeDraftPost, setActiveDraftPost] =
-    useState<ResolvedCoMap<Post> | null>(null);
+  const [activeDraftPost, setActiveDraftPost] = useState<Post | null>(null);
   const isMobile = true;
-  let location = useLocation();
+  const location = useLocation();
 
   const handleClick = (item: string) => {
     setCurrentPage(item);
     router.navigate(`/brand/${brandId}/${item}`);
   };
 
-  const selectBrand = (brand: ResolvedCoMap<Brand>) => {
+  const selectBrand = (brand: Brand) => {
     console.log('brand', brand);
   };
 

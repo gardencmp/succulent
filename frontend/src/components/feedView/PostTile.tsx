@@ -4,7 +4,6 @@ import {
   InstagramScheduled,
   Post,
 } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { DraftPostComponent } from '../draftPost/DraftPost';
@@ -22,11 +21,9 @@ export function PostTile({
   alwaysShowInsights,
   onDeleteDraft,
 }: {
-  post: Resolved<
-    Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>
-  >;
-  olderPost?: Resolved<
-    Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>
+  post: Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>;
+  olderPost?: Post<
+    InstagramPosted | InstagramScheduleDesired | InstagramScheduled
   >;
   alwaysShowInsights: boolean;
   onDeleteDraft?: () => void;

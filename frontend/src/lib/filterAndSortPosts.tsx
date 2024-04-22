@@ -5,7 +5,6 @@ import {
   InstagramScheduled,
   Post,
 } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
 import { compareDesc } from 'date-fns';
 
 const scheduledOrPostedStates = ['scheduleDesired', 'scheduled', 'posted'];
@@ -13,14 +12,14 @@ const draftStates = ['notScheduled'];
 const allDraftStates = ['notScheduled', 'scheduleDesired', 'scheduled'];
 
 export function filterAndSortScheduledAndPostedPosts(
-  posts?: (Resolved<Post> | undefined)[]
+  posts?: (Post | undefined)[]
 ) {
   return [...(posts || [])]
     .filter(
       (
         post
-      ): post is Resolved<
-        Post<InstagramScheduleDesired | InstagramScheduled | InstagramPosted>
+      ): post is Post<
+        InstagramScheduleDesired | InstagramScheduled | InstagramPosted
       > =>
         !!(
           post &&
@@ -44,22 +43,18 @@ export function filterAndSortScheduledAndPostedPosts(
     });
 }
 
-export function filterDraftPosts(posts?: (Resolved<Post> | undefined)[]) {
-  return posts?.filter((post): post is Resolved<Post<InstagramNotScheduled>> =>
+export function filterDraftPosts(posts?: (Post | null)[] | null) {
+  return posts?.filter((post): post is Post<InstagramNotScheduled> =>
     draftStates.includes(post?.instagram.state as string)
   );
 }
 
-export function filterDraftAndScheduledPosts(
-  posts?: (Resolved<Post> | undefined)[]
-) {
+export function filterDraftAndScheduledPosts(posts?: (Post | null)[] | null) {
   return posts?.filter(
     (
       post
-    ): post is Resolved<
-      Post<
-        InstagramNotScheduled | InstagramScheduleDesired | InstagramScheduled
-      >
+    ): post is Post<
+      InstagramNotScheduled | InstagramScheduleDesired | InstagramScheduled
     > => allDraftStates.includes(post?.instagram.state as string)
   );
 }
