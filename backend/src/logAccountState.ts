@@ -1,17 +1,13 @@
-import { Account, Profile } from 'cojson';
-import { Resolved } from 'jazz-autosub';
-import { WorkerAccountRoot } from '.';
+import { SchedulerAccount } from './workerAccount';
 
-export function logAccountState(
-  account: Resolved<Account<Profile, WorkerAccountRoot>>
-) {
+export function logAccountState(account: SchedulerAccount) {
   console.log(
     new Date(),
     'scheduledPosts',
     account.root?.scheduledPosts?.id,
 
     '\n\t' +
-      account.root?.scheduledPosts?.perSession
+      Object.entries(account.root?.scheduledPosts?.perSession)
         .flatMap((entry) =>
           entry[1].all.map((post) =>
             JSON.stringify({

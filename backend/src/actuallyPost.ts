@@ -1,46 +1,44 @@
-import { CoID, Media, LocalNode } from 'cojson';
+import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
 import { Image, Post } from '../sharedDataModel';
 
 export async function actuallyPost(
-  node: LocalNode,
-  postId: CoID<Post>,
+  as: Account & Me,
+  postId: ID<Post>,
   actuallyScheduled: Map<
-    CoID<Post>,
+    ID<Post>,
     | { state: 'posting' }
     | {
         state: 'ready';
         content: string;
-        imageFileIds: CoID<Media.ImageDefinition>[];
+        imageFileIds: ID<ImageDefinition>[];
         scheduledAt: Date;
       }
   >,
   state: {
     state: 'ready';
     content: string;
-    imageFileIds: CoID<Media.ImageDefinition>[];
+    imageFileIds: ID<ImageDefinition>[];
     scheduledAt: Date;
   }
 ) {
   try {
-    const post = await node.load(postId);
-    if (post === 'unavailable') throw new Error('post unavailable');
+    const post = await Post.load(postId, { as });
+    if (!post) throw new Error('post unavailable');
 
     try {
-      if (!post.get('inBrand')) throw new Error('no brand');
+      if (!post.inBrand) throw new Error('no brand');
 
-      const brand = await node.load(post.get('inBrand')!);
-      if (brand === 'unavailable') throw new Error('brand unavailable');
+      const brand = await post._refs.inBrand.load();
+      if (!brand) throw new Error('brand unavailable');
 
-      const imagesListId = post.get('images');
-      if (!imagesListId) throw new Error('no images');
-      const imagesList = await node.load(imagesListId);
+      const imagesList = await post._refs.images.load();
 
-      if (imagesList === 'unavailable') throw new Error('images unavailable');
+      if (!imagesList) throw new Error('images unavailable');
       const maybeImages = await Promise.all(
-        imagesList.asArray().map((imageId) => node.load(imageId))
+        [...imagesList._refs].map((imageRef) => imageRef.load())
       );
 
-      if (maybeImages.some((image) => image === 'unavailable'))
+      if (maybeImages.some((image) => !image))
         throw new Error('image unavailable');
 
       const images = maybeImages as Image[];
@@ -49,22 +47,24 @@ export async function actuallyPost(
         throw new Error('no images');
       }
 
+      // TODO: fetch tags & location
+
       let topContainerId;
 
       if (images.length === 1) {
-        const url = `https://graph.facebook.com/v18.0/${brand.get(
-          'instagramPage'
-        )?.id}/media?caption=${encodeURIComponent(
-          post.get('content') || ''
+        const url = `https://graph.facebook.com/v18.0/${brand.instagramPage
+          ?.id}/media?caption=${encodeURIComponent(
+          post.content || ''
         )}&image_url=${encodeURIComponent(
           (process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331') +
             '/image/' +
-            images[0].get('imageFile')
-        )}&access_token=${brand.get('instagramAccessToken'
-        )}&user_tags=${encodeURIComponent(
-          JSON.stringify(post.get('tags') || [])
+            images[0]._refs.imageFile.id
+        )}&access_token=${
+          brand.instagramAccessToken
+        }&user_tags=${encodeURIComponent(
+          JSON.stringify(post.tags || [])
         )}&location_id=${encodeURIComponent(
-          JSON.stringify(post.get('location')?.id)
+          JSON.stringify(post.location?.fbId)
         )}`;
         console.log(new Date(), 'POST', url);
         const res = await fetch(url, {
@@ -78,17 +78,16 @@ export async function actuallyPost(
       } else {
         const containerIds = await Promise.all(
           images.map(async (image) => {
-            const existingContainerId = image.get('instagramContainerId');
+            const existingContainerId = image.instagramContainerId;
             // if (existingContainerId) {
             //     return existingContainerId;
             // } else {
-            const url = `https://graph.facebook.com/v18.0/${brand.get(
-              'instagramPage'
-            )?.id}/media?image_url=${encodeURIComponent(
+            const url = `https://graph.facebook.com/v18.0/${brand.instagramPage
+              ?.id}/media?image_url=${encodeURIComponent(
               (process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331') +
                 '/image/' +
-                image.get('imageFile')
-            )}&access_token=${brand.get('instagramAccessToken')}`;
+                image.imageFile
+            )}&access_token=${brand.instagramAccessToken}`;
 
             console.log(new Date(), 'POST', url);
 
@@ -101,20 +100,19 @@ export async function actuallyPost(
               );
             const containerId = ((await res.json()) as { id: string }).id;
 
-            image.set('instagramContainerId', containerId);
+            image.instagramContainerId = containerId;
 
             return containerId;
             // }
           })
         );
 
-        const url = `https://graph.facebook.com/v18.0/${brand.get(
-          'instagramPage'
-        )?.id}/media?caption=${encodeURIComponent(
-          post.get('content') || ''
+        const url = `https://graph.facebook.com/v18.0/${brand.instagramPage
+          ?.id}/media?caption=${encodeURIComponent(
+          post.content || ''
         )}&media_type=CAROUSEL&children=${containerIds.join(
           '%2C'
-        )}&access_token=${brand.get('instagramAccessToken')}`;
+        )}&access_token=${brand.instagramAccessToken}`;
         console.log(new Date(), 'POST', url);
         const res = await fetch(url, {
           method: 'POST',
@@ -128,10 +126,7 @@ export async function actuallyPost(
 
       if (!topContainerId) throw new Error('no container id');
 
-      const url = `https://graph.facebook.com/v18.0/${brand.get('instagramPage')
-        ?.id}/media_publish?creation_id=${topContainerId}&access_token=${brand.get(
-        'instagramAccessToken'
-      )}`;
+      const url = `https://graph.facebook.com/v18.0/${brand.instagramPage?.id}/media_publish?creation_id=${topContainerId}&access_token=${brand.instagramAccessToken}`;
       console.log(new Date(), 'POST', url);
       const res = await fetch(url, {
         method: 'POST',
@@ -144,9 +139,7 @@ export async function actuallyPost(
 
       if (!postMediaId) throw new Error('no post media id');
 
-      const permalinkReqUrl = `https://graph.facebook.com/v18.0/${postMediaId}?fields=permalink&access_token=${brand.get(
-        'instagramAccessToken'
-      )}`;
+      const permalinkReqUrl = `https://graph.facebook.com/v18.0/${postMediaId}?fields=permalink&access_token=${brand.instagramAccessToken}`;
       console.log(new Date(), 'GET', permalinkReqUrl);
       const permalinkRes = await fetch(permalinkReqUrl);
       permalinkRes.status !== 200 &&
@@ -163,21 +156,21 @@ export async function actuallyPost(
         }
       ).permalink;
 
-      post.set('instagram', {
+      post.instagram = {
         state: 'posted',
         postedAt: new Date().toISOString(),
         postId: postMediaId,
         permalink: postPermalink,
-      });
+      };
 
       actuallyScheduled.delete(postId);
     } catch (e) {
       console.error(new Date(), 'Error posting after post load', postId, e);
-      post.set('instagram', {
+      post.instagram = {
         state: 'scheduleDesired',
         scheduledAt: state.scheduledAt.toISOString(),
         notScheduledReason: e + '',
-      });
+      };
     }
   } catch (e) {
     console.error(new Date(), 'Error posting - no post info at all', postId, e);

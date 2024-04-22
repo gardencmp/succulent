@@ -1,34 +1,22 @@
-import {
-  ControlledAccount,
-  CoMap,
-  CoStream,
-  Account,
-  Profile,
-  CoID,
-  Media,
-} from 'cojson';
 import 'dotenv/config';
 
-import { createOrResumeWorker, autoSub } from 'jazz-nodejs';
+import { createOrResumeWorker } from 'jazz-nodejs';
+import { ID, ImageDefinition } from 'jazz-tools';
 
 import { Post } from '../sharedDataModel';
-import { migration } from './migration';
 import { logAccountState } from './logAccountState';
 import { loadImageFile } from './loadImageFile';
 import { actuallyPost } from './actuallyPost';
 import { handleImageRequest } from './handleImageRequest';
 import { handleFBConnectRequest } from './handleFBConnectRequest';
-
-export type WorkerAccountRoot = CoMap<{
-  scheduledPosts: ScheduledPosts['id'];
-}>;
-
-export type ScheduledPosts = CoStream<Post['id']>;
+import { CoMap, CoStream, co } from 'jazz-tools';
+import { SchedulerAccount } from './workerAccount';
 
 async function runner() {
-  const { localNode: node, worker } = await createOrResumeWorker({
+  // TODO: make sure this is inferred
+  const { worker } = await createOrResumeWorker<SchedulerAccount>({
     workerName: 'SucculentScheduler',
-    migration: migration,
+    accountSchema: SchedulerAccount,
   });
 
   const actuallyScheduled = new Map<
@@ -37,151 +25,144 @@ async function runner() {
     | {
         state: 'ready';
         content: string;
-        imageFileIds: CoID<Media.ImageDefinition>[];
+        imageFileIds: ID<ImageDefinition>[];
         scheduledAt: Date;
       }
   >();
   const loadedImages = new Map<
-    Media.ImageDefinition['id'],
+    ImageDefinition['id'],
     { mimeType?: string; chunks: Uint8Array[] }
   >();
 
-  console.log(
-    new Date(),
-    'root after migration',
-    (node.account as ControlledAccount<Profile, WorkerAccountRoot>).get('root')
-  );
+  console.log(new Date(), 'root after migration', worker.root);
 
   const postErrorTimeouts = new Map<Post['id'], NodeJS.Timeout>();
 
-  autoSub(
-    node.account.id as CoID<Account<Profile, WorkerAccountRoot>>,
-    node,
-    async (account) => {
-      if (account?.root?.scheduledPosts) {
-        logAccountState(account);
+  worker.subscribe(async (workerSub) => {
+    if (workerSub?.root?.scheduledPosts) {
+      logAccountState(workerSub);
 
-        for (let perSession of account.root.scheduledPosts.perSession) {
-          for (let post of perSession[1].all) {
-            if (!post?.value?.instagram?.state || !post.value.id) continue;
-            if (actuallyScheduled.get(post.value.id)?.state === 'posting') {
+      for (let perSession of Object.entries(
+        workerSub.root.scheduledPosts.perSession
+      )) {
+        for (let post of perSession[1].all satisfies { value: Post }[] as {
+          value: Post;
+        }[]) {
+          if (!post?.value?.instagram?.state || !post.value.id) continue;
+          if (actuallyScheduled.get(post.value.id)?.state === 'posting') {
+            console.log(
+              new Date(),
+              'ignoring update to currently posting post',
+              post.value.id
+            );
+            continue;
+          }
+
+          if (post.value.instagram.state === 'scheduled') {
+            const actuallyScheduledPost = actuallyScheduled.get(post.value.id);
+            if (
+              actuallyScheduledPost?.state !== 'ready' ||
+              post.value.content !== actuallyScheduledPost.content ||
+              post.value.images?.map((image) => image?.imageFile?.id).join() !==
+                actuallyScheduledPost.imageFileIds.join() ||
+              post.value.instagram.scheduledAt !==
+                actuallyScheduledPost.scheduledAt.toISOString()
+            ) {
               console.log(
                 new Date(),
-                'ignoring update to currently posting post',
-                post.value.id
-              );
-              continue;
-            }
-
-            if (post.value.instagram.state === 'scheduled') {
-              const actuallyScheduledPost = actuallyScheduled.get(
-                post.value.id
-              );
-              if (
-                actuallyScheduledPost?.state !== 'ready' ||
-                post.value.content !== actuallyScheduledPost.content ||
-                post.value.images
-                  ?.map((image) => image?.imageFile?.id)
-                  .join() !== actuallyScheduledPost.imageFileIds.join() ||
-                post.value.instagram.scheduledAt !==
-                  actuallyScheduledPost.scheduledAt.toISOString()
-              ) {
-                console.log(
-                  new Date(),
-                  'Got previously scheduled post, or scheduled post that changed, resetting to scheduleDesired',
-                  post.value.id
-                );
-                actuallyScheduled.delete(post.value.id);
-                post.value.set('instagram', {
-                  state: 'scheduleDesired',
-                  scheduledAt: post.value.instagram.scheduledAt,
-                });
-              }
-            } else if (post.value.instagram.state === 'scheduleDesired') {
-              console.log(
-                new Date(),
-                'Update, deleting from actually scheduled',
+                'Got previously scheduled post, or scheduled post that changed, resetting to scheduleDesired',
                 post.value.id
               );
               actuallyScheduled.delete(post.value.id);
-              console.log(new Date(), 'loading images', post.value.id);
-              const streams =
-                post.value.images &&
-                (await Promise.all(
-                  post.value.images.map(
-                    async (image) =>
-                      image?.imageFile?.id && {
-                        id: image.imageFile.id,
-                        ...(await loadImageFile(node, image.imageFile.id)),
-                      }
-                  )
-                ));
+              post.value.instagram = {
+                state: 'scheduleDesired',
+                scheduledAt: post.value.instagram.scheduledAt,
+              };
+            }
+          } else if (post.value.instagram.state === 'scheduleDesired') {
+            console.log(
+              new Date(),
+              'Update, deleting from actually scheduled',
+              post.value.id
+            );
+            actuallyScheduled.delete(post.value.id);
+            console.log(new Date(), 'loading images', post.value.id);
+            const streams =
+              post.value.images &&
+              (await Promise.all(
+                post.value.images.map(
+                  async (image) =>
+                    image?.imageFile?.id && {
+                      id: image.imageFile.id,
+                      ...(await loadImageFile(node, image.imageFile.id)),
+                    }
+                )
+              ));
 
-              if (
-                streams &&
-                streams.length > 0 &&
-                streams.every((stream) => stream)
-              ) {
-                for (let stream of streams) {
-                  loadedImages.set(stream!.id, {
-                    mimeType: stream!.mimeType,
-                    chunks: stream!.chunks!,
-                  });
-                }
-                console.log(
-                  new Date(),
-                  'images loaded, adding to actually scheduled',
-                  post.value.id
-                );
-                actuallyScheduled.set(post.value.id, {
-                  state: 'ready',
-                  content: post.value.content || '',
-                  imageFileIds: post.value.images!.map(
-                    (image) => image!.imageFile!.id
-                  ),
-                  scheduledAt: new Date(post.value.instagram.scheduledAt),
+            if (
+              streams &&
+              streams.length > 0 &&
+              streams.every((stream) => stream)
+            ) {
+              for (let stream of streams) {
+                loadedImages.set(stream!.id, {
+                  mimeType: stream!.mimeType,
+                  chunks: stream!.chunks!,
                 });
-                if (post.value.instagram.state === 'scheduleDesired') {
-                  post.value.set('instagram', {
-                    state: 'scheduled',
-                    scheduledAt: post.value.instagram.scheduledAt,
-                  });
-                }
-              } else {
-                console.log(
-                  new Date(),
-                  'One or several images unavailable',
-                  post.value.id,
-                  streams
-                );
-                const erroredPost = post.value;
-                if (postErrorTimeouts.get(erroredPost.id)) {
-                  clearTimeout(postErrorTimeouts.get(erroredPost.id)!);
-                }
-                postErrorTimeouts.set(
-                  erroredPost.id,
-                  setTimeout(() => {
-                    if (
-                      erroredPost.instagram.state === 'notScheduled' ||
-                      erroredPost.instagram.state === 'posted'
-                    )
-                      return;
-                    erroredPost.set('instagram', {
-                      state: 'scheduleDesired',
-                      scheduledAt: erroredPost.instagram.scheduledAt,
-                      notScheduledReason:
-                        'One or several images unavailable as of ' +
-                        new Date().toISOString(),
-                    });
-                  }, 1_000)
-                );
               }
+              console.log(
+                new Date(),
+                'images loaded, adding to actually scheduled',
+                post.value.id
+              );
+              actuallyScheduled.set(post.value.id, {
+                state: 'ready',
+                content: post.value.content || '',
+                imageFileIds: post.value.images!.map(
+                  (image) => image!.imageFile!.id
+                ),
+                scheduledAt: new Date(post.value.instagram.scheduledAt),
+              });
+              if (post.value.instagram.state === 'scheduleDesired') {
+                post.value.set('instagram', {
+                  state: 'scheduled',
+                  scheduledAt: post.value.instagram.scheduledAt,
+                });
+              }
+            } else {
+              console.log(
+                new Date(),
+                'One or several images unavailable',
+                post.value.id,
+                streams
+              );
+              const erroredPost = post.value;
+              if (postErrorTimeouts.get(erroredPost.id)) {
+                clearTimeout(postErrorTimeouts.get(erroredPost.id)!);
+              }
+              postErrorTimeouts.set(
+                erroredPost.id,
+                setTimeout(() => {
+                  if (
+                    erroredPost.instagram.state === 'notScheduled' ||
+                    erroredPost.instagram.state === 'posted'
+                  )
+                    return;
+                  erroredPost.set('instagram', {
+                    state: 'scheduleDesired',
+                    scheduledAt: erroredPost.instagram.scheduledAt,
+                    notScheduledReason:
+                      'One or several images unavailable as of ' +
+                      new Date().toISOString(),
+                  });
+                }, 1_000)
+              );
             }
           }
         }
       }
     }
-  );
+  });
 
   Bun.serve({
     async fetch(req) {
