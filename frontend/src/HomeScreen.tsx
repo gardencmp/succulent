@@ -1,16 +1,15 @@
 import { Button } from '@/components/ui/button';
-import { AccountRoot } from './dataModel';
-import { ResolvedCoMap, useJazz } from 'jazz-react';
-import { Profile, AccountID } from 'cojson';
 import { Input } from './components/ui/input';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Brand, ListOfPosts } from './sharedDataModel';
 import { InviteButton } from './components/InviteButton';
+import { useAccount } from './main';
+import { ID, Account, Group } from 'jazz-tools';
 
 export function HomeScreen() {
-  const scheduleWorkerId = 'co_zjCnxyEB93sdMwGBHeF5xPY17H9' as AccountID;
-  const { me, localNode } = useJazz<Profile, AccountRoot>();
+  const scheduleWorkerId = 'co_zjCnxyEB93sdMwGBHeF5xPY17H9' as ID<Account>;
+  const { me } = useAccount();
 
   return (
     <main className="p-10 flex flex-col gap-5">
@@ -32,21 +31,27 @@ export function HomeScreen() {
             const el = event.currentTarget;
             const brandName = el.brand.value;
 
-            const scheduleWorker = await localNode.load(scheduleWorkerId);
-            if (!scheduleWorker || scheduleWorker === 'unavailable') {
+            const scheduleWorker = await Account.load(scheduleWorkerId, {
+              as: me,
+            });
+            if (!scheduleWorker) {
               throw new Error('scheduleWorker unavailable');
             }
 
-            const brandGroup = me
-              .createGroup()
-              .addMember(scheduleWorker, 'writer');
-
-            const brand = brandGroup.createMap<Brand>({
-              name: brandName,
-              posts: brandGroup.createList<ListOfPosts>().id,
+            const brandGroup = new Group(undefined, {
+              owner: me,
             });
+            brandGroup.addMember(scheduleWorker, 'writer');
 
-            me.root?.brands.append(brand.id);
+            const brand = new Brand(
+              {
+                name: brandName,
+                posts: new ListOfPosts([], { owner: brandGroup }),
+              },
+              { owner: brandGroup }
+            );
+
+            me.root?.brands.push(brand);
           }}
           className="border rounded p-4 flex flex-col gap-2"
         >
@@ -76,8 +81,8 @@ const scopes = [
   'instagram_content_publish',
 ];
 
-function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
-  const { me } = useJazz<Profile, AccountRoot>();
+function BrandComponent({ brand }: { brand: Brand }) {
+  const { me } = useAccount();
 
   const [pagesToChoose, setPagesToChoose] = useState<
     { name: string; instagram_business_account: { id: string } }[]
@@ -93,8 +98,9 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
           size="sm"
           onClick={() => {
             if (confirm('Really delete ' + brand.name + '?')) {
-              me.root?.brands?.delete(
-                me.root.brands.findIndex((b) => b?.id === brand.id)
+              me.root?.brands?.splice(
+                me.root.brands.findIndex((b) => b?.id === brand.id),
+                1
               );
             }
           }}
@@ -140,10 +146,10 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
             <Button
               key={page.instagram_business_account.id}
               onClick={() => {
-                brand.set('instagramPage', {
+                brand.instagramPage = {
                   id: page.instagram_business_account.id,
                   name: page.name,
-                });
+                };
                 setPagesToChoose([]);
               }}
             >
@@ -160,7 +166,7 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
             className="text-xs"
             variant="ghost"
             onClick={() => {
-              brand.delete('instagramPage');
+              brand.instagramPage = undefined;
             }}
           >
             Reset
@@ -179,7 +185,7 @@ function BrandComponent({ brand }: { brand: ResolvedCoMap<Brand> }) {
           type="text"
           value={brand.instagramAccessToken}
           onChange={(event) => {
-            brand.set('instagramAccessToken', event.target.value);
+            brand.instagramAccessToken = event.target.value;
           }}
         />
       </div>

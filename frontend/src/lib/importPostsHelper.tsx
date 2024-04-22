@@ -5,11 +5,10 @@ import {
   Image,
   InstagramPosted,
 } from '@/sharedDataModel';
-import { Resolved, ResolvedCoMap } from 'jazz-react';
 import { createImage } from 'jazz-browser-media-images';
 
 export async function importPostsHelper(
-  brand: Resolved<Brand>,
+  brand: Brand,
   setImportProgress: (
     progress: { total: number; done: number } | undefined
   ) => void
@@ -82,8 +81,9 @@ export async function importPostsHelper(
 
         for (const existingPost of existingPosts.slice(1)) {
           console.log('Deleting', existingPost?.id);
-          brand.posts?.delete(
-            brand.posts.findIndex((p) => p?.id === existingPost?.id)
+          brand.posts?.splice(
+            brand.posts.findIndex((p) => p?.id === existingPost?.id),
+            1
           );
         }
 
