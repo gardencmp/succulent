@@ -2,7 +2,7 @@ import { useAutoSub } from 'jazz-react';
 import { CoID } from 'cojson';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Brand, InstagramInsights } from './sharedDataModel';
+import { Brand, BrandInstagramInsights } from './sharedDataModel';
 import { InsightsChartView } from './insightsView/InsightsChartView';
 import { cn } from './lib/utils';
 import { HashtagInsightsScreen } from './HashtagInsightsScreen';
@@ -19,7 +19,7 @@ export function BrandInsightsScreen() {
     if (!brand) return;
 
     if (!brand.meta.coValue.get('instagramInsights')) {
-      const insights = brand.meta.group.createMap<InstagramInsights>();
+      const insights = brand.meta.group.createMap<BrandInstagramInsights>();
       brand.set('instagramInsights', insights.id);
 
       console.log('FETCHING INSIGHTS');

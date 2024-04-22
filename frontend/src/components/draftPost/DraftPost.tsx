@@ -1,7 +1,6 @@
 import { AccountRoot } from '@/dataModel';
 import { Post } from '@/sharedDataModel';
 import { Profile, CoStream, CoID } from 'cojson';
-import { Resolved, ResolvedCoMap, useJazz } from 'jazz-react';
 import { useCallback, useState } from 'react';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
@@ -61,7 +60,7 @@ export function DraftPostComponent({
     post.images?.delete(post.images.findIndex((i) => i?.id === activeImageId));
   };
 
-  const onClickPhoto = async (post: ResolvedCoMap<Post>) => {
+  const onClickPhoto = async (post: Post) => {
     setActiveDraftPost(post);
   };
 
@@ -79,7 +78,6 @@ export function DraftPostComponent({
                 image={image}
                 onDeletePhoto={onDeletePhoto}
                 onClickPhoto={() => onClickPhoto(post)}
-                key={image.id}
               />
             )
         )}
@@ -106,8 +104,6 @@ export function DraftPostComponent({
           }}
           schedulePost={schedule}
         />
-        <PostLocation post={post} />
-        <Tags post={post} />
         <Button variant="destructive" onClick={onDelete}>
           Delete Post
         </Button>
