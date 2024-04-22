@@ -39,6 +39,8 @@ export class Post<S extends InstagramState = InstagramState> extends CoMap<
   content? = co.string;
   images = co.ref(ListOfImages);
   instagram = co.json<S>();
+  location = co.ref(Location);
+  tags = co.ref(TagMap);
   instagramInsights? = co.json<{
     profileVisits?: number;
     impressions?: number;
@@ -74,6 +76,22 @@ export class Brand extends CoMap<Brand> {
 export class ListOfBrands extends CoList.Of(co.ref(Brand)) {}
 
 export class ListOfPosts extends CoList.Of(co.ref(Post)) {}
+
+export class Location extends CoMap<Location> {
+  fbId? = co.string;
+  name = co.string;
+}
+
+/** map from username to position */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export class TagMap extends CoMap<TagMap> {
+  [co.items] = co.json<{
+    x: number;
+    y: number;
+  }>();
+}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface TagMap extends Record<string, { x: number; y: number }> {}
 
 export type DayInsights = {
   impressions?: number;

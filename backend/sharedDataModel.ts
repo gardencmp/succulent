@@ -29,6 +29,8 @@ export type Post = CoMap<{
   content?: string;
   images: ListOfImages['id'];
   instagram: InstagramState;
+  location: Location;
+  tags: Tag[];
 }>;
 
 export type ListOfImages = CoList<Image['id']>;
@@ -59,3 +61,13 @@ export type InstagramInsights = CoMap<{
 }>;
 
 export type ListOfBrands = CoList<Brand['id']>;
+
+export type Location = {
+  id: number;
+};
+
+export type Tag = {
+  username: string;
+  x: number;
+  y: number;
+};

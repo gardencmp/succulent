@@ -1,7 +1,13 @@
-import { useAutoSub } from 'jazz-react';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { ResolvedCoMap, useAutoSub, useJazz } from 'jazz-react';
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useOutletContext,
+  useParams,
+} from 'react-router-dom';
 import { CoID } from 'cojson';
-import { Brand } from './sharedDataModel';
+import { Brand, Post } from './sharedDataModel';
 import { Button } from './components/ui/button';
 import { router } from './router';
 import {
@@ -11,12 +17,23 @@ import {
   DropdownMenuTrigger,
 } from './components/ui/dropdown-menu';
 import { useEffect, useState } from 'react';
+import { Profile } from 'cojson';
+import { AccountRoot } from './dataModel';
+import { ImageTagView } from './components/draftPost/ImageTagView';
+
+type ContextType = {
+  activeDraftPost: ResolvedCoMap<Post> | null;
+  setActiveDraftPost: (newPost: ResolvedCoMap<Post>) => void;
+};
 
 export function BrandHome() {
+  const { me } = useJazz<Profile, AccountRoot>();
   const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
   const brand = useAutoSub(brandId);
   const [currentPage, setCurrentPage] = useState('schedule');
   const navItems = ['schedule', 'insights', 'drafts', 'preferences'];
+  const [activeDraftPost, setActiveDraftPost] =
+    useState<ResolvedCoMap<Post> | null>(null);
   const isMobile = true;
   let location = useLocation();
 
@@ -25,16 +42,43 @@ export function BrandHome() {
     router.navigate(`/brand/${brandId}/${item}`);
   };
 
+  const selectBrand = (brand: ResolvedCoMap<Brand>) => {
+    console.log('brand', brand);
+  };
+
+  console.log('activeDraftPost', activeDraftPost);
+
   useEffect(() => {
     const path = location.pathname.split('/');
     setCurrentPage(path[path.length - 1]);
   }, []);
 
   return (
-    <div className="flex flex-col-reverse lg:flex-col max-h-[100dvh]">
-      <nav className="flex-none flex gap-6 px-8 w-full max-w-[100vw] items-center bg-stone-950 z-10">
+    <div className="flex flex-col-reverse lg:flex-col max-h-[100dvh] min-h-[100vh]">
+      <nav className="flex-none flex gap-6 px-0 py-2 lg:py-3 w-full max-w-[100vw] items-center bg-stone-950 z-10 sm:sticky sm:bottom-0 lg:mt-1">
         <h1 className="text-stone-300 pl-6 flex flex-shrink-0">
-          <div className="tracking-wider">🪴</div> / {brand?.name}
+          <Link to="/" className="tracking-wider flex align-middle">
+            🪴
+          </Link>{' '}
+          /
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">{brand?.name}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem key={`mobile-${brand}`}>
+                <Link to="/">+ Add brand</Link>
+              </DropdownMenuItem>
+              {me.root?.brands?.map((brand) => (
+                <DropdownMenuItem
+                  key={`mobile-${brand}`}
+                  onClick={() => brand && selectBrand(brand)}
+                >
+                  {brand?.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </h1>
         {!isMobile &&
           navItems.map((item) => (
@@ -65,9 +109,23 @@ export function BrandHome() {
           </DropdownMenu>
         )}
       </nav>
-      <main className="flex flex-col flex-shrink min-h-0 my-3">
-        <Outlet />
+      <main className="flex flex-col flex-shrink lg:my-3 overflow-scroll min-h-[93vh] p-2">
+        <Outlet
+          context={
+            { activeDraftPost, setActiveDraftPost } satisfies ContextType
+          }
+        />
+        {activeDraftPost && (
+          <ImageTagView
+            activeDraftPost={activeDraftPost}
+            setActiveDraftPost={setActiveDraftPost}
+          />
+        )}
       </main>
     </div>
   );
+}
+
+export function useActiveDraftPost() {
+  return useOutletContext<ContextType>();
 }
