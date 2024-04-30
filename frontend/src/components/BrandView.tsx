@@ -1,12 +1,10 @@
 import { Brand } from '@/sharedDataModel';
-import { ResolvedCoMap, useJazz } from 'jazz-react';
-import { Profile } from 'cojson';
-import { AccountRoot } from '../dataModel';
 import { InviteButton } from './InviteButton';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Link } from 'react-router-dom';
 import { Input } from './ui/input';
+import { useAccount } from '@/main';
 
 const scopes = [
   'instagram_basic',
@@ -24,8 +22,8 @@ const scopes = [
   'instagram_content_publish',
 ];
 
-export function BrandView({ brand }: { brand: ResolvedCoMap<Brand> }) {
-  const { me } = useJazz<Profile, AccountRoot>();
+export function BrandView({ brand }: { brand: Brand }) {
+  const { me } = useAccount();
 
   const [pagesToChoose, setPagesToChoose] = useState<
     { name: string; instagram_business_account: { id: string } }[]
@@ -41,9 +39,10 @@ export function BrandView({ brand }: { brand: ResolvedCoMap<Brand> }) {
           size="sm"
           onClick={() => {
             if (confirm('Really delete ' + brand.name + '?')) {
-              me.root?.brands?.delete(
-                me.root.brands.findIndex((b) => b?.id === brand.id)
-              );
+              const idx = me.root?.brands?.findIndex((b) => b?.id === brand.id);
+              typeof idx === 'number' &&
+                idx !== -1 &&
+                me.root?.brands?.splice(idx, 1);
             }
           }}
         >
@@ -88,10 +87,10 @@ export function BrandView({ brand }: { brand: ResolvedCoMap<Brand> }) {
             <Button
               key={page.instagram_business_account.id}
               onClick={() => {
-                brand.set('instagramPage', {
+                brand.instagramPage = {
                   id: page.instagram_business_account.id,
                   name: page.name,
-                });
+                };
                 setPagesToChoose([]);
               }}
             >
@@ -108,7 +107,7 @@ export function BrandView({ brand }: { brand: ResolvedCoMap<Brand> }) {
             className="text-xs"
             variant="ghost"
             onClick={() => {
-              brand.delete('instagramPage');
+              brand.instagramPage = undefined;
             }}
           >
             Reset
@@ -127,7 +126,7 @@ export function BrandView({ brand }: { brand: ResolvedCoMap<Brand> }) {
           type="text"
           value={brand.instagramAccessToken}
           onChange={(event) => {
-            brand.set('instagramAccessToken', event.target.value);
+            brand.instagramAccessToken = event.target.value;
           }}
         />
       </div>

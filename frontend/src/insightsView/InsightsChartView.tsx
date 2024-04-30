@@ -1,11 +1,10 @@
 import { BrandInstagramInsights } from '@/sharedDataModel';
 import { ResponsiveLine } from '@nivo/line';
-import { ResolvedCoMap } from 'jazz-react';
 
 export function InsightsChartView({
   insights,
 }: {
-  insights: ResolvedCoMap<BrandInstagramInsights>;
+  insights: BrandInstagramInsights;
 }) {
   console.log('insights', insights);
   const insightsData = [

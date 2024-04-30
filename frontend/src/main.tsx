@@ -11,7 +11,7 @@ export const Jazz = JazzReact<SucculentAccount>({
     accountSchema: SucculentAccount,
   }),
 });
-export const { useCoState, useAccount } = Jazz;
+export const { useCoState, useAccount, useAcceptInvite } = Jazz;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>

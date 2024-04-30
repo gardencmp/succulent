@@ -6,8 +6,6 @@ import { cn } from '@/lib/utils';
 import { DraftPostImage } from './DraftPostImage';
 import { DraftPostScheduler } from './DraftPostScheduler';
 import { ImageUploader } from './ImageUploader';
-import { PostLocation } from './Location';
-import { Tags } from './Tags';
 import { useActiveDraftPost } from '@/BrandHome';
 import { useAccount } from '@/main';
 import { CoStream, ID, co } from 'jazz-tools';
@@ -48,8 +46,8 @@ export function DraftPostComponent({
       }
 
       if (
-        ![...scheduledPostsStream.byMe.all].some(
-          (entry) => entry.value === post.id
+        ![...(scheduledPostsStream.byMe?.all || [])].some(
+          (entry) => entry.ref.id === post.id
         )
       ) {
         scheduledPostsStream.push(post);

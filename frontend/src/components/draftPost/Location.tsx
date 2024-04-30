@@ -1,20 +1,16 @@
 import { MapPin, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Resolved } from 'jazz-react';
 import { Post } from '@/sharedDataModel';
-import { handleLocation } from '../../../../backend/src/handleLocation';
 
-export const PostLocation = ({post}: {
-  post: Resolved<Post>
-}) => {
+export const PostLocation = ({ post }: { post: Post }) => {
   const location = post.location || null;
   const locationEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      const location = { name: e.currentTarget.value}
-      const rolledLocation = handleLocation({location});
-      post.set('location', rolledLocation);
+      // const location = { name: e.currentTarget.value}
+      // const rolledLocation = handleLocation({location});
+      // post.location = rolledLocation;
     }
   };
 
@@ -27,7 +23,7 @@ export const PostLocation = ({post}: {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => post.set('location', null)}
+            onClick={() => (post.location = null)}
           >
             <X className="h-4 w-4" />
           </Button>

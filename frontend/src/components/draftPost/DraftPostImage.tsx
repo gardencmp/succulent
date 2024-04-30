@@ -6,7 +6,7 @@ export function DraftPostImage({
   image,
   onDeletePhoto,
   onClickPhoto,
-  imageSize = 500,
+  imageSize = 512,
 }: {
   image?: Image | null;
   onDeletePhoto?: (id: Image['id']) => void;
@@ -26,7 +26,7 @@ export function DraftPostImage({
           x
         </Button>
       )}
-      <ProgressiveImg image={image.imageFile}>
+      <ProgressiveImg image={image.imageFile} maxWidth={imageSize}>
         {({ src }) => (
           <img
             key={image.id}

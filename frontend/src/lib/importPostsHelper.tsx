@@ -81,10 +81,8 @@ export async function importPostsHelper(
 
         for (const existingPost of existingPosts.slice(1)) {
           console.log('Deleting', existingPost?.id);
-          brand.posts?.splice(
-            brand.posts.findIndex((p) => p?.id === existingPost?.id),
-            1
-          );
+          const idx = brand.posts?.findIndex((p) => p?.id === existingPost?.id);
+          typeof idx === 'number' && idx !== -1 && brand.posts?.splice(idx, 1);
         }
 
         existingPosts[0]!.instagram = {

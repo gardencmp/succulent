@@ -1,29 +1,20 @@
-import { AccountRoot } from './dataModel';
-import { useAcceptInvite, useJazz } from 'jazz-react';
-import { Profile } from 'cojson';
 import { RouterProvider } from 'react-router-dom';
-import { Brand } from './sharedDataModel';
 import { Toaster } from './components/ui/toaster';
-import { autoSubResolution } from 'jazz-autosub';
 import { router } from './router';
+// import { useAcceptInvite, useAccount } from './main';
+// import { Brand } from './sharedDataModel';
 
 function App() {
-  const { me, localNode } = useJazz<Profile, AccountRoot>();
-  useAcceptInvite<Brand>(async (brandID) => {
-    const myBrands = await autoSubResolution(
-      me.id,
-      (me) => me.root?.brands,
-      localNode
-    );
+  // const { me } = useAccount();
+  // useAcceptInvite({invitedObjectSchema: Brand, onAccept: async (brandID) => {
+  //   if (!me.root?.brands) {
+  //     console.log('myBrands not available');
+  //     return;
+  //   }
 
-    if (!myBrands) {
-      console.log('myBrands not available');
-      return;
-    }
-
-    myBrands.append(brandID);
-    router.navigate('/');
-  });
+  //   me.root?.brands.push(brandID);
+  //   router.navigate('/');
+  // }});
 
   return (
     <>
