@@ -9,7 +9,8 @@ export class SucculentAccount extends Account<SucculentAccount> {
   profile = co.ref(Profile);
   root = co.ref(AccountRoot);
 
-  migrate = () => {
+  migrate(creationProps?: { name: string }) {
+    super.migrate(creationProps);
     if (!this._refs.root) {
       this.root = new AccountRoot(
         {
@@ -18,5 +19,5 @@ export class SucculentAccount extends Account<SucculentAccount> {
         { owner: this }
       );
     }
-  };
+  }
 }

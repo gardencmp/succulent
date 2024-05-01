@@ -7,7 +7,6 @@ import { DraftPostImage } from './DraftPostImage';
 import { DraftPostScheduler } from './DraftPostScheduler';
 import { ImageUploader } from './ImageUploader';
 import { useActiveDraftPost } from '@/BrandHome';
-import { useAccount } from '@/main';
 
 export function DraftPostComponent({
   post,
@@ -20,7 +19,6 @@ export function DraftPostComponent({
   styling?: string;
   onDelete?: () => void;
 }) {
-  const { me } = useAccount();
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
   const { setActiveDraftPost } = useActiveDraftPost();
 

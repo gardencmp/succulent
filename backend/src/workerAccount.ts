@@ -11,7 +11,8 @@ export class SchedulerAccount extends Account<SchedulerAccount> {
   profile = co.ref(Profile);
   root = co.ref(SchedulerAccountRoot);
 
-  migrate = () => {
+  migrate(creationProps?: { name: string }) {
+    super.migrate(creationProps);
     if (!this._refs.root) {
       this.root = new SchedulerAccountRoot(
         {
@@ -20,5 +21,5 @@ export class SchedulerAccount extends Account<SchedulerAccount> {
         { owner: this }
       );
     }
-  };
+  }
 }
