@@ -1,24 +1,27 @@
 import { Post } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
-import { BrowserImage } from 'jazz-browser-media-images';
 import { cn } from '@/lib/utils';
+import { ProgressiveImg } from 'jazz-react';
 
-export function PostImage({ post }: { post: Resolved<Post> }) {
+export function PostImage({ post }: { post: Post }) {
   return (
     post.images?.[0] && (
-      <img
+      <ProgressiveImg
         key={post.images[0].id}
-        className={cn(
-          'block w-full h-full object-cover shrink-0 outline-none hover:opacity-100',
-          {
-            'opacity-50': post.instagram.state !== 'posted',
-          }
+        image={post.images[0].imageFile}
+        maxWidth={512}
+      >
+        {({ src }) => (
+          <img
+            className={cn(
+              'block w-full h-full object-cover shrink-0 outline-none hover:opacity-100',
+              {
+                'opacity-50': post.instagram.state !== 'posted',
+              }
+            )}
+            src={src}
+          />
         )}
-        src={
-          post.images[0].imageFile?.as(BrowserImage(500))
-            ?.highestResSrcOrPlaceholder
-        }
-      />
+      </ProgressiveImg>
     )
   );
 }

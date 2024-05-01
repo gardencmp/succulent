@@ -1,6 +1,4 @@
 import { Brand, ISODate, Post } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
-import { CoID } from 'cojson';
 import { useState } from 'react';
 import {
   DndContext,
@@ -13,15 +11,16 @@ import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { cn } from '@/lib/utils';
 import { smartSchedule } from '@/lib/smartSchedule';
 import { PostImage } from '../PostImage';
+import { ID } from 'jazz-tools';
 
 export function DragToScheduleContext({
   brand,
   children,
 }: {
-  brand: Resolved<Brand>;
+  brand: Brand;
   children: React.ReactNode;
 }) {
-  const [draggedPostId, setDraggedPostId] = useState<CoID<Post>>();
+  const [draggedPostId, setDraggedPostId] = useState<ID<Post>>();
   const draggedPost = brand?.posts?.find((post) => post?.id === draggedPostId);
 
   const sensors = useSensors(
@@ -41,7 +40,7 @@ export function DragToScheduleContext({
     <DndContext
       sensors={sensors}
       onDragStart={(event) => {
-        setDraggedPostId(event.active.id as CoID<Post>);
+        setDraggedPostId(event.active.id as ID<Post>);
       }}
       onDragOver={(event) => {
         setSchedulePreview(event.over?.data?.current);
@@ -50,12 +49,13 @@ export function DragToScheduleContext({
         setDraggedPostId(undefined);
         if (!event.over?.data.current) return;
         const post = brand?.posts?.find((p) => p?.id === event.active.id);
-        post?.set('instagram', {
+        if (!post) return;
+        post.instagram = {
           state: 'scheduleDesired',
           scheduledAt: smartSchedule(
             event.over.data.current as { before?: ISODate; after?: ISODate }
           ),
-        });
+        };
       }}
       modifiers={[snapCenterToCursor]}
     >

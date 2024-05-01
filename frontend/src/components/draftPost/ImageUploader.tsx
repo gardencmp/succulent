@@ -1,9 +1,8 @@
 import { Post, Image } from '@/sharedDataModel';
 import { createImage } from 'jazz-browser-media-images';
-import { Resolved } from 'jazz-react';
 import { Input } from '../ui/input';
 
-export function ImageUploader({ post }: { post: Resolved<Post> }) {
+export function ImageUploader({ post }: { post: Post }) {
   return (
     <Input
       type="file"
@@ -15,11 +14,9 @@ export function ImageUploader({ post }: { post: Resolved<Post> }) {
 
         Promise.all(
           files.map((file) =>
-            createImage(file, post.meta.group).then((image) => {
-              post.images?.append(
-                post.meta.group.createMap<Image>({
-                  imageFile: image.id,
-                }).id
+            createImage(file, { owner: post._owner }).then((image) => {
+              post.images?.push(
+                new Image({ imageFile: image }, { owner: post._owner })
               );
             })
           )

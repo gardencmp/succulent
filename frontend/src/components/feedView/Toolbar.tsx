@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { Resolved } from 'jazz-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Brand } from '@/sharedDataModel';
@@ -12,7 +11,7 @@ export function Toolbar({
   showInsights,
   setShowInsights,
 }: {
-  brand: Resolved<Brand>;
+  brand: Brand;
   filter?: string;
   setFilter: (filter: string) => void;
   showInsights: boolean;

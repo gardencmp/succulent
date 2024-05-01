@@ -4,7 +4,6 @@ import {
   InstagramScheduled,
   Post,
 } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
 import { Button } from '../ui/button';
 import { DropGap } from './DropGap';
 import { PostTile } from './PostTile';
@@ -15,11 +14,11 @@ export function PostGrid({
   deleteDraft,
   createDraft: createDraftPost,
 }: {
-  posts: Resolved<
-    Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>
+  posts: Post<
+    InstagramPosted | InstagramScheduleDesired | InstagramScheduled
   >[];
   showInsights: boolean;
-  deleteDraft: (post: Resolved<Post>) => void;
+  deleteDraft: (post: Post) => void;
   createDraft: () => void;
 }) {
   const firstPostState = posts[0]?.instagram;

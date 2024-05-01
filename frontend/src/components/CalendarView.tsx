@@ -1,15 +1,15 @@
 import { Brand, Post, ListOfImages } from '@/sharedDataModel';
-import { useAutoSub } from 'jazz-react';
 import { Button } from '../components/ui/button';
 import { useParams } from 'react-router-dom';
 import { DraftPostComponent } from './draftPost/DraftPost';
-import { CoID } from 'cojson';
 import { useCallback, useState } from 'react';
 import { importPostsHelper } from '../lib/importPostsHelper';
+import { ID } from 'jazz-tools';
+import { useCoState } from '@/main';
 
 export function CalendarView() {
-  const brandId = useParams<{ brandId: CoID<Brand> }>().brandId;
-  const brand = useAutoSub(brandId);
+  const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
+  const brand = useCoState(Brand, brandId);
 
   const importPosts = useCallback(async () => {
     if (!brand) return;
@@ -32,14 +32,17 @@ export function CalendarView() {
         className="h-20"
         onClick={() => {
           if (!brand) return;
-          const draftPost = brand.meta.group.createMap<Post>({
-            instagram: {
-              state: 'notScheduled',
+          const draftPost = new Post(
+            {
+              instagram: {
+                state: 'notScheduled',
+              },
+              images: new ListOfImages([], { owner: brand._owner }),
+              inBrand: brand,
             },
-            images: brand.meta.group.createList<ListOfImages>().id,
-            inBrand: brand.id,
-          });
-          brand.posts?.append(draftPost.id);
+            { owner: brand._owner }
+          );
+          brand.posts?.push(draftPost);
         }}
       >
         + Add draft post
@@ -53,12 +56,13 @@ export function CalendarView() {
               onDelete={() => {
                 if (!confirm('Are you sure you want to delete this post?'))
                   return;
-                post.set('instagram', {
+                post.instagram = {
                   state: 'notScheduled',
-                });
-                brand.posts?.delete(
-                  brand.posts.findIndex((p) => p?.id === post.id)
-                );
+                };
+                const idx = brand.posts?.findIndex((p) => p?.id === post.id);
+                typeof idx === 'number' &&
+                  idx !== -1 &&
+                  brand.posts?.splice(idx, 1);
               }}
             />
           )

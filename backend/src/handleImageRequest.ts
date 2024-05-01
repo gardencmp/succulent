@@ -1,9 +1,9 @@
-import { CoID, Media } from 'cojson';
+import { ID, ImageDefinition } from 'jazz-tools';
 
 export function handleImageRequest(
   req: Request,
   loadedImages: Map<
-    CoID<Media.ImageDefinition>,
+    ID<ImageDefinition>,
     { mimeType?: string; chunks: Uint8Array[] }
   >
 ) {
@@ -11,9 +11,7 @@ export function handleImageRequest(
   const imageFileId = req.url.split('/image/')[1];
   console.log(new Date(), imageFileId);
 
-  const streamInfo = loadedImages.get(
-    imageFileId as CoID<Media.ImageDefinition>
-  );
+  const streamInfo = loadedImages.get(imageFileId as ID<ImageDefinition>);
 
   if (!streamInfo) return new Response('not found', { status: 404 });
 

@@ -1,61 +1,111 @@
-import { CoMap, CoList, AccountMigration, Media } from 'cojson';
+import { CoList, CoMap, ImageDefinition, co } from 'jazz-tools';
 
 export type Platform = 'Twitter' | 'Instagram' | 'Facebook' | 'TikTok';
 
-type ISODate = string;
+export type ISODate = string;
 
 export type InstagramState =
-  | {
-      state: 'notScheduled';
-    }
-  | {
-      state: 'scheduleDesired';
-      scheduledAt: ISODate;
-      notScheduledReason?: string;
-    }
-  | {
-      state: 'scheduled';
-      scheduledAt: ISODate;
-    }
-  | {
-      state: 'posted';
-      postedAt: ISODate;
-      postId: string;
-      permalink: string;
-    };
+  | InstagramNotScheduled
+  | InstagramScheduleDesired
+  | InstagramScheduled
+  | InstagramPosted;
 
-export type Post = CoMap<{
-  inBrand: Brand['id'];
-  content?: string;
-  images: ListOfImages['id'];
-  instagram: InstagramState;
-}>;
+export type InstagramNotScheduled = {
+  state: 'notScheduled';
+};
 
-export type ListOfImages = CoList<Image['id']>;
+export type InstagramScheduleDesired = {
+  state: 'scheduleDesired';
+  scheduledAt: ISODate;
+  notScheduledReason?: string;
+};
 
-export type Image = CoMap<{
-  imageFile: Media.ImageDefinition['id'];
-  instagramContainerId?: string;
-}>;
+export type InstagramScheduled = {
+  state: 'scheduled';
+  scheduledAt: ISODate;
+};
 
-export type ListOfPosts = CoList<Post['id']>;
+export type InstagramPosted = {
+  state: 'posted';
+  postedAt: ISODate;
+  postId: string;
+  permalink: string;
+};
 
-export type Brand = CoMap<{
-  name: string;
-  instagramAccessToken?: string;
-  instagramAccessTokenValidUntil?: number;
-  instagramInsights?: InstagramInsights['id'];
-  instagramPage?: { id: string; name: string };
-  posts: ListOfPosts['id'];
-}>;
-
-export type InstagramInsights = CoMap<{
-  [day: string]: {
+export class Post<out S extends InstagramState = InstagramState> extends CoMap<
+  Post<InstagramState>
+> {
+  inBrand: co<Brand | null> = co.ref(Brand);
+  content? = co.string;
+  images = co.ref(ListOfImages);
+  instagram = co.json<S>();
+  location = co.ref(Location);
+  userTags = co.ref(UserTagMap);
+  instagramInsights? = co.json<{
+    profileVisits?: number;
     impressions?: number;
+    totalInteractions?: number;
     reach?: number;
-    profileViews?: number;
-    accountsEngaged?: number;
-  };
-}>;
+    likes?: number;
+    comments?: number;
+    saved?: number;
+    shares?: number;
+    follows?: number;
+    profileActivity?: {
+      [breakdown: string]: number | undefined;
+    };
+  }>();
+}
 
-export type ListOfBrands = CoList<Brand['id']>;
+export class Image extends CoMap<Image> {
+  imageFile = co.ref(ImageDefinition);
+  instagramContainerId? = co.string;
+}
+
+export class ListOfImages extends CoList.Of(co.ref(Image)) {}
+
+export class Brand extends CoMap<Brand> {
+  name = co.string;
+  instagramAccessToken? = co.string;
+  instagramAccessTokenValidUntil? = co.number;
+  instagramInsights? = co.ref(BrandInstagramInsights);
+  instagramPage? = co.json<{ id: string; name: string }>();
+  posts = co.ref(ListOfPosts);
+  usedLocations = co.ref(ListOfLocations);
+  usedUserTags = co.ref(UserTagList);
+}
+
+export class ListOfBrands extends CoList.Of(co.ref(Brand)) {}
+
+export class ListOfPosts extends CoList.Of(co.ref(Post)) {}
+
+export class Location extends CoMap<Location> {
+  fbId? = co.string;
+  name = co.string;
+}
+
+export class ListOfLocations extends CoList.Of(co.ref(Location)) {}
+
+/** map from username to position */
+export class UserTagMap extends CoMap.Record(
+  co.json<{
+    x: number;
+    y: number;
+  }>()
+) {}
+
+export class UserTagList extends CoList.Of(co.string) {}
+
+export type DayInsights = {
+  impressions?: number;
+  reach?: number;
+  profileViews?: number;
+  accountsEngaged?: number;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export class BrandInstagramInsights extends CoMap<BrandInstagramInsights> {
+  [co.items] = co.json<DayInsights>();
+}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface BrandInstagramInsights extends Record<string, DayInsights> {}

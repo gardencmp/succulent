@@ -1,5 +1,4 @@
 import { Post } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
 import {
   Heart,
   HeartHandshake,
@@ -12,7 +11,7 @@ import {
 } from 'lucide-react';
 import { ReactElement } from 'react';
 
-export function insightConfigForPost(post: Resolved<Post>) {
+export function insightConfigForPost(post: Post) {
   const insights = post.instagramInsights;
   if (!insights) return;
 

@@ -5,11 +5,10 @@ import {
   Image,
   InstagramPosted,
 } from '@/sharedDataModel';
-import { Resolved, ResolvedCoMap } from 'jazz-react';
 import { createImage } from 'jazz-browser-media-images';
 
 export async function importPostsHelper(
-  brand: Resolved<Brand>,
+  brand: Brand,
   setImportProgress: (
     progress: { total: number; done: number } | undefined
   ) => void
@@ -82,9 +81,8 @@ export async function importPostsHelper(
 
         for (const existingPost of existingPosts.slice(1)) {
           console.log('Deleting', existingPost?.id);
-          brand.posts?.delete(
-            brand.posts.findIndex((p) => p?.id === existingPost?.id)
-          );
+          const idx = brand.posts?.findIndex((p) => p?.id === existingPost?.id);
+          typeof idx === 'number' && idx !== -1 && brand.posts?.splice(idx, 1);
         }
 
         existingPosts[0]!.instagram = {
@@ -96,35 +94,41 @@ export async function importPostsHelper(
       }
 
       if (existingPosts.length === 0) {
-        const images = brand.meta.group.createList<ListOfImages>(
+        const brandGroup = brand._owner;
+        const images = new ListOfImages(
           await Promise.all(
             imageUrls.map(
               async (url) =>
-                brand.meta.group.createMap<Image>({
-                  imageFile: (
-                    await createImage(
+                new Image(
+                  {
+                    imageFile: await createImage(
                       await fetch(url).then((response) => response.blob()),
-                      brand.meta.group
-                    )
-                  ).id,
-                }).id
+                      { owner: brandGroup }
+                    ),
+                  },
+                  { owner: brandGroup }
+                )
             )
-          )
+          ),
+          { owner: brandGroup }
         );
 
-        const succulentPost = brand.meta.group.createMap<Post>({
-          content: post.caption,
-          images: images.id,
-          inBrand: brand.id,
-          instagram: {
-            state: 'posted',
-            postId: post.id,
-            postedAt: post.timestamp,
-            permalink: post.permalink,
+        const succulentPost = new Post(
+          {
+            content: post.caption,
+            images: images,
+            inBrand: brand,
+            instagram: {
+              state: 'posted',
+              postId: post.id,
+              postedAt: post.timestamp,
+              permalink: post.permalink,
+            },
           },
-        });
+          { owner: brandGroup }
+        );
 
-        brand.posts?.append(succulentPost.id);
+        brand.posts?.push(succulentPost);
       }
     }
     done++;
@@ -140,11 +144,11 @@ export async function importPostsHelper(
   }, 1000);
 }
 
-export async function getPostInsightsHelper(brand: Resolved<Brand>) {
+export async function getPostInsightsHelper(brand: Brand) {
   const posts = (
     [...(brand.posts || [])].filter(
       (p) => p?.instagram?.state === 'posted'
-    ) as ResolvedCoMap<Post<InstagramPosted>>[]
+    ) as Post<InstagramPosted>[]
   ).sort((a, b) => (a.instagram.postedAt > b.instagram.postedAt ? -1 : 1));
 
   for (const post of posts) {
@@ -190,7 +194,7 @@ export async function getPostInsightsHelper(brand: Resolved<Brand>) {
             [breakdown: string]: number | undefined;
           };
 
-      post.set('instagramInsights', {
+      post.instagramInsights = {
         profileVisits: insights.data.find(
           (insight: { name: string }) => insight.name === 'profile_visits'
         )?.values[0].value,
@@ -219,7 +223,7 @@ export async function getPostInsightsHelper(brand: Resolved<Brand>) {
           (insight: { name: string }) => insight.name === 'follows'
         )?.values[0].value,
         profileActivity: restructuredProfileActivity,
-      });
+      };
     }
   }
 }

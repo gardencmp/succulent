@@ -1,21 +1,16 @@
 import { Post } from '@/sharedDataModel';
-import { BrowserImage } from 'jazz-browser-media-images';
-import { Resolved } from 'jazz-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { insightConfigForPost } from '@/lib/postInsights';
-
-// const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
-//   CoStream<Post['id']>
-// >;
+import { ProgressiveImg } from 'jazz-react';
 
 export function PostComponent({
   post,
   border = true,
   styling,
 }: {
-  post: Resolved<Post>;
+  post: Post;
   border?: boolean;
   styling?: string;
   onDelete?: () => void;
@@ -41,20 +36,17 @@ export function PostComponent({
       })}
     >
       <div className="flex gap-2 overflow-x-scroll">
-        {post.images?.map(
-          (image) =>
-            image &&
-            image.imageFile && (
-              <img
-                key={image.id}
-                className="w-40 h-40 object-cover shrink-0"
-                src={
-                  image.imageFile.as(BrowserImage(500))
-                    ?.highestResSrcOrPlaceholder
-                }
-              />
-            )
-        )}
+        {post.images?.map((image) => (
+          <ProgressiveImg
+            key={image?.id}
+            image={image?.imageFile}
+            maxWidth={512}
+          >
+            {({ src }) => (
+              <img className="w-40 h-40 object-cover shrink-0" src={src} />
+            )}
+          </ProgressiveImg>
+        ))}
       </div>
       <div className="relative">
         <Button

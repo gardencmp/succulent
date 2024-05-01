@@ -1,7 +1,7 @@
-import { CoID } from 'cojson';
+import { Account, ID, Me } from 'jazz-tools';
 import { Brand } from '../sharedDataModel';
 
-export async function handleFBConnectRequest(req: Request) {
+export async function handleFBConnectRequest(req: Request, as: Account & Me) {
   const code = new URL(req.url).searchParams.get('code');
 
   if (!code) return new Response('no code');
@@ -31,15 +31,13 @@ export async function handleFBConnectRequest(req: Request) {
 
   if (!brandId) return new Response('no brandId');
 
-  const brand = await node.load(brandId as CoID<Brand>);
+  const brand = await Brand.load(brandId as ID<Brand>, { as });
 
-  if (brand === 'unavailable') return new Response('unavailable');
+  if (!brand) return new Response('unavailable');
 
-  brand.set('instagramAccessToken', longLivedResult.access_token);
-  brand.set(
-    'instagramAccessTokenValidUntil',
-    Date.now() + longLivedResult.expires_in * 1000
-  );
+  brand.instagramAccessToken = longLivedResult.access_token;
+  brand.instagramAccessTokenValidUntil =
+    Date.now() + longLivedResult.expires_in * 1000;
 
   console.log(new Date(), brand.toJSON());
 

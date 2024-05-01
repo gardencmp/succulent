@@ -1,8 +1,7 @@
 import { Post } from '@/sharedDataModel';
-import { Resolved } from 'jazz-react';
 import { insightConfigForPost } from '@/lib/postInsights';
 
-export function PostInsights(props: { post: Resolved<Post> }) {
+export function PostInsights(props: { post: Post }) {
   const storedPrefs = localStorage.getItem('postPreferences');
 
   return (
