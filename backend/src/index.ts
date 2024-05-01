@@ -7,7 +7,7 @@ import {
   InstagramScheduleDesired,
   InstagramScheduled,
   Post,
-} from '../sharedDataModel';
+} from './sharedDataModel';
 import { actuallyPost } from './actuallyPost';
 import { handleImageRequest } from './handleImageRequest';
 import { handleFBConnectRequest } from './handleFBConnectRequest';

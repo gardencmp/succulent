@@ -1,5 +1,5 @@
 import { Group, co, CoMap, CoStream, Account, Profile } from 'jazz-tools';
-import { Brand, ListOfBrands, Post } from '../sharedDataModel';
+import { Brand, ListOfBrands, Post } from './sharedDataModel';
 
 export class SchedulerAccountRoot extends CoMap<SchedulerAccountRoot> {
   brands = co.ref(ListOfBrands);

@@ -1,5 +1,5 @@
 import { Account, ID, Me } from 'jazz-tools';
-import { Brand } from '../sharedDataModel';
+import { Brand } from './sharedDataModel';
 
 export async function handleFBConnectRequest(req: Request, as: Account & Me) {
   const code = new URL(req.url).searchParams.get('code');
