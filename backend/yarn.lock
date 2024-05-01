@@ -74,20 +74,20 @@ bun-types@^1.0.18:
     "@types/node" "~20.11.3"
     "@types/ws" "~8.5.10"
 
-cojson-transport-nodejs-ws@0.7.0-alpha.28:
-  version "0.7.0-alpha.28"
-  resolved "https://registry.yarnpkg.com/cojson-transport-nodejs-ws/-/cojson-transport-nodejs-ws-0.7.0-alpha.28.tgz#e67e3f44a9c539c702433d47de65d2d0bb02a539"
-  integrity sha512-Is72ELYUC5yEEogwf4X/XGbZcAl7zTe5oQYG5JQOlizvWICVQzmiCeGKjwywI1V75rjS/fybCERsG3UNzEi70Q==
+cojson-transport-nodejs-ws@0.7.0-alpha.29:
+  version "0.7.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/cojson-transport-nodejs-ws/-/cojson-transport-nodejs-ws-0.7.0-alpha.29.tgz#bff18df0c18987c7ff32ece020d91c261fecbab6"
+  integrity sha512-VbHSIO5pObOkJbpuxYzyZBJFR9RPp/9iqa6x/A9Ng9TjFCrx+KbMHK+BGyCHn4xIuQRyAX/Cv3jd45fe48xc6A==
   dependencies:
-    cojson "0.7.0-alpha.28"
+    cojson "0.7.0-alpha.29"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
     typescript "^5.1.6"
     ws "^8.14.2"
 
-cojson@0.7.0-alpha.28:
-  version "0.7.0-alpha.28"
-  resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.7.0-alpha.28.tgz#11f390654023d1884993a678efac6594125bed22"
-  integrity sha512-lZfmEDk0VXXfX3m8sGBHJ63qLHpvBNJCg+7nX9TH1WWjno53H1qY7XU1/Dzn38EqYgy5WbWhJBb88rr47CgGjQ==
+cojson@0.7.0-alpha.29:
+  version "0.7.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.7.0-alpha.29.tgz#c46e123b7e3c21df1a72531bc10d5fdfbf92b660"
+  integrity sha512-cFW4CFYQCyPTPCnaYG13mgcDl0zCkJzF2QLzv5ffpyWpjsOBfsft7a2/qQMjf5yajf0PvYaTm17Tw+2AHbQsmQ==
   dependencies:
     "@hazae41/berith" "^1.2.6"
     "@noble/ciphers" "^0.1.3"
@@ -121,23 +121,23 @@ hash-wasm@^4.9.0:
   version "1.0.3"
   resolved "git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
-jazz-nodejs@0.7.0-alpha.28:
-  version "0.7.0-alpha.28"
-  resolved "https://registry.yarnpkg.com/jazz-nodejs/-/jazz-nodejs-0.7.0-alpha.28.tgz#0ef63bb4a504421a1e39d1a124e4083db6b08b0d"
-  integrity sha512-qbCUSFkTqCBUerVdHZPHlA4/riP1l/gvlhM1yg9wdzqNVinoFMjtA7v2YZNJsajDu+XyK9DM31eCSBniSTJRvw==
+jazz-nodejs@0.7.0-alpha.29:
+  version "0.7.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/jazz-nodejs/-/jazz-nodejs-0.7.0-alpha.29.tgz#30342da486f2ec9c01bf9461d4c18a7b878c39dc"
+  integrity sha512-D1rX25+QVFrSCda2Bwy/BOMikvxly1h9/+O0CIpSpp0MaeFUCSANEZkim/1RHPqSc6/3nu/YwekiMrJMsjtjhw==
   dependencies:
-    cojson "0.7.0-alpha.28"
-    cojson-transport-nodejs-ws "0.7.0-alpha.28"
-    jazz-tools "0.7.0-alpha.28"
+    cojson "0.7.0-alpha.29"
+    cojson-transport-nodejs-ws "0.7.0-alpha.29"
+    jazz-tools "0.7.0-alpha.29"
     ws "^8.14.2"
 
-jazz-tools@0.7.0-alpha.28:
-  version "0.7.0-alpha.28"
-  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.0-alpha.28.tgz#ef6a41904570f1d44d61fd37202032490fbfc776"
-  integrity sha512-CKl2VLm+jXXCAaJHQ2/SogikRIvvr26AXzrvscK6N0OxxGvgSw3QKhQ4qKIGLvQUcxk1OlxXEFphVlRXikal1w==
+jazz-tools@0.7.0-alpha.29:
+  version "0.7.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.0-alpha.29.tgz#ca56b8ba3e80139ea18493e41904d4302e83d98b"
+  integrity sha512-M7dg4rRhwIcNRZkArgecP6E27nI456TXkyGQTI6AGAE756N4V4I8N0M9Vv780+ug7YZBs0V9pahYQGxSIgn29A==
   dependencies:
     "@effect/schema" "^0.66.6"
-    cojson "0.7.0-alpha.28"
+    cojson "0.7.0-alpha.29"
     effect "^3.0"
     fast-check "^3.17.2"
 
