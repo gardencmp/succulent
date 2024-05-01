@@ -1,24 +1,46 @@
 import { SchedulerAccount } from './workerAccount';
 
 export function logAccountState(account: SchedulerAccount) {
-  console.log(new Date(), 'scheduledPosts', account.root?.scheduledPosts?.id);
+  console.log(new Date(), 'scheduledPosts');
 
   console.table(
-    Object.entries(account.root?.scheduledPosts?.perSession || {}).flatMap(
-      (entry) =>
-        [...entry[1].all].map((post) => ({
-          session: entry[0].split('_session_')[1],
-          id: post.value?.id,
-          state: post.value?.instagram?.state,
-          scheduledAt:
-            post.value &&
-            'scheduledAt' in post.value.instagram &&
-            post.value?.instagram?.scheduledAt,
-          content: post.value?.content?.split('\n')[0].slice(0, 20),
-          imageFileIds: post.value?.images?.map(
-            (image) => image?.imageFile?.id
-          ),
-        }))
+    account.root?.brands?.flatMap(
+      (brand) =>
+        brand?.posts
+          ?.toSorted((a, b) => {
+            if (!a) return 1;
+            if (!b) return -1;
+            // sort by scheduledAt/postedAt
+            const dateA = new Date(
+              a.instagram?.state === 'posted'
+                ? a.instagram?.postedAt
+                : (a.instagram &&
+                    'scheduledAt' in a.instagram &&
+                    a.instagram?.scheduledAt) ||
+                  new Date()
+            );
+            const dateB = new Date(
+              b.instagram?.state === 'posted'
+                ? b.instagram?.postedAt
+                : (b.instagram &&
+                    'scheduledAt' in b.instagram &&
+                    b.instagram?.scheduledAt) ||
+                  new Date()
+            );
+            return dateA > dateB ? -1 : 1;
+          })
+          .map((post) => ({
+            brand: brand.name,
+            content: post?.content?.split('\n')[0].slice(0, 20),
+            state: post?.instagram?.state,
+            ['scheduledAt/postedAt']:
+              post?.instagram &&
+              (('scheduledAt' in post.instagram &&
+                post.instagram.scheduledAt) ||
+                ('postedAt' in post.instagram && post.instagram.postedAt)),
+            imgs: post?.images?.length,
+            id: post?.id,
+          }))
     )
   );
 }

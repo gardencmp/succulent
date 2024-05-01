@@ -21,6 +21,20 @@ export const handlePostUpdate = (
       return;
     }
 
+    if (
+      post.instagram.state === 'posted' ||
+      post.instagram.state === 'notScheduled'
+    ) {
+      if (actuallyScheduled.has(post.id)) {
+        console.log(
+          `Post ${post.content?.split('\n')[0].slice(0, 20)}/${
+            post.id
+          } is now ${post.instagram.state}, removing from actuallyScheduled`
+        );
+        actuallyScheduled.delete(post.id);
+      }
+    }
+
     if (post.instagram.state === 'scheduled') {
       const actuallyScheduledPost = actuallyScheduled.get(post.id);
       if (

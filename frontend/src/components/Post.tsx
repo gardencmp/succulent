@@ -5,10 +5,6 @@ import { cn } from '@/lib/utils';
 import { insightConfigForPost } from '@/lib/postInsights';
 import { ProgressiveImg } from 'jazz-react';
 
-// const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as CoID<
-//   CoStream<Post['id']>
-// >;
-
 export function PostComponent({
   post,
   border = true,

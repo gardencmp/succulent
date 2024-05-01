@@ -8,11 +8,6 @@ import { DraftPostScheduler } from './DraftPostScheduler';
 import { ImageUploader } from './ImageUploader';
 import { useActiveDraftPost } from '@/BrandHome';
 import { useAccount } from '@/main';
-import { CoStream, ID, co } from 'jazz-tools';
-
-const scheduledPostsStreamId = 'co_zNHLSfAEVwmcE1oJiszREJzeHEy' as ID<
-  CoStream<Post | null>
->;
 
 export function DraftPostComponent({
   post,
@@ -35,23 +30,6 @@ export function DraftPostComponent({
         state: 'scheduleDesired',
         scheduledAt: scheduleAt.toISOString(),
       };
-
-      const scheduledPostsStream = await CoStream.Of(co.ref(Post)).load(
-        scheduledPostsStreamId,
-        { as: me }
-      );
-
-      if (!scheduledPostsStream) {
-        throw new Error('scheduledPostsStream unavailable');
-      }
-
-      if (
-        ![...(scheduledPostsStream.byMe?.all || [])].some(
-          (entry) => entry.ref.id === post.id
-        )
-      ) {
-        scheduledPostsStream.push(post);
-      }
     },
     [post]
   );

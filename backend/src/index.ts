@@ -69,20 +69,30 @@ async function runner() {
       clearTimeout(tryLoadingImagesTimeout);
     }
 
-    if (workerUpdate?.root?.scheduledPosts) {
+    if (workerUpdate?.root?.brands) {
       logAccountState(workerUpdate);
 
-      for (let perSession of Object.entries(
-        workerUpdate.root?.scheduledPosts?.perSession || {}
-      )) {
-        for (let postEntry of perSession[1].all) {
-          if (postEntry.value) {
+      const seenPosts = [];
+
+      for (let brand of workerUpdate.root?.brands) {
+        for (let post of brand?.posts || []) {
+          if (post) {
+            seenPosts.push(post.id);
             handlePostUpdate(
               actuallyScheduled,
               loadedImages,
               workerUpdate
-            )(postEntry.value);
+            )(post);
           }
+        }
+      }
+
+      for (let postId of actuallyScheduled.keys()) {
+        if (!seenPosts.includes(postId)) {
+          console.log(
+            `No longer seeing ${postId}, removing from actuallyScheduled`
+          );
+          actuallyScheduled.delete(postId);
         }
       }
 
@@ -205,10 +215,10 @@ function logActuallyScheduled(actuallyScheduled: ActuallyScheduled) {
       state.state === 'posting' || state.state === 'loadingImagesFailed'
         ? { state: state.state }
         : {
-            id,
+            content: state.content?.split('\n')[0].slice(0, 20),
             state: state.state,
             scheduledAt: state.scheduledAt,
-            content: state.content?.split('\n')[0].slice(0, 20),
+            id,
             imageFileIds: state.imageFileIds,
           }
     )
