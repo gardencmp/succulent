@@ -1,0 +1,62 @@
+import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
+import { InstagramScheduleDesired, Post } from '../sharedDataModel';
+import { ActuallyScheduled } from '.';
+
+export const handlePostUpdate = (
+  actuallyScheduled: ActuallyScheduled,
+  loadedImages: Map<
+    ImageDefinition['id'],
+    { mimeType?: string; chunks: Uint8Array[] }
+  >,
+  worker: Account & Me
+) => {
+  return async function handlePostUpdateInner(post: Post) {
+    if (!post.instagram?.state) return;
+    if (actuallyScheduled.get(post.id)?.state === 'posting') {
+      console.log(
+        new Date(),
+        'ignoring update to currently posting post',
+        post.id
+      );
+      return;
+    }
+
+    if (post.instagram.state === 'scheduled') {
+      const actuallyScheduledPost = actuallyScheduled.get(post.id);
+      if (
+        !(
+          actuallyScheduledPost?.state === 'ready' ||
+          actuallyScheduledPost?.state === 'imagesNotLoaded' ||
+          actuallyScheduledPost?.state === 'loadingImages'
+        ) ||
+        post.content !== actuallyScheduledPost.content ||
+        post.images?.map((image) => image?.imageFile?.id).join() !==
+          actuallyScheduledPost.imageFileIds.join() ||
+        post.instagram.scheduledAt !==
+          actuallyScheduledPost.scheduledAt.toISOString()
+      ) {
+        console.log(
+          new Date(),
+          'Got previously scheduled post, or scheduled post that changed, resetting to scheduleDesired',
+          post.id
+        );
+        actuallyScheduled.delete(post.id);
+        post.instagram = {
+          state: 'scheduleDesired',
+          scheduledAt: post.instagram.scheduledAt,
+        };
+      }
+    } else if (post.instagram.state === 'scheduleDesired') {
+      actuallyScheduled.set(post.id, {
+        state: 'imagesNotLoaded',
+        content: post.content || '',
+        imageFileIds:
+          post.images
+            ?.map((image) => image?.imageFile?.id)
+            .filter((i): i is NonNullable<typeof i> => !!i) || [],
+        scheduledAt: new Date(post.instagram.scheduledAt),
+        post: post as Post<InstagramScheduleDesired>,
+      });
+    }
+  };
+};

@@ -1,19 +1,11 @@
 import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
 import { Image, Post } from '../sharedDataModel';
+import { ActuallyScheduled } from '.';
 
 export async function actuallyPost(
   as: Account & Me,
   postId: ID<Post>,
-  actuallyScheduled: Map<
-    ID<Post>,
-    | { state: 'posting' }
-    | {
-        state: 'ready';
-        content: string;
-        imageFileIds: ID<ImageDefinition>[];
-        scheduledAt: Date;
-      }
-  >,
+  actuallyScheduled: ActuallyScheduled,
   state: {
     state: 'ready';
     content: string;
@@ -61,11 +53,12 @@ export async function actuallyPost(
             images[0]._refs.imageFile.id
         )}&access_token=${
           brand.instagramAccessToken
-        }&user_tags=${encodeURIComponent(
+          /*}&user_tags=${encodeURIComponent(
           JSON.stringify(post.tags || [])
         )}&location_id=${encodeURIComponent(
           JSON.stringify(post.location?.fbId)
-        )}`;
+        )*/
+        }`;
         console.log(new Date(), 'POST', url);
         const res = await fetch(url, {
           method: 'POST',

@@ -32,7 +32,7 @@ export type InstagramPosted = {
   permalink: string;
 };
 
-export class Post<S extends InstagramState = InstagramState> extends CoMap<
+export class Post<out S extends InstagramState = InstagramState> extends CoMap<
   Post<InstagramState>
 > {
   inBrand: co<Brand | null> = co.ref(Brand);
@@ -40,7 +40,7 @@ export class Post<S extends InstagramState = InstagramState> extends CoMap<
   images = co.ref(ListOfImages);
   instagram = co.json<S>();
   location = co.ref(Location);
-  tags = co.ref(TagMap);
+  userTags = co.ref(UserTagMap);
   instagramInsights? = co.json<{
     profileVisits?: number;
     impressions?: number;
@@ -71,6 +71,8 @@ export class Brand extends CoMap<Brand> {
   instagramInsights? = co.ref(BrandInstagramInsights);
   instagramPage? = co.json<{ id: string; name: string }>();
   posts = co.ref(ListOfPosts);
+  usedLocations = co.ref(ListOfLocations);
+  usedUserTags = co.ref(UserTagList);
 }
 
 export class ListOfBrands extends CoList.Of(co.ref(Brand)) {}
@@ -82,16 +84,17 @@ export class Location extends CoMap<Location> {
   name = co.string;
 }
 
+export class ListOfLocations extends CoList.Of(co.ref(Location)) {}
+
 /** map from username to position */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class TagMap extends CoMap<TagMap> {
-  [co.items] = co.json<{
+export class UserTagMap extends CoMap.Record(
+  co.json<{
     x: number;
     y: number;
-  }>();
-}
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export interface TagMap extends Record<string, { x: number; y: number }> {}
+  }>()
+) {}
+
+export class UserTagList extends CoList.Of(co.string) {}
 
 export type DayInsights = {
   impressions?: number;

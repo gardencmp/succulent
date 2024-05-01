@@ -23,7 +23,8 @@ export async function loadImageFile(
   }
 
   const streamInfo = await new Promise<
-    (BinaryStreamInfo & { chunks: Uint8Array[] }) | undefined
+    | (ReturnType<(typeof res)['getChunks']> & { chunks: Uint8Array[] })
+    | undefined
   >(async (resolve) => {
     const unsub = res.subscribe(async (res) => {
       const streamInfo = res.getChunks();
