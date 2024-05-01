@@ -183,23 +183,48 @@ async function runner() {
 
     if (process.env.NODE_ENV === 'development') {
       console.log(new Date(), 'not actually posting in dev mode');
-      return;
+    }
+
+    if (!process.env.ARMED) {
+      console.log(new Date(), 'not actually posting in unarmed mode');
     }
 
     for (let [postId, state] of actuallyScheduled.entries()) {
       if (state.state === 'ready' && state.scheduledAt < new Date()) {
         console.log(new Date(), 'posting', postId);
-        if (process.env.ARMED === 'true') {
-          actuallyScheduled.set(postId, { state: 'posting' });
-          await actuallyPost(worker, postId, actuallyScheduled, state);
-        } else {
-          console.log(
-            new Date(),
-            postId,
-            JSON.stringify(state),
-            'not actually posting in unarmed mode'
-          );
-        }
+        actuallyScheduled.set(postId, { state: 'posting' });
+        await actuallyPost(
+          worker,
+          postId,
+          actuallyScheduled,
+          state,
+          process.env.NODE_ENV === 'production' && process.env.ARMED
+            ? fetch
+            : async (...params) => {
+                const url = params[0] as URL;
+                const opts = params[1];
+                console.log(
+                  new Date(),
+                  'simulating fetch',
+                  opts?.method,
+                  url.host,
+                  url.pathname,
+                  Object.fromEntries(url.searchParams.entries())
+                );
+                if (
+                  url.toString().includes('/media?') &&
+                  opts?.method === 'POST'
+                ) {
+                  return new Response(
+                    JSON.stringify({
+                      id: 'simulatedId_' + Math.random().toString(36).slice(2),
+                    }),
+                    { status: 200 }
+                  );
+                }
+                return new Response('simulated response', { status: 500 });
+              }
+        );
       }
     }
 

@@ -11,7 +11,8 @@ export async function actuallyPost(
     content: string;
     imageFileIds: ID<ImageDefinition>[];
     scheduledAt: Date;
-  }
+  },
+  fetchImpl: typeof fetch
 ) {
   try {
     const post = await Post.load(postId, { as });
@@ -22,45 +23,27 @@ export async function actuallyPost(
 
       const brand = await post._refs.inBrand.load();
       if (!brand) throw new Error('brand unavailable');
-
-      const imagesList = await post._refs.images.load();
-
-      if (!imagesList) throw new Error('images unavailable');
-      const maybeImages = await Promise.all(
-        [...imagesList._refs].map((imageRef) => imageRef.load())
-      );
-
-      if (maybeImages.some((image) => !image))
-        throw new Error('image unavailable');
-
-      const images = maybeImages as Image[];
-
-      if (images.length === 0) {
-        throw new Error('no images');
-      }
+      if (!brand.instagramAccessToken) throw new Error('no access token');
+      if (!brand.instagramPage) throw new Error('no instagram page');
+      const accessToken = brand.instagramAccessToken;
+      const igPage = brand.instagramPage.id;
+      const backendAddr =
+        process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331';
 
       // TODO: fetch tags & location
 
       let topContainerId;
 
-      if (images.length === 1) {
-        const url = `https://graph.facebook.com/v18.0/${brand.instagramPage
-          ?.id}/media?caption=${encodeURIComponent(
-          post.content || ''
-        )}&image_url=${encodeURIComponent(
-          (process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331') +
-            '/image/' +
-            images[0]._refs.imageFile.id
-        )}&access_token=${
-          brand.instagramAccessToken
-          /*}&user_tags=${encodeURIComponent(
-          JSON.stringify(post.tags || [])
-        )}&location_id=${encodeURIComponent(
-          JSON.stringify(post.location?.fbId)
-        )*/
-        }`;
-        console.log(new Date(), 'POST', url);
-        const res = await fetch(url, {
+      if (state.imageFileIds.length === 1) {
+        const url = new URL(`https://graph.facebook.com/v18.0/${igPage}/media`);
+        url.searchParams.set('access_token', accessToken);
+        url.searchParams.set('caption', post.content || '');
+        url.searchParams.set(
+          'image_url',
+          backendAddr + '/image/' + state.imageFileIds[0]
+        );
+        console.log(new Date(), 'POST', url.toString());
+        const res = await fetchImpl(url, {
           method: 'POST',
         });
         if (res.status !== 200)
@@ -70,21 +53,19 @@ export async function actuallyPost(
         topContainerId = ((await res.json()) as { id: string }).id;
       } else {
         const containerIds = await Promise.all(
-          images.map(async (image) => {
-            const existingContainerId = image.instagramContainerId;
-            // if (existingContainerId) {
-            //     return existingContainerId;
-            // } else {
-            const url = `https://graph.facebook.com/v18.0/${brand.instagramPage
-              ?.id}/media?image_url=${encodeURIComponent(
-              (process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331') +
-                '/image/' +
-                image.imageFile
-            )}&access_token=${brand.instagramAccessToken}`;
+          state.imageFileIds.map(async (imageFileId) => {
+            const url = new URL(
+              `https://graph.facebook.com/v18.0/${igPage}/media`
+            );
+            url.searchParams.set('access_token', accessToken);
+            url.searchParams.set(
+              'image_url',
+              backendAddr + '/image/' + imageFileId
+            );
 
-            console.log(new Date(), 'POST', url);
+            console.log(new Date(), 'POST', url.toString());
 
-            const res = await fetch(url, {
+            const res = await fetchImpl(url, {
               method: 'POST',
             });
             if (res.status !== 200)
@@ -93,21 +74,18 @@ export async function actuallyPost(
               );
             const containerId = ((await res.json()) as { id: string }).id;
 
-            image.instagramContainerId = containerId;
-
             return containerId;
-            // }
           })
         );
 
-        const url = `https://graph.facebook.com/v18.0/${brand.instagramPage
-          ?.id}/media?caption=${encodeURIComponent(
-          post.content || ''
-        )}&media_type=CAROUSEL&children=${containerIds.join(
-          '%2C'
-        )}&access_token=${brand.instagramAccessToken}`;
-        console.log(new Date(), 'POST', url);
-        const res = await fetch(url, {
+        const url = new URL(`https://graph.facebook.com/v18.0/${igPage}/media`);
+        url.searchParams.set('access_token', accessToken);
+        url.searchParams.set('caption', post.content || '');
+        url.searchParams.set('media_type', 'CAROUSEL');
+        url.searchParams.set('children', containerIds.join(','));
+
+        console.log(new Date(), 'POST', url.toString());
+        const res = await fetchImpl(url, {
           method: 'POST',
         });
         if (res.status !== 200)
@@ -119,9 +97,14 @@ export async function actuallyPost(
 
       if (!topContainerId) throw new Error('no container id');
 
-      const url = `https://graph.facebook.com/v18.0/${brand.instagramPage?.id}/media_publish?creation_id=${topContainerId}&access_token=${brand.instagramAccessToken}`;
-      console.log(new Date(), 'POST', url);
-      const res = await fetch(url, {
+      const url = new URL(
+        `https://graph.facebook.com/v18.0/${igPage}/media_publish`
+      );
+      url.searchParams.set('access_token', accessToken);
+      url.searchParams.set('creation_id', topContainerId);
+
+      console.log(new Date(), 'POST', url.toString());
+      const res = await fetchImpl(url, {
         method: 'POST',
       });
       if (res.status !== 200)
@@ -132,9 +115,14 @@ export async function actuallyPost(
 
       if (!postMediaId) throw new Error('no post media id');
 
-      const permalinkReqUrl = `https://graph.facebook.com/v18.0/${postMediaId}?fields=permalink&access_token=${brand.instagramAccessToken}`;
+      const permalinkReqUrl = new URL(
+        `https://graph.facebook.com/v18.0/${postMediaId}`
+      );
+      permalinkReqUrl.searchParams.set('access_token', accessToken);
+      permalinkReqUrl.searchParams.set('fields', 'permalink');
+
       console.log(new Date(), 'GET', permalinkReqUrl);
-      const permalinkRes = await fetch(permalinkReqUrl);
+      const permalinkRes = await fetchImpl(permalinkReqUrl);
       permalinkRes.status !== 200 &&
         console.error(
           new Date(),
