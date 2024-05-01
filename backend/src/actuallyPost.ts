@@ -1,5 +1,5 @@
 import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
-import { Image, Post } from '../sharedDataModel';
+import { Image, Post } from './sharedDataModel';
 import { ActuallyScheduled } from '.';
 
 export async function actuallyPost(

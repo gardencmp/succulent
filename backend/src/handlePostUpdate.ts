@@ -1,5 +1,5 @@
 import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
-import { InstagramScheduleDesired, Post } from '../sharedDataModel';
+import { InstagramScheduleDesired, Post } from './sharedDataModel';
 import { ActuallyScheduled } from '.';
 
 export const handlePostUpdate = (
