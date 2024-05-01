@@ -152,6 +152,7 @@ export async function actuallyPost(
         scheduledAt: state.scheduledAt.toISOString(),
         notScheduledReason: e + '',
       };
+      setTimeout(() => actuallyScheduled.delete(postId), 10_000);
     }
   } catch (e) {
     console.error(new Date(), 'Error posting - no post info at all', postId, e);
