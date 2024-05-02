@@ -54,6 +54,7 @@ job "succulent-backend$BRANCH_SUFFIX" {
       env {
         SUCCULENT_BACKEND_ADDR = "https://succulent-backend$BRANCH_SUFFIX.jazz.tools"
         SUCCULENT_FRONTEND_ADDR = "https://succulent$BRANCH_SUFFIX.jazz.tools"
+        ARMED_BRANDS = "co_zYTf6vk6zhSJJJAZ8RL4K8dMM41"
       }
 
       template {

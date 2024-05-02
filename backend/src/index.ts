@@ -4,6 +4,7 @@ import { createOrResumeWorker } from 'jazz-nodejs';
 import { ID, ImageDefinition } from 'jazz-tools';
 
 import {
+  Brand,
   InstagramScheduleDesired,
   InstagramScheduled,
   Post,
@@ -31,6 +32,7 @@ export type ActuallyScheduled = Map<
       content: string;
       imageFileIds: ID<ImageDefinition>[];
       scheduledAt: Date;
+      brandId: ID<Brand>;
     }
   | {
       state: 'loadingImagesFailed';
@@ -40,6 +42,7 @@ export type ActuallyScheduled = Map<
       content: string;
       imageFileIds: ID<ImageDefinition>[];
       scheduledAt: Date;
+      brandId: ID<Brand>;
     }
 >;
 
@@ -125,7 +128,11 @@ async function runner() {
     for (let [postId, state] of actuallyScheduled.entries()) {
       if (state.state === 'imagesNotLoaded') {
         console.log(new Date(), 'loading images for', postId);
-        actuallyScheduled.set(postId, { ...state, state: 'loadingImages' });
+        actuallyScheduled.set(postId, {
+          ...state,
+          state: 'loadingImages',
+          brandId: state.post._refs.inBrand.id,
+        });
 
         const streams = await Promise.all(
           state.imageFileIds.map(async (imageId) => ({
@@ -151,6 +158,7 @@ async function runner() {
           actuallyScheduled.set(postId, {
             ...state,
             state: 'ready',
+            brandId: state.post._refs.inBrand.id,
           });
           if (state.post.instagram.state === 'scheduleDesired') {
             state.post.instagram = {
@@ -185,8 +193,8 @@ async function runner() {
       console.log(new Date(), 'not actually posting in dev mode');
     }
 
-    if (!process.env.ARMED) {
-      console.log(new Date(), 'not actually posting in unarmed mode');
+    if (!process.env.ARMED_BRANDS) {
+      console.log(new Date(), 'no armed brands, not actually posting');
     }
 
     for (let [postId, state] of actuallyScheduled.entries()) {
@@ -198,7 +206,8 @@ async function runner() {
           postId,
           actuallyScheduled,
           state,
-          process.env.NODE_ENV === 'production' && process.env.ARMED
+          process.env.NODE_ENV === 'production' &&
+            process.env.ARMED_BRANDS?.includes(state.brandId)
             ? fetch
             : async (...params) => {
                 const url = params[0] as URL;

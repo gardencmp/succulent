@@ -147,6 +147,7 @@ export async function actuallyPost(
       actuallyScheduled.delete(postId);
     } catch (e) {
       console.error(new Date(), 'Error posting after post load', postId, e);
+      // TODO add last try and next retry interval directly on post
       post.instagram = {
         state: 'scheduleDesired',
         scheduledAt: state.scheduledAt.toISOString(),
