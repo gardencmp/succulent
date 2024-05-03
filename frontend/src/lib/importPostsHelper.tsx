@@ -95,25 +95,24 @@ export async function importPostsHelper(
 
       if (existingPosts.length === 0) {
         const brandGroup = brand._owner;
-        const images = new ListOfImages(
+        const images = ListOfImages.create(
           await Promise.all(
-            imageUrls.map(
-              async (url) =>
-                new Image(
-                  {
-                    imageFile: await createImage(
-                      await fetch(url).then((response) => response.blob()),
-                      { owner: brandGroup }
-                    ),
-                  },
-                  { owner: brandGroup }
-                )
+            imageUrls.map(async (url) =>
+              Image.create(
+                {
+                  imageFile: await createImage(
+                    await fetch(url).then((response) => response.blob()),
+                    { owner: brandGroup }
+                  ),
+                },
+                { owner: brandGroup }
+              )
             )
           ),
           { owner: brandGroup }
         );
 
-        const succulentPost = new Post(
+        const succulentPost = Post.create(
           {
             content: post.caption,
             images: images,

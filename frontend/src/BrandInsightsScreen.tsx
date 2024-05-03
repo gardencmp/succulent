@@ -19,7 +19,10 @@ export function BrandInsightsScreen() {
     if (!brand) return;
 
     if (!brand._refs.instagramInsights) {
-      const insights = new BrandInstagramInsights({}, { owner: brand._owner });
+      const insights = BrandInstagramInsights.create(
+        {},
+        { owner: brand._owner }
+      );
       brand.instagramInsights = insights;
 
       console.log('FETCHING INSIGHTS');

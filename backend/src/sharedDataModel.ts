@@ -32,9 +32,7 @@ export type InstagramPosted = {
   permalink: string;
 };
 
-export class Post<out S extends InstagramState = InstagramState> extends CoMap<
-  Post<InstagramState>
-> {
+export class Post<out S extends InstagramState = InstagramState> extends CoMap {
   inBrand: co<Brand | null> = co.ref(Brand);
   content? = co.string;
   images = co.ref(ListOfImages);
@@ -57,14 +55,14 @@ export class Post<out S extends InstagramState = InstagramState> extends CoMap<
   }>();
 }
 
-export class Image extends CoMap<Image> {
+export class Image extends CoMap {
   imageFile = co.ref(ImageDefinition);
   instagramContainerId? = co.string;
 }
 
 export class ListOfImages extends CoList.Of(co.ref(Image)) {}
 
-export class Brand extends CoMap<Brand> {
+export class Brand extends CoMap {
   name = co.string;
   instagramAccessToken? = co.string;
   instagramAccessTokenValidUntil? = co.number;
@@ -79,7 +77,7 @@ export class ListOfBrands extends CoList.Of(co.ref(Brand)) {}
 
 export class ListOfPosts extends CoList.Of(co.ref(Post)) {}
 
-export class Location extends CoMap<Location> {
+export class Location extends CoMap {
   fbId? = co.string;
   name = co.string;
 }
@@ -104,7 +102,7 @@ export type DayInsights = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class BrandInstagramInsights extends CoMap<BrandInstagramInsights> {
+export class BrandInstagramInsights extends CoMap {
   [co.items] = co.json<DayInsights>();
 }
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging

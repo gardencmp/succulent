@@ -1,20 +1,20 @@
 import { Account, CoMap, Profile, co } from 'jazz-tools';
 import { ListOfBrands } from './sharedDataModel';
 
-export class AccountRoot extends CoMap<AccountRoot> {
+export class AccountRoot extends CoMap {
   brands = co.ref(ListOfBrands);
 }
 
-export class SucculentAccount extends Account<SucculentAccount> {
+export class SucculentAccount extends Account {
   profile = co.ref(Profile);
   root = co.ref(AccountRoot);
 
   migrate(creationProps?: { name: string }) {
     super.migrate(creationProps);
     if (!this._refs.root) {
-      this.root = new AccountRoot(
+      this.root = AccountRoot.create(
         {
-          brands: new ListOfBrands([], { owner: this }),
+          brands: ListOfBrands.create([], { owner: this }),
         },
         { owner: this }
       );

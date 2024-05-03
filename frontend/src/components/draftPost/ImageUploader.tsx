@@ -16,7 +16,7 @@ export function ImageUploader({ post }: { post: Post }) {
           files.map((file) =>
             createImage(file, { owner: post._owner }).then((image) => {
               post.images?.push(
-                new Image({ imageFile: image }, { owner: post._owner })
+                Image.create({ imageFile: image }, { owner: post._owner })
               );
             })
           )

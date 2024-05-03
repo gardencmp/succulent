@@ -36,15 +36,15 @@ export function HomeScreen() {
               throw new Error('scheduleWorker unavailable');
             }
 
-            const brandGroup = new Group(undefined, {
+            const brandGroup = Group.create({
               owner: me,
             });
             brandGroup.addMember(scheduleWorker, 'writer');
 
-            const brand = new Brand(
+            const brand = Brand.create(
               {
                 name: brandName,
-                posts: new ListOfPosts([], { owner: brandGroup }),
+                posts: ListOfPosts.create([], { owner: brandGroup }),
               },
               { owner: brandGroup }
             );

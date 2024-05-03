@@ -1,22 +1,22 @@
 import { Group, co, CoMap, CoStream, Account, Profile } from 'jazz-tools';
 import { Brand, ListOfBrands, Post } from './sharedDataModel';
 
-export class SchedulerAccountRoot extends CoMap<SchedulerAccountRoot> {
+export class SchedulerAccountRoot extends CoMap {
   brands = co.ref(ListOfBrands);
 }
 
 export class ScheduledPosts extends CoStream.Of(co.ref(Post)) {}
 
-export class SchedulerAccount extends Account<SchedulerAccount> {
+export class SchedulerAccount extends Account {
   profile = co.ref(Profile);
   root = co.ref(SchedulerAccountRoot);
 
   migrate(creationProps?: { name: string }) {
     super.migrate(creationProps);
     if (!this._refs.root) {
-      this.root = new SchedulerAccountRoot(
+      this.root = SchedulerAccountRoot.create(
         {
-          brands: new ListOfBrands([], { owner: this }),
+          brands: ListOfBrands.create([], { owner: this }),
         },
         { owner: this }
       );

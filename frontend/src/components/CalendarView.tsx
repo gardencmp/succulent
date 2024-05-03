@@ -32,12 +32,12 @@ export function CalendarView() {
         className="h-20"
         onClick={() => {
           if (!brand) return;
-          const draftPost = new Post(
+          const draftPost = Post.create(
             {
               instagram: {
                 state: 'notScheduled',
               },
-              images: new ListOfImages([], { owner: brand._owner }),
+              images: ListOfImages.create([], { owner: brand._owner }),
               inBrand: brand,
             },
             { owner: brand._owner }
