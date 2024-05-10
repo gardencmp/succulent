@@ -46,25 +46,27 @@ job "succulent-backend$BRANCH_SUFFIX" {
 
         mount {
           type   = "bind"
-          source = "configs/SucculentSchedulerCredentials.json"
-          target = "/usr/src/app/SucculentSchedulerCredentials.json"
+          source = "configs/.env"
+          target = "/usr/src/app/.env"
         }
       }
 
       env {
         SUCCULENT_BACKEND_ADDR = "https://succulent-backend$BRANCH_SUFFIX.jazz.tools"
         SUCCULENT_FRONTEND_ADDR = "https://succulent$BRANCH_SUFFIX.jazz.tools"
-        ARMED_BRANDS = "co_zYTf6vk6zhSJJJAZ8RL4K8dMM41"
       }
 
       template {
         data = <<EOH
-        {{ with nomadVar "nomad/jobs/succulent-backend" }}{
-          "accountID": "{{ .accountID }}",
-          "accountSecret": "{{ .accountSecret }}"
-        }{{ end }}
+        {{ with nomadVar "nomad/jobs/succulent-backend" }}
+        JAZZ_WORKER_ACCOUNT={{ .accountID }}
+        JAZZ_WORKER_SECRET={{ .accountSecret }}
+        FB_CLIENT_ID={{ .fbClientID }}
+        FB_CLIENT_SECRET={{ .fbClientSecret }}
+        ARMED_BRANDS={{ .armedBrands }}
+        {{ end }}
         EOH
-        destination = "configs/SucculentSchedulerCredentials.json"
+        destination = "configs/.env"
       }
 
       service {

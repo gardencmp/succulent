@@ -264,10 +264,10 @@
   dependencies:
     tslib "^2.0.0"
 
-"@effect/schema@^0.66.6":
-  version "0.66.6"
-  resolved "https://registry.yarnpkg.com/@effect/schema/-/schema-0.66.6.tgz#619995c3dfdf3ca1d2a32d0684efe8b9374b7665"
-  integrity sha512-ucyPKkmiXiiAN6SurfysM3wG2qFKz2XCCmR1EMR7PJtcjLi5TKvW2Ax9gXf7ByChKXKcp1sM3Wzbr/3sQw9zwg==
+"@effect/schema@^0.66.16":
+  version "0.66.16"
+  resolved "https://registry.yarnpkg.com/@effect/schema/-/schema-0.66.16.tgz#97fe63049601dbb4d3e411ab0aca61804c1cf72d"
+  integrity sha512-sT/k5NOgKslGPzs3DUaCFuM6g2JQoIIT8jpwEorAZooplPIMK2xIspr7ECz6pp6Dc7Wz/ppXGk7HVyGZQsIYEQ==
 
 "@esbuild/android-arm64@0.18.20":
   version "0.18.20"
@@ -1572,6 +1572,16 @@ cojson-storage-indexeddb@0.7.0-alpha.29:
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
     typescript "^5.1.6"
 
+cojson-transport-nodejs-ws@0.7.0-alpha.29:
+  version "0.7.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/cojson-transport-nodejs-ws/-/cojson-transport-nodejs-ws-0.7.0-alpha.29.tgz#bff18df0c18987c7ff32ece020d91c261fecbab6"
+  integrity sha512-VbHSIO5pObOkJbpuxYzyZBJFR9RPp/9iqa6x/A9Ng9TjFCrx+KbMHK+BGyCHn4xIuQRyAX/Cv3jd45fe48xc6A==
+  dependencies:
+    cojson "0.7.0-alpha.29"
+    isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
+    typescript "^5.1.6"
+    ws "^8.14.2"
+
 cojson@0.7.0-alpha.29:
   version "0.7.0-alpha.29"
   resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.7.0-alpha.29.tgz#c46e123b7e3c21df1a72531bc10d5fdfbf92b660"
@@ -1810,10 +1820,10 @@ eastasianwidth@^0.2.0:
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
-effect@^3.0:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/effect/-/effect-3.0.3.tgz#eff906adc01192d01ac6c1b0d4ca102859a60ff4"
-  integrity sha512-mgG+FoWrM4sny8OxDFWCpq+6LwGf9cK/JztVhxZQeZM9ZMXY+lKbdMEQmemNYce0QVAz2+YqUKwhKzOidwbZzg==
+effect@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/effect/-/effect-3.1.3.tgz#d4df46be839464ae1f099edfdee8743291b42cfe"
+  integrity sha512-afL9sbn4m9fCERYMLgUgtJC8+JvHb62zh0Q3v0O56z4aMAEdrrd+DKvLtlTbonQjgdOB37frE9LJuwUO7DV0ww==
 
 electron-to-chromium@^1.4.601:
   version "1.4.616"
@@ -2287,7 +2297,6 @@ isexe@^2.0.0:
 
 "isomorphic-streams@https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
   version "1.0.3"
-  uid aa9394781bfc92f8d7c981be7daf8af4b4cd4fae
   resolved "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
 jackspeak@^2.3.5:
@@ -2299,48 +2308,50 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jazz-browser-media-images@0.7.0-alpha.31:
-  version "0.7.0-alpha.31"
-  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.0-alpha.31.tgz#aa7e400361316e287f18c4bfb537a365662a5e8b"
-  integrity sha512-qD5ldaiQMkMAsCq5WaSCd6jyFJRroSaoWDqOxfWtvmVKqirQrH3v28zC97aIQN0nlrBsnDSG2ZuIiR+D/pD2Qw==
+jazz-browser-media-images@0.7.0-alpha.33:
+  version "0.7.0-alpha.33"
+  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.0-alpha.33.tgz#33696fdee9a8cef5d12d9b10eaf9096675f8dd40"
+  integrity sha512-TDg08b5E+3PJqZvfRR5FC8dSIftrnJruBQag6qe807PaziOgNumsx6K74+yLHzgoD/8EyYZklxT3W6rpjo3zjg==
   dependencies:
     "@types/image-blob-reduce" "^4.1.1"
     image-blob-reduce "^4.1.0"
-    jazz-browser "0.7.0-alpha.31"
-    jazz-tools "0.7.0-alpha.31"
+    jazz-browser "0.7.0-alpha.34"
+    jazz-tools "0.7.0-alpha.34"
     pica "^9.0.1"
     typescript "^5.1.6"
 
-jazz-browser@0.7.0-alpha.31:
-  version "0.7.0-alpha.31"
-  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.0-alpha.31.tgz#bb0170e3af2f26274343ff6c1cd2684dde0405e7"
-  integrity sha512-nq6SB+Fl4LDwg0ERP/1wHMQuq/+FpwuyIaxRuE2tuYC4bvbi0UJKqBpaa2bAhTvBIrzKIkPcuN/R/C4U4OdKsg==
+jazz-browser@0.7.0-alpha.34:
+  version "0.7.0-alpha.34"
+  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.0-alpha.34.tgz#c66b901b98f5607964f70e5400b0f41ed055e1bd"
+  integrity sha512-lLYcPcYlrjsF8RMbUJ1H8jexNq/3q7mPDeV14SBuNrtgCUfeT8rkZDmio/a9h/xXx7rhI424uf4ibG3HqJrJdQ==
   dependencies:
     "@scure/bip39" "^1.3.0"
     cojson "0.7.0-alpha.29"
     cojson-storage-indexeddb "0.7.0-alpha.29"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
-    jazz-tools "0.7.0-alpha.31"
+    jazz-tools "0.7.0-alpha.34"
     typescript "^5.1.6"
 
-jazz-react@0.7.0-alpha.31:
-  version "0.7.0-alpha.31"
-  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.0-alpha.31.tgz#b055e289f07ca2819eb5539d61d83c559faddbc2"
-  integrity sha512-wCahykqv7iGG5j3Q+YiALrcSktAe8C+8eAEwxF+a1NLwlhPsBxCvs8hpDUx2b9BM3o8sKBdpvSz3YMh/+YwUQg==
+jazz-react@0.7.0-alpha.34:
+  version "0.7.0-alpha.34"
+  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.0-alpha.34.tgz#db2da4207f16d3f64920a11bdff99505092f31a0"
+  integrity sha512-3ofb59+ile89IJxosEDMJbSNmPOUiY/NLaT19aXhNLg8oj4yrvUW9elAu49gQR9RnuysPvJT0Qc7ASfKWkqlwA==
   dependencies:
+    "@scure/bip39" "^1.3.0"
     cojson "0.7.0-alpha.29"
-    jazz-browser "0.7.0-alpha.31"
-    jazz-tools "0.7.0-alpha.31"
+    jazz-browser "0.7.0-alpha.34"
+    jazz-tools "0.7.0-alpha.34"
     typescript "^5.1.6"
 
-jazz-tools@0.7.0-alpha.31:
-  version "0.7.0-alpha.31"
-  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.0-alpha.31.tgz#57c886d6b158bc1257dda08110f6d8b20cb32b9f"
-  integrity sha512-UpyUTX266W4uxT750Fv2nBZKI9nNu1ha+HMWtasKmLr9El376UZdGtqtXmiTK90MXS0yoRbiTlCPCByWLMUKmw==
+jazz-tools@0.7.0-alpha.34:
+  version "0.7.0-alpha.34"
+  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.0-alpha.34.tgz#60809be5e54e80fd2bff45037180aa4eb2d613d7"
+  integrity sha512-BFglhe6LDf4rs+tdfC9aq46Y5tWQrnYlGtv32+YTJRuOl9s9Ij/PGyNnNI3U+ZVrdTlFpAt7O9j4bDOuIbKskg==
   dependencies:
-    "@effect/schema" "^0.66.6"
+    "@effect/schema" "^0.66.16"
     cojson "0.7.0-alpha.29"
-    effect "^3.0"
+    cojson-transport-nodejs-ws "0.7.0-alpha.29"
+    effect "^3.1.3"
     fast-check "^3.17.2"
 
 jiti@^1.19.1:
@@ -3210,6 +3221,11 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
+
+ws@^8.14.2:
+  version "8.17.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.0.tgz#d145d18eca2ed25aaf791a183903f7be5e295fea"
+  integrity sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==
 
 yallist@^3.0.2:
   version "3.1.1"

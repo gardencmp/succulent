@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { createOrResumeWorker } from 'jazz-nodejs';
+import { startWorker } from 'jazz-nodejs';
 import { ID, ImageDefinition } from 'jazz-tools';
 
 import {
@@ -48,8 +48,7 @@ export type ActuallyScheduled = Map<
 
 async function runner() {
   // TODO: make sure this is inferred
-  const { worker } = await createOrResumeWorker<SchedulerAccount>({
-    workerName: 'SucculentScheduler',
+  const { worker } = await startWorker<SchedulerAccount>({
     accountSchema: SchedulerAccount,
   });
 
