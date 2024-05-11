@@ -61,16 +61,26 @@ export const handlePostUpdate = (
         };
       }
     } else if (post.instagram.state === 'scheduleDesired') {
-      actuallyScheduled.set(post.id, {
-        state: 'imagesNotLoaded',
-        content: post.content || '',
-        imageFileIds:
-          post.images
-            ?.map((image) => image?.imageFile?.id)
-            .filter((i): i is NonNullable<typeof i> => !!i) || [],
-        scheduledAt: new Date(post.instagram.scheduledAt),
-        post: post as Post<InstagramScheduleDesired>,
-      });
+      if (
+        new Date(post.instagram.scheduledAt).getTime() >=
+        Date.now() - 1000 * 60 * 5
+      ) {
+        actuallyScheduled.set(post.id, {
+          state: 'imagesNotLoaded',
+          content: post.content || '',
+          imageFileIds:
+            post.images
+              ?.map((image) => image?.imageFile?.id)
+              .filter((i): i is NonNullable<typeof i> => !!i) || [],
+          scheduledAt: new Date(post.instagram.scheduledAt),
+          post: post as Post<InstagramScheduleDesired>,
+        });
+      } else {
+        console.log(
+          new Date(),
+          '⚠️ Ignoring scheduleDesired post that is older than 5 minutes'
+        );
+      }
     }
   };
 };
