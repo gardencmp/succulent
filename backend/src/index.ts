@@ -12,7 +12,7 @@ import {
 import { actuallyPost } from './actuallyPost';
 import { handleImageRequest } from './handleImageRequest';
 import { handleFBConnectRequest } from './handleFBConnectRequest';
-import { SchedulerAccount } from './workerAccount';
+import { SchedulerAccount, SchedulerAccountRoot } from './workerAccount';
 import { handlePostUpdate } from './handlePostUpdate';
 import { logAccountState, logActuallyScheduled } from './logging';
 import { loadImageFile } from './loadImageFile';
@@ -60,10 +60,12 @@ async function runner() {
 
   console.log(new Date(), 'root after migration', worker.root);
 
-  let lastWorkerUpdate: Date | undefined;
+  let lastWorkerUpdateAt: Date | undefined;
+  let lastWorkerUpdate: SchedulerAccountRoot | null;
 
   worker.subscribe((workerUpdate) => {
-    lastWorkerUpdate = new Date();
+    lastWorkerUpdateAt = new Date();
+    lastWorkerUpdate = workerUpdate?.root;
 
     if (workerUpdate?.root?.brands) {
       logAccountState(workerUpdate);
@@ -110,8 +112,52 @@ async function runner() {
     port: 3331,
   });
 
+  const tryReclaimingOldScheduledPosts = async () => {
+    if (Date.now() - lastWorkerUpdateAt!.getTime() < 10_000) {
+      console.log(
+        new Date(),
+        'skipping reclaiming old scheduled, last worker update less than 10s ago'
+      );
+      return;
+    }
+    for (let brand of lastWorkerUpdate?.brands || []) {
+      for (let post of brand?.posts || []) {
+        if (post) {
+          if (post.instagram.state === 'scheduled') {
+            const actuallyScheduledPost = actuallyScheduled.get(post.id);
+            if (
+              !(
+                actuallyScheduledPost?.state === 'ready' ||
+                actuallyScheduledPost?.state === 'imagesNotLoaded' ||
+                actuallyScheduledPost?.state === 'loadingImages'
+              ) ||
+              post.content !== actuallyScheduledPost.content ||
+              post.images?.map((image) => image?.imageFile?.id).join() !==
+                actuallyScheduledPost.imageFileIds.join() ||
+              post.instagram.scheduledAt !==
+                actuallyScheduledPost.scheduledAt.toISOString()
+            ) {
+              console.log(
+                new Date(),
+                'Got previously scheduled post, or scheduled post that changed, resetting to scheduleDesired',
+                post.id
+              );
+              actuallyScheduled.delete(post.id);
+              post.instagram = {
+                state: 'scheduleDesired',
+                scheduledAt: post.instagram.scheduledAt,
+              };
+            }
+          }
+        }
+      }
+    }
+  };
+
+  setInterval(tryReclaimingOldScheduledPosts, 10_000);
+
   const tryLoadingImages = async () => {
-    if (Date.now() - lastWorkerUpdate!.getTime() < 10_000) {
+    if (Date.now() - lastWorkerUpdateAt!.getTime() < 10_000) {
       console.log(
         new Date(),
         'skipping loading images, last worker update less than 10s ago'
@@ -179,7 +225,7 @@ async function runner() {
   setInterval(tryLoadingImages, 10_000);
 
   const tryPosting = async () => {
-    if (Date.now() - lastWorkerUpdate!.getTime() < 10_000) {
+    if (Date.now() - lastWorkerUpdateAt!.getTime() < 10_000) {
       console.log(
         new Date(),
         'skipping try posting, last worker update less than 10s ago'
