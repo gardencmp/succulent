@@ -2,6 +2,7 @@ import { Post } from '@/sharedDataModel';
 import {
   Heart,
   HeartHandshake,
+  LucideIcon,
   MessageCircle,
   MessageCircleReply,
   Save,
@@ -9,7 +10,6 @@ import {
   UserRoundPlus,
   View,
 } from 'lucide-react';
-import { ReactElement } from 'react';
 
 export function insightConfigForPost(post: Post) {
   const insights = post.instagramInsights;
@@ -18,7 +18,7 @@ export function insightConfigForPost(post: Post) {
   type PostInsight = {
     id: string;
     title: string;
-    icon: ReactElement;
+    icon: LucideIcon;
     data: string;
   };
 
@@ -46,55 +46,55 @@ export function insightConfigForPost(post: Post) {
     {
       id: 'likes',
       title: 'likes',
-      icon: <Heart />,
+      icon: Heart,
       data: getInsights('likes'),
     },
     {
       id: 'reach',
       title: 'reach',
-      icon: <Smile />,
+      icon: Smile,
       data: getInsights('reach'),
     },
     {
       id: 'totalInteractions',
       title: 'interactionPc',
-      icon: <HeartHandshake />,
+      icon: HeartHandshake,
       data: getInteractionPc(),
     },
     {
       id: 'comments',
       title: 'comments',
-      icon: <MessageCircle />,
+      icon: MessageCircle,
       data: getInsights('comments'),
     },
     {
       id: 'saves',
       title: 'saves',
-      icon: <Save />,
+      icon: Save,
       data: getInsights('saved'),
     },
     {
       id: 'shares',
       title: 'shares',
-      icon: <MessageCircleReply />,
+      icon: MessageCircleReply,
       data: getInsights('shares'),
     },
     {
       id: 'profileActivity',
       title: 'profileVisits',
-      icon: <View />,
+      icon: View,
       data: getInsights('profileVisits'),
     },
     {
       id: 'follows',
       title: 'follows',
-      icon: <UserRoundPlus />,
+      icon: UserRoundPlus,
       data: getInsights('follows'),
     },
     {
       id: 'impressions',
       title: 'impressions',
-      icon: <UserRoundPlus />,
+      icon: UserRoundPlus,
       data: getInsights('impressions'),
     },
   ];
