@@ -14,7 +14,7 @@ import { handleImageRequest } from './handleImageRequest';
 import { handleFBConnectRequest } from './handleFBConnectRequest';
 import { SchedulerAccount } from './workerAccount';
 import { handlePostUpdate } from './handlePostUpdate';
-import { logAccountState } from './logAccountState';
+import { logAccountState, logActuallyScheduled } from './logging';
 import { loadImageFile } from './loadImageFile';
 
 export type ActuallyScheduled = Map<
@@ -60,16 +60,10 @@ async function runner() {
 
   console.log(new Date(), 'root after migration', worker.root);
 
-  let tryPostingTimeout: NodeJS.Timeout | undefined;
-  let tryLoadingImagesTimeout: NodeJS.Timeout | undefined;
+  let lastWorkerUpdate: Date | undefined;
 
   worker.subscribe((workerUpdate) => {
-    if (tryPostingTimeout) {
-      clearTimeout(tryPostingTimeout);
-    }
-    if (tryLoadingImagesTimeout) {
-      clearTimeout(tryLoadingImagesTimeout);
-    }
+    lastWorkerUpdate = new Date();
 
     if (workerUpdate?.root?.brands) {
       logAccountState(workerUpdate);
@@ -100,10 +94,6 @@ async function runner() {
 
       console.log(new Date(), 'actuallyScheduled after workerUpdate');
       logActuallyScheduled(actuallyScheduled);
-
-      tryLoadingImagesTimeout = setTimeout(() => {
-        tryLoadingImages();
-      }, 10_000);
     }
   });
 
@@ -121,6 +111,13 @@ async function runner() {
   });
 
   const tryLoadingImages = async () => {
+    if (Date.now() - lastWorkerUpdate!.getTime() < 10_000) {
+      console.log(
+        new Date(),
+        'skipping loading images, last worker update less than 10s ago'
+      );
+      return;
+    }
     console.log(new Date(), 'actuallyScheduled in tryLoadingImages');
     logActuallyScheduled(actuallyScheduled);
 
@@ -177,14 +174,19 @@ async function runner() {
         }
       }
     }
-
-    tryLoadingImagesTimeout = setTimeout(tryLoadingImages, 10_000);
-    tryPostingTimeout = setTimeout(() => {
-      tryPosting();
-    }, 10_000);
   };
 
+  setInterval(tryLoadingImages, 10_000);
+
   const tryPosting = async () => {
+    if (Date.now() - lastWorkerUpdate!.getTime() < 10_000) {
+      console.log(
+        new Date(),
+        'skipping try posting, last worker update less than 10s ago'
+      );
+      return;
+    }
+
     console.log(new Date(), 'actuallyScheduled in tryPosting');
     logActuallyScheduled(actuallyScheduled);
 
@@ -235,25 +237,9 @@ async function runner() {
         );
       }
     }
-
-    tryPostingTimeout = setTimeout(tryPosting, 10_000);
   };
+
+  setInterval(tryPosting, 10_000);
 }
 
 runner();
-
-function logActuallyScheduled(actuallyScheduled: ActuallyScheduled) {
-  console.table(
-    [...actuallyScheduled.entries()].map(([id, state]) =>
-      state.state === 'posting' || state.state === 'loadingImagesFailed'
-        ? { state: state.state }
-        : {
-            content: state.content?.split('\n')[0].slice(0, 20),
-            state: state.state,
-            scheduledAt: state.scheduledAt,
-            id,
-            imageFileIds: state.imageFileIds,
-          }
-    )
-  );
-}

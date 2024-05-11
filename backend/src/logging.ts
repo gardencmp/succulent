@@ -1,3 +1,4 @@
+import { ActuallyScheduled } from '.';
 import { SchedulerAccount } from './workerAccount';
 
 export function logAccountState(account: SchedulerAccount) {
@@ -41,6 +42,22 @@ export function logAccountState(account: SchedulerAccount) {
             imgs: post?.images?.length,
             id: post?.id,
           }))
+    )
+  );
+}
+
+export function logActuallyScheduled(actuallyScheduled: ActuallyScheduled) {
+  console.table(
+    [...actuallyScheduled.entries()].map(([id, state]) =>
+      state.state === 'posting' || state.state === 'loadingImagesFailed'
+        ? { state: state.state }
+        : {
+            content: state.content?.split('\n')[0].slice(0, 20),
+            state: state.state,
+            scheduledAt: state.scheduledAt,
+            id,
+            imageFileIds: state.imageFileIds,
+          }
     )
   );
 }
