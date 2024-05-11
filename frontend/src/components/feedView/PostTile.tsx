@@ -15,11 +15,13 @@ import { PostImage } from '../PostImage';
 
 export function PostTile({
   post,
+  isFirst,
   olderPost,
   alwaysShowInsights,
   onDeleteDraft,
 }: {
   post: Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>;
+  isFirst: boolean;
   olderPost?: Post<
     InstagramPosted | InstagramScheduleDesired | InstagramScheduled
   >;
@@ -36,7 +38,17 @@ export function PostTile({
 
   return (
     <Dialog key={post.id}>
-      <div className="col-span-1 aspect-square relative p-1">
+      <div className="col-span-1 aspect-square relative">
+        {isFirst && (
+          <DropGap
+            isLeft
+            after={
+              post.instagram.state === 'posted'
+                ? post.instagram.postedAt
+                : post.instagram.scheduledAt
+            }
+          />
+        )}
         <DialogTrigger asChild>
           <Button
             variant="ghost"

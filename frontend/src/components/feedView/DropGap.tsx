@@ -5,9 +5,11 @@ import { cn } from '@/lib/utils';
 export function DropGap({
   before,
   after,
+  isLeft,
 }: {
   before?: ISODate;
   after?: ISODate;
+  isLeft?: boolean;
 }) {
   const { isOver, setNodeRef, active } = useDroppable({
     id: 'dropGap-' + after + '-' + before,
@@ -18,7 +20,10 @@ export function DropGap({
     active && (
       <div
         ref={setNodeRef}
-        className="absolute top-0 bottom-0 w-20 -right-10 z-10 flex justify-center items-center"
+        className={
+          'absolute top-0 bottom-0 w-20 z-10 flex justify-center items-center ' +
+          (isLeft ? '-left-10' : '-right-10')
+        }
       >
         <div
           className={cn('h-[80%] rounded', {

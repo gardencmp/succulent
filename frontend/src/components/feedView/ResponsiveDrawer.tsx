@@ -92,7 +92,7 @@ export function DrawerOrSidebar(props: {
       {isMd ? (
         <div
           className={cn(
-            'flex md:col-span-4 xl:col-span-6 flex-col overflow-auto',
+            'ml-4 md:col-span-4 xl:col-span-6 overflow-auto',
             props.className
           )}
         >
@@ -100,7 +100,7 @@ export function DrawerOrSidebar(props: {
         </div>
       ) : (
         <div
-          className={cn('flex flex-col overflow-auto', props.className)}
+          className={cn('overflow-auto', props.className)}
           style={{
             height: ctx.drawerHeight + '%',
           }}

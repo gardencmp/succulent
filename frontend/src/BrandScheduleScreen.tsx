@@ -9,7 +9,7 @@ export function BrandScheduleScreen() {
   const [activeTab, setActiveTab] = useState<viewTypes>('feed');
 
   return (
-    <div className="flex flex-col gap-6 px-8 flex-shrink min-h-0">
+    <div className="flex flex-col gap-6 md:px-8 flex-shrink min-h-0">
       <ul className="flex-none tabs flex mb-3">
         {viewTabs.map((tab) => (
           <li

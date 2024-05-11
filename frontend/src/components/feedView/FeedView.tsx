@@ -17,16 +17,17 @@ import {
 import { DragToScheduleContext } from './DragToScheduleContext';
 import { PostGrid } from './PostGrid';
 import { DraftPostList } from './DraftPostList';
-import { Toolbar } from './Toolbar';
 import { ID } from 'jazz-tools';
 import { useCoState } from '@/main';
+import { getPostInsightsHelper } from '@/lib/importPostsHelper';
+import { DownloadCloudIcon, EyeIcon, PlusIcon } from 'lucide-react';
 
 export function FeedView() {
   const [showInsights, setShowInsights] = useState<boolean>(false);
   const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
   const brand = useCoState(Brand, brandId);
 
-  const [filter, setFilter] = useState<string>();
+  const [filter] = useState<string>();
   const filteredPosts = brand?.posts?.filter(
     (post): post is NonNullable<Post> =>
       !filter ||
@@ -51,6 +52,11 @@ export function FeedView() {
 
   const deleteDraft = useDeleteDraft(brand);
 
+  const getPostInsights = useCallback(async () => {
+    if (!brand) return;
+    await getPostInsightsHelper(brand);
+  }, [brand]);
+
   return (
     brand && (
       <DragToScheduleContext brand={brand}>
@@ -60,13 +66,35 @@ export function FeedView() {
           minDrawerHeightPercent={10}
         >
           <MainContent className="relative">
-            <Toolbar
+            <div className="uppercase text-xs tracking-wider font-semibold text-stone-500 mb-2 flex items-center justify-between">
+              Feed Preview
+              <div className="flex gap-2">
+                <Button
+                  variant={showInsights ? 'default' : 'outline'}
+                  size="sm"
+                  className="gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
+                  onClick={() => setShowInsights(!showInsights)}
+                >
+                  <EyeIcon size={15} /> Show{' '}
+                  <span className="hidden md:inline">all</span> insights
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
+                  onClick={getPostInsights}
+                >
+                  <DownloadCloudIcon size={15} /> Fetch
+                </Button>
+              </div>
+            </div>
+            {/* <Toolbar
               brand={brand}
               filter={filter}
               setFilter={setFilter}
               showInsights={showInsights}
               setShowInsights={setShowInsights}
-            />
+            /> */}
 
             <PostGrid
               posts={filterAndSortScheduledAndPostedPosts(filteredPosts)}
@@ -76,18 +104,33 @@ export function FeedView() {
             />
           </MainContent>
           <DrawerOrSidebar>
-            <Button
-              variant="outline"
-              className="mb-6 justify-center"
-              onClick={createDraft}
-            >
-              New Draft
-            </Button>
-
-            <DraftPostList
-              posts={filterDraftPosts(filteredPosts)}
-              deleteDraft={deleteDraft}
-            />
+            <div className="uppercase text-xs tracking-wider font-semibold text-stone-500 mb-2 flex items-center justify-between">
+              Drafts
+              <div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="gap-1 py-0 h-8"
+                  onClick={createDraft}
+                >
+                  <PlusIcon size={15} /> New Draft
+                </Button>
+              </div>
+            </div>
+            <div className="grid xl:grid-cols-2 gap-4">
+              <DraftPostList
+                posts={filterDraftPosts(filteredPosts)}
+                deleteDraft={deleteDraft}
+              />
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-1 h-full min-h-28"
+                onClick={createDraft}
+              >
+                <PlusIcon /> New Draft
+              </Button>
+            </div>
           </DrawerOrSidebar>
         </ResponsiveDrawer>
       </DragToScheduleContext>

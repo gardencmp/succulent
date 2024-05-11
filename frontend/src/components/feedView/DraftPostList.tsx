@@ -31,7 +31,6 @@ export function DraftPostList({
           <DraftPostComponent
             key={`drafts-${post.id}`}
             post={post}
-            styling="mb-3"
             onDelete={() => deleteDraft(post)}
           />
         </div>
