@@ -10,19 +10,19 @@ export function PostInsights(props: { post: Post }) {
         <div
           key={insightType.title}
           title={insightType.title}
-          className="col-span-1 flex items-center gap-1"
+          className="text-xs md:text-sm col-span-1 flex items-center gap-1"
         >
-          <insightType.icon size={17} />
+          <insightType.icon size={'1em'} />
           <p>{insightType.data}</p>
         </div>
       )
   );
 
   return (
-    <div className="absolute bg-neutral-800/65 backdrop-blur bottom-2 left-2 right-2 max-h-1/2 p-2 rounded-lg">
+    <div className="absolute bg-neutral-800/80 md:bg-neutral-800/65 md:backdrop-blur bottom-1 left-1 right-1 top-1 md:bottom-2 md:left-2 md:right-2 md:top-auto md:max-h-1/2 p-1 md:p-2 rounded-lg">
       <PostState post={props.post} />
       {insightElems?.length ? (
-        <div className="grid grid-cols-3 justify-around items-center w-full py-2 px-3 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 justify-around items-center w-full py-2 px-1 md:px-3 md:gap-2">
           {insightElems}
         </div>
       ) : undefined}
@@ -47,7 +47,7 @@ function PostState({ post }: { post: Post }) {
           : [undefined, undefined, undefined];
 
   return (
-    <div className={color}>
+    <div className={color + ' text-[0.7em] leading-tight md:text-sm'}>
       {prefix}
       {date ? date.toLocaleString() : 'Draft'}
     </div>
