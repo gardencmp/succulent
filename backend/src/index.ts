@@ -125,12 +125,13 @@ async function runner() {
         if (post) {
           if (post.instagram.state === 'scheduled') {
             const actuallyScheduledPost = actuallyScheduled.get(post.id);
+            if (actuallyScheduledPost?.state === 'loadingImagesFailed') {
+              // this should never happen
+              continue;
+            }
+            if (actuallyScheduledPost?.state === 'posting') continue;
             if (
-              !(
-                actuallyScheduledPost?.state === 'ready' ||
-                actuallyScheduledPost?.state === 'imagesNotLoaded' ||
-                actuallyScheduledPost?.state === 'loadingImages'
-              ) ||
+              !actuallyScheduledPost ||
               post.content !== actuallyScheduledPost.content ||
               post.images?.map((image) => image?.imageFile?.id).join() !==
                 actuallyScheduledPost.imageFileIds.join() ||
