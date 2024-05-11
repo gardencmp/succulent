@@ -78,7 +78,9 @@ export const handlePostUpdate = (
       } else {
         console.log(
           new Date(),
-          '⚠️ Ignoring scheduleDesired post that is older than 5 minutes'
+          '⚠️ Ignoring scheduleDesired post that is older than 5 minutes',
+          post.id,
+          post.content?.split('\n')[0].slice(0, 20)
         );
       }
     }
