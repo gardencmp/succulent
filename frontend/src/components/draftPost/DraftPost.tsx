@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { DraftPostImage } from './DraftPostImage';
 import { DraftPostScheduler } from './DraftPostScheduler';
 import { ImageUploader } from './ImageUploader';
-import { useActiveDraftPost } from '@/BrandHome';
 
 export function DraftPostComponent({
   post,
@@ -20,7 +19,6 @@ export function DraftPostComponent({
   onDelete?: () => void;
 }) {
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
-  const { setActiveDraftPost } = useActiveDraftPost();
 
   const schedule = useCallback(
     async (scheduleAt: Date) => {
@@ -40,10 +38,6 @@ export function DraftPostComponent({
     );
   };
 
-  const onClickPhoto = async (post: Post) => {
-    setActiveDraftPost(post);
-  };
-
   return (
     <div
       className={cn('rounded p-4 flex flex-col gap-4', styling, {
@@ -54,11 +48,7 @@ export function DraftPostComponent({
         {post?.images?.map(
           (image) =>
             image && (
-              <DraftPostImage
-                image={image}
-                onDeletePhoto={onDeletePhoto}
-                onClickPhoto={() => onClickPhoto(post)}
-              />
+              <DraftPostImage image={image} onDeletePhoto={onDeletePhoto} />
             )
         )}
         <ImageUploader post={post} />

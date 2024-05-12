@@ -49,7 +49,15 @@ function PostState({ post }: { post: Post }) {
   return (
     <div className={color + ' text-[0.7em] leading-tight md:text-sm'}>
       {prefix}
-      {date ? date.toLocaleString() : 'Draft'}
+      {date
+        ? date.toLocaleString('default', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : 'Draft'}
     </div>
   );
 }

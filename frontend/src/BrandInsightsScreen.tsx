@@ -1,19 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Brand, BrandInstagramInsights } from './sharedDataModel';
 import { InsightsChartView } from './insightsView/InsightsChartView';
-import { cn } from './lib/utils';
 import { HashtagInsightsScreen } from './HashtagInsightsScreen';
 import { useCoState } from './main';
 import { ID } from 'jazz-tools';
+import { LayoutWithNav } from './Nav';
 
 export function BrandInsightsScreen() {
   const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
+  const path = useLocation().pathname;
   const brand = useCoState(Brand, brandId);
-
-  type viewTypes = 'posts' | 'hashtags' | 'profile';
-  const viewTabs = ['posts', 'hashtags', 'profile'];
-  const [activeTab, setActiveTab] = useState<viewTypes>('posts');
 
   useEffect(() => {
     if (!brand) return;
@@ -81,8 +78,7 @@ export function BrandInsightsScreen() {
   }, [brand?.instagramAccessToken, brand?.instagramInsights]);
 
   return (
-    <div className="flex flex-col gap-6 px-8 flex-shrink min-h-[100vh]">
-      {/* <h1 className="text-l">{brand?.name} Insights</h1> */}
+    <LayoutWithNav>
       {/* <Button
         onClick={() => {
           brand?.delete('instagramInsights');
@@ -90,23 +86,13 @@ export function BrandInsightsScreen() {
       >
         Clear
       </Button> */}
-      <ul className="flex-none tabs flex mb-3">
-        {viewTabs.map((tab) => (
-          <li
-            key={tab}
-            className={cn('cursor-pointer text-stone-400 pr-3', {
-              'text-white font-semibold': activeTab === tab,
-            })}
-            onClick={() => setActiveTab(tab as viewTypes)}
-          >
-            {tab}
-          </li>
+      {path.endsWith('brand') &&
+        (brand?.instagramInsights ? (
+          <InsightsChartView insights={brand.instagramInsights} />
+        ) : (
+          <div>Loading...</div>
         ))}
-      </ul>
-      {brand?.instagramInsights && activeTab === 'profile' && (
-        <InsightsChartView insights={brand.instagramInsights} />
-      )}
-      {activeTab === 'hashtags' && <HashtagInsightsScreen />}
-    </div>
+      {path.endsWith('hashtags') && <HashtagInsightsScreen />}
+    </LayoutWithNav>
   );
 }

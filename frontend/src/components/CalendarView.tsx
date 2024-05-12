@@ -22,7 +22,7 @@ export function CalendarView() {
   }>();
 
   return (
-    <div className="flex flex-col gap-8 p-8 flex-shrink overflow-y-auto">
+    <>
       <Button onClick={importPosts} disabled={!!importProgress}>
         Import posts{' '}
         {importProgress && importProgress.done + '/' + importProgress.total}
@@ -67,6 +67,6 @@ export function CalendarView() {
             />
           )
       )}
-    </div>
+    </>
   );
 }

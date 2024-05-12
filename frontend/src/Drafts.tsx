@@ -5,6 +5,7 @@ import { DraftPostList } from './components/feedView/DraftPostList';
 import { useDeleteDraft } from './lib/deleteDraft';
 import { ID } from 'jazz-tools';
 import { useCoState } from './main';
+import { LayoutWithNav } from './Nav';
 
 export function Drafts() {
   const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
@@ -12,8 +13,10 @@ export function Drafts() {
   const posts = filterDraftAndScheduledPosts(brand?.posts);
 
   return (
-    <>
-      <DraftPostList posts={posts} deleteDraft={useDeleteDraft(brand)} />
-    </>
+    <LayoutWithNav>
+      <div className="h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain flex flex-col gap-4">
+        <DraftPostList posts={posts} deleteDraft={useDeleteDraft(brand)} />
+      </div>
+    </LayoutWithNav>
   );
 }

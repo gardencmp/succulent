@@ -16,6 +16,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableItem } from '@/components/SortableItem';
+import { LayoutWithNav } from './Nav';
 
 export const insightTypes = [
   'profileVisits',
@@ -65,7 +66,7 @@ export function Preferences() {
   };
 
   return (
-    <>
+    <LayoutWithNav>
       <p>😒</p>
       <h3>Post Prefs:</h3>
       <DndContext
@@ -92,7 +93,7 @@ export function Preferences() {
           ))}
         </SortableContext>
       </DndContext>
-    </>
+    </LayoutWithNav>
   );
 
   function handleDragEnd(event: DragEndEvent) {

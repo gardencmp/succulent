@@ -65,7 +65,7 @@ export function MainContent(props: {
   return (
     <div
       className={cn(
-        'md:col-span-8 xl:col-span-6 overflow-y-auto',
+        'md:col-span-8 xl:col-span-6 overflow-y-auto overscroll-contain',
         props.className
       )}
       style={{
@@ -92,7 +92,7 @@ export function DrawerOrSidebar(props: {
       {isMd ? (
         <div
           className={cn(
-            'ml-4 md:col-span-4 xl:col-span-6 overflow-auto',
+            'ml-4 md:col-span-4 xl:col-span-6 overflow-auto overscroll-contain',
             props.className
           )}
         >
@@ -100,7 +100,7 @@ export function DrawerOrSidebar(props: {
         </div>
       ) : (
         <div
-          className={cn('overflow-auto', props.className)}
+          className={cn('overflow-auto overscroll-contain', props.className)}
           style={{
             height: ctx.drawerHeight + '%',
           }}

@@ -134,7 +134,7 @@ export function BrandView({ brand }: { brand: Brand }) {
         <Link to={`/brand/${brand.id}/insights`}>Insights</Link>
       </Button>
       <Button asChild>
-        <Link to={`/brand/${brand.id}/schedule`}>Schedule</Link>
+        <Link to={`/brand/${brand.id}/schedule/feed`}>Schedule</Link>
       </Button>
     </div>
   );
