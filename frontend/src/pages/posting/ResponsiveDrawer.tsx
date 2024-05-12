@@ -1,6 +1,13 @@
 import { useBreakpoint } from '@/lib/useBreakpoint';
 import { cn } from '@/lib/utils';
-import { ReactNode, createContext, useContext, useRef, useState } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 const ResponsiveDrawerContext = createContext<{
   drawerHeight: number;
@@ -62,11 +69,33 @@ export function MainContent(props: {
 
   const { isMd } = useBreakpoint('md');
 
+  const [scrolling, setScrolling] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let timeout: number | null;
+    const handleScroll = () => {
+      setScrolling(true);
+      if (timeout) clearTimeout(timeout);
+      timeout = window.setTimeout(() => {
+        setScrolling(false);
+      }, 1000);
+    };
+
+    container.current?.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.current?.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div
+      ref={container}
       className={cn(
         'md:col-span-8 xl:col-span-6 overflow-y-auto overscroll-contain',
-        props.className
+        props.className,
+        scrolling ? '[&_.showOnScroll]:opacity-100' : ''
       )}
       style={{
         height: isMd ? undefined : 100 - ctx.drawerHeight + '%',

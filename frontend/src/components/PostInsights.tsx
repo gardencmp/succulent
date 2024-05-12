@@ -1,5 +1,6 @@
 import { Post } from '@/sharedDataModel';
 import { insightConfigForPost } from '@/lib/postInsights';
+import { formatDateTime } from '@/lib/dates';
 
 export function PostInsights(props: { post: Post }) {
   const storedPrefs = localStorage.getItem('postPreferences');
@@ -49,15 +50,7 @@ function PostState({ post }: { post: Post }) {
   return (
     <div className={color + ' text-[0.7em] leading-tight md:text-sm'}>
       {prefix}
-      {date
-        ? date.toLocaleString('default', {
-            day: '2-digit',
-            month: 'short',
-            year: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-          })
-        : 'Draft'}
+      {date ? formatDateTime(date) : 'Draft'}
     </div>
   );
 }

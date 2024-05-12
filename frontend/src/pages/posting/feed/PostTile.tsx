@@ -5,13 +5,14 @@ import {
   Post,
 } from '@/sharedDataModel';
 import { Button } from '../../../components/ui/button';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DraftPostComponent } from '../../../components/draftPost/DraftPost';
 import { PostComponent } from '../../../components/Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { PostInsights } from '../../../components/PostInsights';
 import { DropGap } from './DropGap';
 import { PostImage } from '../../../components/PostImage';
+import { formatDateOnly } from '@/lib/dates';
 
 export function PostTile({
   post,
@@ -29,18 +30,6 @@ export function PostTile({
   onDeleteDraft?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
-  const [scrolling, setScrolling] = useState(false);
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout | undefined;
-    const handleScroll = () => {
-      if (timeout) clearTimeout(timeout);
-      setScrolling(true);
-      timeout = setTimeout(() => setScrolling(false), 1000);
-    };
-    window.addEventListener('scroll', handleScroll, true);
-    return () => window.removeEventListener('scroll', handleScroll);
-  });
 
   const olderPostDate =
     olderPost &&
@@ -74,20 +63,10 @@ export function PostTile({
               <PostInsights post={post} />
             )}
             <PostImage post={post} />
-            <div
-              style={{ opacity: scrolling ? 1 : 0 }}
-              className="pointer-events-none transition-opacity absolute top-0 right-2 text-lg md:text-xl [text-shadow:_0_1px_2px_rgb(0_0_0_/_80%)]"
-            >
+            <div className="showOnScroll opacity-0 pointer-events-none transition-opacity absolute top-0 right-2 text-lg md:text-xl [text-shadow:_0_1px_2px_rgb(0_0_0_/_80%)]">
               {post.instagram.state === 'posted'
-                ? new Date(post.instagram.postedAt).toLocaleString('default', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: '2-digit',
-                  })
-                : new Date(post.instagram.scheduledAt).toLocaleString(
-                    'default',
-                    { day: '2-digit', month: 'short', year: '2-digit' }
-                  )}
+                ? formatDateOnly(new Date(post.instagram.postedAt))
+                : formatDateOnly(new Date(post.instagram.scheduledAt))}
             </div>
           </Button>
         </DialogTrigger>
