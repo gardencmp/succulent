@@ -9,11 +9,6 @@ function App() {
   useAcceptInvite<Brand>({
     invitedObjectSchema: Brand,
     onAccept: async (brandID) => {
-      if (!me.root?.brands) {
-        console.log('myBrands not available');
-        return;
-      }
-
       const brand = await Brand.load(brandID, { as: me });
 
       if (!brand) {
@@ -21,7 +16,11 @@ function App() {
         return;
       }
 
-      me.root?.brands.push(brand);
+      const myBrands = await (
+        await me._refs.root?.load()
+      )?._refs.brands?.load();
+
+      myBrands?.push(brand);
       router.navigate('/');
     },
   });
