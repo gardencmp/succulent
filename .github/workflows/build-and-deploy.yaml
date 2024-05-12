@@ -117,7 +117,7 @@ jobs:
             export BRANCH_SUBDOMAIN="";
           else
             export BRANCH_SUFFIX=-${{needs.env-job.outputs.modified-branch-name}};
-            export BRANCH_SUBDOMAIN=${{needs.env-job.outputs.modified-branch-name}}.;
+            export BRANCH_SUBDOMAIN="${{needs.env-job.outputs.modified-branch-name}}__";
           fi
 
           export DOCKER_USER=gardencmp;
