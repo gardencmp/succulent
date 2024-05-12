@@ -9,9 +9,7 @@ import { useState } from 'react';
 import { DraftPostComponent } from '../draftPost/DraftPost';
 import { PostComponent } from '../Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
 import { PostInsights } from '../PostInsights';
-import { toDateString } from '@/lib/dates';
 import { DropGap } from './DropGap';
 import { PostImage } from '../PostImage';
 
@@ -49,34 +47,7 @@ export function PostTile({
             {(alwaysShowInsights ||
               hovered ||
               post.instagram.state === 'scheduleDesired') && (
-              <>
-                {post.instagram.state === 'posted' ? (
-                  <>
-                    <div className="absolute top-0 left-0">
-                      {new Date(post.instagram.postedAt).toLocaleString()}
-                    </div>
-                    <PostInsights post={post} />
-                  </>
-                ) : (
-                  <div
-                    className={cn('absolute', {
-                      'text-orange-400':
-                        post.instagram.state === 'scheduleDesired' &&
-                        post.instagram.notScheduledReason,
-                      'text-blue-500':
-                        post.instagram.state === 'scheduleDesired' &&
-                        !post.instagram.notScheduledReason,
-                    })}
-                  >
-                    {post.instagram.state === 'scheduleDesired'
-                      ? post.instagram.notScheduledReason
-                        ? '⚠️'
-                        : '✈️'
-                      : '⏳'}{' '}
-                    {toDateString(post.instagram.scheduledAt)}
-                  </div>
-                )}
-              </>
+              <PostInsights post={post} />
             )}
             <PostImage post={post} />
           </Button>
