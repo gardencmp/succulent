@@ -12,7 +12,7 @@ const draftStates = ['notScheduled'];
 const allDraftStates = ['notScheduled', 'scheduleDesired', 'scheduled'];
 
 export function filterAndSortScheduledAndPostedPosts(
-  posts?: (Post | undefined)[]
+  posts?: (Post | undefined | null)[]
 ) {
   return [...(posts || [])]
     .filter(

@@ -13,7 +13,7 @@ export function HomePage() {
     <main className="p-10 flex flex-col gap-5">
       <h1 className="text-2xl">My brands</h1>
       {/* {JSON.stringify(me.root)} */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-2">
         {me.root?.brands?.map(
           (brand) =>
             brand && (

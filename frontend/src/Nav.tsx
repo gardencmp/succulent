@@ -42,7 +42,7 @@ export function Nav() {
               </DropdownMenuItem>
             ))}
             <DropdownMenuItem>
-              <NavLink to="/">+ Add brand</NavLink>
+              <NavLink to="/">Manage brands</NavLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
