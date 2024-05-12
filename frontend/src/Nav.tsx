@@ -8,7 +8,7 @@ import { NavLink, useParams } from 'react-router-dom';
 import { ID } from 'jazz-tools';
 import { useAccount, useCoState } from './main';
 import { Brand } from './sharedDataModel';
-import { CalendarIcon, LineChartIcon, UserIcon } from 'lucide-react';
+import { LineChartIcon, RadioTowerIcon, UserIcon } from 'lucide-react';
 
 export function Nav() {
   const { me } = useAccount();
@@ -34,7 +34,7 @@ export function Nav() {
             {me.root?.brands?.map((brand) => (
               <DropdownMenuItem key={brand?.id} asChild>
                 <NavLink
-                  to={`/brand/${brand?.id}/schedule/feed`}
+                  to={`/brand/${brand?.id}/posting/feed`}
                   className="cursor-pointer"
                 >
                   {brand?.name}
@@ -49,9 +49,9 @@ export function Nav() {
       </h1>
       <NavLink
         className="text-sm justify-center p-2 flex gap-1 items-center text-stone-400 [&.active]:text-white hover:text-stone-200"
-        to={`/brand/${brandId}/schedule/feed`}
+        to={`/brand/${brandId}/posting/feed`}
       >
-        <CalendarIcon size="1em" /> Schedule
+        <RadioTowerIcon size="1em" /> Posting
       </NavLink>
 
       <DropdownMenu>
@@ -86,13 +86,22 @@ export function Nav() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <NavLink
-        className="md:ml-auto text-sm p-2 justify-center flex gap-1 items-center text-stone-400 [&.active]:text-white hover:text-stone-200"
-        to={`/brand/${brandId}/preferences`}
-      >
-        <UserIcon size="1em" />{' '}
-        <span className="hidden md:inline">{me.profile?.name}</span>
-      </NavLink>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="ml-auto text-sm justify-center p-2 flex gap-1 items-center text-stone-400 [&.active]:text-white hover:text-stone-200">
+          <UserIcon size="1em" />{' '}
+          <span className="hidden md:inline">{me.profile?.name}</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem asChild>
+            <NavLink
+              className="md:ml-auto text-sm p-2 justify-center flex gap-1 items-center text-stone-400 [&.active]:text-white hover:text-stone-200"
+              to={`/brand/${brandId}/settings/preferences`}
+            >
+              Preferences
+            </NavLink>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </nav>
   );
 }

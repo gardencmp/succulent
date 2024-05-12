@@ -16,7 +16,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableItem } from '@/components/SortableItem';
-import { LayoutWithNav } from './Nav';
+import { LayoutWithNav } from '../../Nav';
 
 export const insightTypes = [
   'profileVisits',
@@ -31,7 +31,7 @@ export const insightTypes = [
   'profileActivity',
 ] as const;
 
-export function Preferences() {
+export function PreferencesPage() {
   const [items, setItems] = useState([1, 2, 3]);
   const [postPreferences, setPostPreferences] = useState<
     (typeof insightTypes)[number][]

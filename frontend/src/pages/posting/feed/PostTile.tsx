@@ -4,14 +4,14 @@ import {
   InstagramScheduled,
   Post,
 } from '@/sharedDataModel';
-import { Button } from '../ui/button';
+import { Button } from '../../../components/ui/button';
 import { useEffect, useState } from 'react';
-import { DraftPostComponent } from '../draftPost/DraftPost';
-import { PostComponent } from '../Post';
+import { DraftPostComponent } from '../../../components/draftPost/DraftPost';
+import { PostComponent } from '../../../components/Post';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { PostInsights } from '../PostInsights';
+import { PostInsights } from '../../../components/PostInsights';
 import { DropGap } from './DropGap';
-import { PostImage } from '../PostImage';
+import { PostImage } from '../../../components/PostImage';
 
 export function PostTile({
   post,

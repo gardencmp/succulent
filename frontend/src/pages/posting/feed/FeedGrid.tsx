@@ -6,7 +6,7 @@ import {
 } from '@/sharedDataModel';
 import { PostTile } from './PostTile';
 
-export function PostGrid({
+export function FeedGrid({
   posts,
   showInsights,
   deleteDraft,

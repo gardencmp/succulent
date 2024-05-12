@@ -4,7 +4,7 @@ import {
   InstagramScheduled,
   Post,
 } from '@/sharedDataModel';
-import { DraftPostComponent } from '../draftPost/DraftPost';
+import { DraftPostComponent } from '../../components/draftPost/DraftPost';
 import { GripHorizontal, GripVertical } from 'lucide-react';
 import { Draggable } from '@/lib/dragAndDrop';
 

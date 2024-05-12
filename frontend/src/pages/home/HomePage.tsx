@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Input } from './components/ui/input';
-import { Brand, ListOfPosts } from './sharedDataModel';
-import { BrandView } from './components/BrandView';
+import { Input } from '../../components/ui/input';
+import { Brand, ListOfPosts } from '../../sharedDataModel';
+import { BrandView } from './BrandView';
 import { Account, Group, ID } from 'jazz-tools';
-import { useAccount } from './main';
+import { useAccount } from '../../main';
 
-export function HomeScreen() {
+export function HomePage() {
   const scheduleWorkerId = 'co_zjCnxyEB93sdMwGBHeF5xPY17H9' as ID<Account>;
   const { me } = useAccount();
 

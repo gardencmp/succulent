@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Brand, Post } from './sharedDataModel';
+import { Brand, Post } from '../../../sharedDataModel';
 import {
   ColumnDef,
   SortingState,
@@ -15,12 +15,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './components/ui/table';
+} from '../../../components/ui/table';
 import { useMemo, useState } from 'react';
-import { Button } from './components/ui/button';
+import { Button } from '../../../components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
 import { ID } from 'jazz-tools';
-import { useCoState } from './main';
+import { useCoState } from '../../../main';
+import { LayoutWithNav } from '@/Nav';
 
 type Row = {
   hashtag: string;
@@ -87,7 +88,7 @@ const columns: ColumnDef<Row>[] = [
   },
 ];
 
-export function HashtagInsightsScreen() {
+export function HashtagInsightsPage() {
   const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
 
   const brand = useCoState(Brand, brandId);
@@ -113,48 +114,50 @@ export function HashtagInsightsScreen() {
   });
 
   return (
-    <Table className="max-w-[70rem] mx-auto max-h-auto">
-      <TableHeader className="sticky top-0 bg-stone-950">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              return (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              );
-            })}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => (
-            <TableRow
-              key={row.id}
-              data-state={row.getIsSelected() && 'selected'}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
+    <LayoutWithNav>
+      <Table className="max-w-[70rem] mx-auto max-h-auto">
+        <TableHeader className="sticky top-0 bg-stone-950">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                );
+              })}
             </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell colSpan={columns.length} className="h-24 text-center">
-              No results.
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </LayoutWithNav>
   );
 }
 function collectHashtagRows(brand: Brand) {

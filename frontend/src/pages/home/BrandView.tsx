@@ -1,9 +1,9 @@
 import { Brand } from '@/sharedDataModel';
-import { InviteButton } from './InviteButton';
+import { InviteButton } from '../../components/InviteButton';
 import { useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
-import { Input } from './ui/input';
+import { Input } from '../../components/ui/input';
 import { useAccount } from '@/main';
 
 const scopes = [
@@ -134,7 +134,7 @@ export function BrandView({ brand }: { brand: Brand }) {
         <Link to={`/brand/${brand.id}/insights`}>Insights</Link>
       </Button>
       <Button asChild>
-        <Link to={`/brand/${brand.id}/schedule/feed`}>Schedule</Link>
+        <Link to={`/brand/${brand.id}/posting/feed`}>Posting</Link>
       </Button>
     </div>
   );

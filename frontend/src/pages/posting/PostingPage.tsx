@@ -15,7 +15,7 @@ import {
   ResponsiveDrawer,
 } from './ResponsiveDrawer';
 import { DragToScheduleContext } from './DragToScheduleContext';
-import { PostGrid } from './PostGrid';
+import { FeedGrid } from './feed/FeedGrid';
 import { DraftPostList } from './DraftPostList';
 import { ID } from 'jazz-tools';
 import { useCoState } from '@/main';
@@ -28,10 +28,10 @@ import {
   PlusIcon,
 } from 'lucide-react';
 import { LayoutWithNav } from '@/Nav';
-import { FilterBar } from '../FilterBar';
-import { CalendarView } from '../CalendarView';
+import { FilterBar } from '../../components/FilterBar';
+import { CalendarView } from './calendar/CalendarView';
 
-export function ScheduleView() {
+export function PostingPage() {
   const location = useLocation();
   const [showInsights, setShowInsights] = useState<boolean>(false);
   const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
@@ -88,13 +88,13 @@ export function ScheduleView() {
             >
               <div className="rounded-lg bg-stone-800 border border-stone-700 p-0.5 flex gap-1">
                 <NavLink
-                  to={`/brand/${brand.id}/schedule/feed`}
+                  to={`/brand/${brand.id}/posting/feed`}
                   className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
                 >
                   <Grid3X3Icon size="1em" /> Feed
                 </NavLink>
                 <NavLink
-                  to={`/brand/${brand.id}/schedule/calendar`}
+                  to={`/brand/${brand.id}/posting/calendar`}
                   className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
                 >
                   <CalendarIcon size="1em" /> Calendar
@@ -144,7 +144,7 @@ export function ScheduleView() {
             </div>
 
             {location.pathname.endsWith('feed') ? (
-              <PostGrid
+              <FeedGrid
                 posts={filterAndSortScheduledAndPostedPosts(filteredPosts)}
                 showInsights={showInsights}
                 createDraft={createDraft}
@@ -159,16 +159,14 @@ export function ScheduleView() {
               <div onClick={getPostInsights} className="cursor-pointer">
                 Drafts
               </div>
-              <div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="gap-1 py-0 h-8"
-                  onClick={createDraft}
-                >
-                  <PlusIcon size={15} /> New Draft
-                </Button>
-              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-1 py-0 h-8"
+                onClick={createDraft}
+              >
+                <PlusIcon size={15} /> New Draft
+              </Button>
             </div>
             <div className="flex flex-col gap-4">
               <DraftPostList
