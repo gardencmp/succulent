@@ -1,11 +1,18 @@
 import { Post, UserTagMap } from '@/sharedDataModel';
 import { PostImage } from './PostImage';
 import { Textarea } from './ui/textarea';
-import { CircleUserRoundIcon, MapPinIcon, XIcon } from 'lucide-react';
+import {
+  CircleUserRoundIcon,
+  MapPinIcon,
+  Trash2Icon,
+  XIcon,
+} from 'lucide-react';
 import { Input } from './ui/input';
 import { useEffect, useState } from 'react';
 import { DraftPostScheduler } from './draftPost/DraftPostScheduler';
 import { ImageUploader } from './draftPost/ImageUploader';
+import { Button } from './ui/button';
+import { useDeleteDraft } from '@/lib/deleteDraft';
 
 export function PostComponent({
   post,
@@ -45,13 +52,38 @@ export function PostComponent({
     }
   }, [lastScheduledOrPostDate]);
 
+  const deleteDraft = useDeleteDraft(post.inBrand);
+
   return (
-    <div className="grid grid-cols-3 max-w-full p-6 border rounded gap-2">
-      <div className="h-52 aspect-square">
-        {post.images?.[0] ? (
-          <PostImage post={post} />
-        ) : (
-          <ImageUploader post={post} />
+    <div className="grid grid-cols-3 max-w-full gap-2 relative">
+      <div
+        key={post.images?.length}
+        className="w-full max-w-52 aspect-square md:row-span-2 overflow-x-scroll flex snap-mandatory snap-x"
+      >
+        {post.images?.map((_, idx) => (
+          <div
+            key={idx}
+            className="group shrink-0 h-full aspect-square snap-center relative"
+          >
+            <PostImage post={post} idx={idx} />
+            {editable && (
+              <Button
+                className="hidden group-hover:flex absolute top-1 right-1 text-white hover:bg-red-500 p-0 h-8 aspect-square justify-center"
+                variant="ghost"
+                onClick={() => {
+                  if (!post.images) return;
+                  post.images.splice(idx, 1);
+                }}
+              >
+                <Trash2Icon size={20} />
+              </Button>
+            )}
+          </div>
+        ))}
+        {editable && (
+          <div className="shrink-0 h-full aspect-square snap-center">
+            <ImageUploader post={post} />
+          </div>
         )}
       </div>
       <div className="col-span-2 flex flex-col gap-2">
@@ -60,11 +92,12 @@ export function PostComponent({
           onChange={(event) => {
             post.content = event.target.value;
           }}
+          className={editable ? '' : 'border-transparent'}
         />
         <div className="text-sm">
           <div className="flex gap-1 items-center mt-2 opacity-50">
             <MapPinIcon size="1em" />{' '}
-            <Input value={'Location'} className="px-2 py-0.5 h-auto" readOnly />
+            <Input value={'Location'} className="px-2 py-0.5 h-auto" disabled />
           </div>
           <div className="overflow-x-scroll">
             <div className="flex gap-1 items-center mt-3">
@@ -120,6 +153,10 @@ export function PostComponent({
               )}
             </div>
           </div>
+        </div>
+      </div>
+      <div className="col-span-3 md:col-span-2 md:col-start-2">
+        <div>
           <div className="mt-3 flex gap-2 items-center">
             <DraftPostScheduler
               post={post}
@@ -137,6 +174,17 @@ export function PostComponent({
                 };
               }}
             />
+            {editable && (
+              <Button
+                variant="ghost"
+                className="p-0 aspect-square hover:bg-red-500"
+                onClick={() => {
+                  deleteDraft(post);
+                }}
+              >
+                <Trash2Icon size={20} />
+              </Button>
+            )}
           </div>
         </div>
       </div>

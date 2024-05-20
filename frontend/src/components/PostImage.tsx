@@ -1,9 +1,8 @@
 import { Post } from '@/sharedDataModel';
-import { cn } from '@/lib/utils';
 import { ProgressiveImg } from 'jazz-react';
 import { useEffect, useRef, useState } from 'react';
 
-export function PostImage({ post }: { post: Post }) {
+export function PostImage({ post, idx }: { post: Post; idx?: number }) {
   const [visible, setVisible] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,18 +34,13 @@ export function PostImage({ post }: { post: Post }) {
   return (
     <div ref={containerRef} className={'w-full h-full'}>
       <ProgressiveImg
-        image={post.images?.[0]?.imageFile}
+        image={post.images?.[idx || 0]?.imageFile}
         maxWidth={visible ? 1024 : 0}
       >
         {({ src }) =>
           src ? (
             <img
-              className={cn(
-                'block w-full h-full object-cover shrink-0 outline-none hover:opacity-100',
-                {
-                  'opacity-50': post.instagram.state !== 'posted',
-                }
-              )}
+              className="block w-full h-full object-cover shrink-0 outline-none hover:opacity-100"
               src={src}
             />
           ) : (

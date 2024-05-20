@@ -1,5 +1,6 @@
 import { Post } from '@/sharedDataModel';
 import {
+  EyeIcon,
   Heart,
   HeartHandshake,
   LucideIcon,
@@ -94,7 +95,7 @@ export function insightConfigForPost(post: Post) {
     {
       id: 'impressions',
       title: 'impressions',
-      icon: UserRoundPlus,
+      icon: EyeIcon,
       data: getInsights('impressions'),
     },
   ];

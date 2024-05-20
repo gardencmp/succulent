@@ -28,8 +28,8 @@ export function Nav() {
         <DropdownMenu>
           <DropdownMenuTrigger>{brand?.name}</DropdownMenuTrigger>
           <DropdownMenuContent>
-            {me.root?.brands?.map((brand) => (
-              <DropdownMenuItem key={brand?.id} asChild>
+            {me.root?.brands?.map((brand, idx) => (
+              <DropdownMenuItem key={brand?.id || idx} asChild>
                 <NavLink
                   to={`/brand/${brand?.id}/posting/feed`}
                   className="cursor-pointer"
@@ -107,7 +107,7 @@ export function LayoutWithNav({ children }: { children: React.ReactNode }) {
   return (
     <div className="px-2 md:px-8 flex flex-col-reverse md:flex-col">
       <Nav />
-      <main className="h-[calc(100dvh-4rem)] pt-2 md:pt-0 overflow-y-auto overscroll-contain flex flex-col gap-4">
+      <main className="h-[calc(100dvh-3rem)] md:h-[calc(100dvh-4rem)] pt-2 md:pt-0 overflow-y-auto overscroll-contain flex flex-col gap-4">
         {children}
       </main>
     </div>
