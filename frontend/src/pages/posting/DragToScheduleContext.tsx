@@ -10,14 +10,14 @@ import {
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { cn } from '@/lib/utils';
 import { smartSchedule } from '@/lib/smartSchedule';
-import { PostImage } from '../PostImage';
+import { PostImage } from '../../components/PostImage';
 import { ID } from 'jazz-tools';
 
 export function DragToScheduleContext({
   brand,
   children,
 }: {
-  brand: Brand;
+  brand: Brand | undefined;
   children: React.ReactNode;
 }) {
   const [draggedPostId, setDraggedPostId] = useState<ID<Post>>();

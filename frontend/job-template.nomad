@@ -41,7 +41,7 @@ job "succulent-frontend$BRANCH_SUFFIX" {
 
       service {
         tags = ["public"]
-        name = "succulent$BRANCH_SUFFIX"
+        name = "${BRANCH_SUBDOMAIN}succulent"
         port = "http"
         provider = "consul"
       }
@@ -53,4 +53,4 @@ job "succulent-frontend$BRANCH_SUFFIX" {
     }
   }
 }
-# deploy bump 4
+# deploy bump 5

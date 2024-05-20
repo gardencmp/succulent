@@ -1,10 +1,12 @@
 import { Brand } from '@/sharedDataModel';
-import { InviteButton } from './InviteButton';
+import { InviteButton } from '../../components/InviteButton';
 import { useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../../components/ui/button';
 import { Link } from 'react-router-dom';
-import { Input } from './ui/input';
 import { useAccount } from '@/main';
+import { filterAndSortScheduledAndPostedPosts } from '@/lib/filterAndSortPosts';
+import { ProgressiveImg } from 'jazz-react';
+import { InstagramIcon, TrashIcon } from 'lucide-react';
 
 const scopes = [
   'instagram_basic',
@@ -29,11 +31,30 @@ export function BrandView({ brand }: { brand: Brand }) {
     { name: string; instagram_business_account: { id: string } }[]
   >([]);
 
+  const previewPosts =
+    brand.posts && filterAndSortScheduledAndPostedPosts(brand.posts);
+
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="text-2xl mb-4">{brand.name} </h1>
-      <div className="flex justify-end gap-2">
-        <InviteButton value={brand} />
+      <div className="flex gap-2">
+        <h1 className="text-2xl mb-4">{brand.name} </h1>
+        {brand.instagramPage && (
+          <Button
+            size="sm"
+            className="text-xs flex gap-1"
+            variant="ghost"
+            onClick={() => {
+              if (confirm('Really reset Instagram page?')) {
+                brand.instagramPage = undefined;
+              }
+            }}
+          >
+            <InstagramIcon size="1.2em" /> {brand.instagramPage.name}{' '}
+          </Button>
+        )}
+        <div className="ml-auto">
+          <InviteButton value={brand} />
+        </div>
         <Button
           variant="destructive"
           size="sm"
@@ -46,7 +67,7 @@ export function BrandView({ brand }: { brand: Brand }) {
             }
           }}
         >
-          Delete brand
+          <TrashIcon size="1.2em" />
         </Button>
       </div>
       {!brand.instagramAccessToken && (
@@ -99,23 +120,7 @@ export function BrandView({ brand }: { brand: Brand }) {
           ))}
         </div>
       )}
-      {brand.instagramPage && (
-        <div>
-          Instagram page: {brand.instagramPage.name}{' '}
-          <Button
-            size="sm"
-            className="text-xs"
-            variant="ghost"
-            onClick={() => {
-              brand.instagramPage = undefined;
-            }}
-          >
-            Reset
-          </Button>
-        </div>
-      )}
-
-      <div>
+      {/* <div>
         IG Access Token{' '}
         {brand.instagramAccessToken &&
           brand.instagramAccessTokenValidUntil &&
@@ -129,13 +134,44 @@ export function BrandView({ brand }: { brand: Brand }) {
             brand.instagramAccessToken = event.target.value;
           }}
         />
+      </div> */}
+
+      <Link to={`/brand/${brand.id}/posting/feed`}>
+        <div className="rounded grid grid-cols-3 gap-px w-full overflow-hidden">
+          {Array.from({ length: 9 }, (_, i) => previewPosts?.[i]).map(
+            (post, i) => (
+              <ProgressiveImg
+                key={post?.id || i}
+                image={post?.images?.[0]?.imageFile}
+                maxWidth={256}
+              >
+                {({ src }) =>
+                  src ? (
+                    <img
+                      className="block w-full aspect-square object-cover"
+                      src={src}
+                    />
+                  ) : (
+                    <div className="block w-full aspect-square bg-neutral-800" />
+                  )
+                }
+              </ProgressiveImg>
+            )
+          )}
+        </div>
+      </Link>
+      <div className="flex gap-2">
+        <Button asChild>
+          <Link className="flex-1" to={`/brand/${brand.id}/posting/feed`}>
+            Posting
+          </Link>
+        </Button>
+        <Button asChild>
+          <Link className="flex-1" to={`/brand/${brand.id}/insights/brand`}>
+            Insights
+          </Link>
+        </Button>
       </div>
-      <Button asChild>
-        <Link to={`/brand/${brand.id}/insights`}>Insights</Link>
-      </Button>
-      <Button asChild>
-        <Link to={`/brand/${brand.id}/schedule`}>Schedule</Link>
-      </Button>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import { Brand, Post, ListOfImages } from '@/sharedDataModel';
-import { Button } from '../components/ui/button';
+import { Button } from '../../../components/ui/button';
 import { useParams } from 'react-router-dom';
-import { DraftPostComponent } from './draftPost/DraftPost';
+import { DraftPostComponent } from '../../../components/draftPost/DraftPost';
 import { useCallback, useState } from 'react';
-import { importPostsHelper } from '../lib/importPostsHelper';
+import { importPostsHelper } from '../../../lib/importPostsHelper';
 import { ID } from 'jazz-tools';
 import { useCoState } from '@/main';
 
@@ -22,7 +22,7 @@ export function CalendarView() {
   }>();
 
   return (
-    <div className="flex flex-col gap-8 p-8 flex-shrink overflow-y-auto">
+    <>
       <Button onClick={importPosts} disabled={!!importProgress}>
         Import posts{' '}
         {importProgress && importProgress.done + '/' + importProgress.total}
@@ -47,26 +47,28 @@ export function CalendarView() {
       >
         + Add draft post
       </Button>
-      {brand?.posts?.map(
-        (post) =>
-          post && (
-            <DraftPostComponent
-              key={post.id}
-              post={post}
-              onDelete={() => {
-                if (!confirm('Are you sure you want to delete this post?'))
-                  return;
-                post.instagram = {
-                  state: 'notScheduled',
-                };
-                const idx = brand.posts?.findIndex((p) => p?.id === post.id);
-                typeof idx === 'number' &&
-                  idx !== -1 &&
-                  brand.posts?.splice(idx, 1);
-              }}
-            />
-          )
-      )}
-    </div>
+      <div className="flex flex-col gap-4">
+        {brand?.posts?.map(
+          (post) =>
+            post && (
+              <DraftPostComponent
+                key={post.id}
+                post={post}
+                onDelete={() => {
+                  if (!confirm('Are you sure you want to delete this post?'))
+                    return;
+                  post.instagram = {
+                    state: 'notScheduled',
+                  };
+                  const idx = brand.posts?.findIndex((p) => p?.id === post.id);
+                  typeof idx === 'number' &&
+                    idx !== -1 &&
+                    brand.posts?.splice(idx, 1);
+                }}
+              />
+            )
+        )}
+      </div>
+    </>
   );
 }

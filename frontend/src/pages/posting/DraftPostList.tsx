@@ -4,17 +4,18 @@ import {
   InstagramScheduled,
   Post,
 } from '@/sharedDataModel';
-import { DraftPostComponent } from '../draftPost/DraftPost';
 import { GripHorizontal, GripVertical } from 'lucide-react';
 import { Draggable } from '@/lib/dragAndDrop';
+import { PostComponent } from '@/components/PostComponent';
 
 export function DraftPostList({
   posts,
-  deleteDraft,
+  lastScheduledOrPostDate,
 }: {
   posts?: Post<
     InstagramNotScheduled | InstagramScheduleDesired | InstagramScheduled
   >[];
+  lastScheduledOrPostDate?: Date;
   deleteDraft: (post: Post) => void;
 }) {
   return posts?.map(
@@ -28,11 +29,11 @@ export function DraftPostList({
             <GripVertical size={20} className="hidden md:block" />
             <GripHorizontal size={20} className="md:hidden" />
           </Draggable>
-          <DraftPostComponent
+          <PostComponent
             key={`drafts-${post.id}`}
             post={post}
-            styling="mb-3"
-            onDelete={() => deleteDraft(post)}
+            lastScheduledOrPostDate={lastScheduledOrPostDate}
+            // onDelete={() => deleteDraft(post)}
           />
         </div>
       )

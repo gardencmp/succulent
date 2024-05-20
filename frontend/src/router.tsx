@@ -1,35 +1,41 @@
 import { createHashRouter } from 'react-router-dom';
-import { HomeScreen } from './HomeScreen';
-import { BrandHome } from './BrandHome';
-import { BrandInsightsScreen } from './BrandInsightsScreen';
-import { BrandScheduleScreen } from './BrandScheduleScreen';
-import { Preferences } from './Preferences';
-import { Drafts } from './Drafts';
+import { HomePage } from './pages/home/HomePage';
+import { PreferencesPage } from './pages/settings/PreferencesPage';
+import { PostingPage } from './pages/posting/PostingPage';
+import { BrandInsightsPage } from './pages/insights/brand/BrandInsightsPages';
+import { HashtagInsightsPage } from './pages/insights/hashtags/HashtagInsightsPage';
 
 export const router = createHashRouter([
   {
     path: '/',
-    element: <HomeScreen />,
+    element: <HomePage />,
   },
   {
     path: '/brand/:brandId',
-    element: <BrandHome />,
     children: [
       {
-        path: '/brand/:brandId/insights',
-        element: <BrandInsightsScreen />,
+        path: '/brand/:brandId/posting/feed',
+        element: <PostingPage />,
       },
       {
-        path: '/brand/:brandId/schedule',
-        element: <BrandScheduleScreen />,
+        path: '/brand/:brandId/posting/calendar',
+        element: <PostingPage />,
       },
       {
-        path: '/brand/:brandId/drafts',
-        element: <Drafts />,
+        path: '/brand/:brandId/insights/brand',
+        element: <BrandInsightsPage />,
       },
       {
-        path: '/brand/:brandId/preferences',
-        element: <Preferences />,
+        path: '/brand/:brandId/insights/hashtags',
+        element: <HashtagInsightsPage />,
+      },
+      {
+        path: '/brand/:brandId/insights/posts',
+        element: <div>TODO</div>,
+      },
+      {
+        path: '/brand/:brandId/settings/preferences',
+        element: <PreferencesPage />,
       },
     ],
   },
@@ -40,6 +46,6 @@ export const router = createHashRouter([
   },
   {
     path: '_=_',
-    element: <HomeScreen />,
+    element: <HomePage />,
   },
 ]);

@@ -9,6 +9,9 @@ export const Jazz = createJazzReactContext<SucculentAccount>({
   auth: PasskeyAuth<SucculentAccount>({
     appName: 'succulent',
     accountSchema: SucculentAccount,
+    appHostname: window.location.hostname.endsWith('succulent.jazz.tools')
+      ? 'succulent.jazz.tools'
+      : undefined,
   }),
   peer: 'wss://mesh.jazz.tools',
 });

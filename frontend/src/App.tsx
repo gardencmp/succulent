@@ -1,20 +1,29 @@
 import { RouterProvider } from 'react-router-dom';
 import { Toaster } from './components/ui/toaster';
 import { router } from './router';
-// import { useAcceptInvite, useAccount } from './main';
-// import { Brand } from './sharedDataModel';
+import { useAcceptInvite, useAccount } from './main';
+import { Brand } from './sharedDataModel';
 
 function App() {
-  // const { me } = useAccount();
-  // useAcceptInvite({invitedObjectSchema: Brand, onAccept: async (brandID) => {
-  //   if (!me.root?.brands) {
-  //     console.log('myBrands not available');
-  //     return;
-  //   }
+  const { me } = useAccount();
+  useAcceptInvite<Brand>({
+    invitedObjectSchema: Brand,
+    onAccept: async (brandID) => {
+      const brand = await Brand.load(brandID, { as: me });
 
-  //   me.root?.brands.push(brandID);
-  //   router.navigate('/');
-  // }});
+      if (!brand) {
+        console.log('Failed to accept invite');
+        return;
+      }
+
+      const myBrands = await (
+        await me._refs.root?.load()
+      )?._refs.brands?.load();
+
+      myBrands?.push(brand);
+      router.navigate('/');
+    },
+  });
 
   return (
     <>

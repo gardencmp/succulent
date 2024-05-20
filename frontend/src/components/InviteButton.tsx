@@ -36,7 +36,7 @@ export function InviteButton<T extends CoValue>({
           }
         }}
       >
-        Invite
+        Invite Collaborators
       </Button>
     )
   );

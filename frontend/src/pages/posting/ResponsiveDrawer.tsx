@@ -1,6 +1,13 @@
 import { useBreakpoint } from '@/lib/useBreakpoint';
 import { cn } from '@/lib/utils';
-import { ReactNode, createContext, useContext, useRef, useState } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 const ResponsiveDrawerContext = createContext<{
   drawerHeight: number;
@@ -62,11 +69,33 @@ export function MainContent(props: {
 
   const { isMd } = useBreakpoint('md');
 
+  const [scrolling, setScrolling] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let timeout: number | null;
+    const handleScroll = () => {
+      setScrolling(true);
+      if (timeout) clearTimeout(timeout);
+      timeout = window.setTimeout(() => {
+        setScrolling(false);
+      }, 1000);
+    };
+
+    container.current?.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.current?.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div
+      ref={container}
       className={cn(
-        'md:col-span-8 xl:col-span-6 overflow-y-auto',
-        props.className
+        'md:col-span-8 xl:col-span-6 overflow-y-auto overscroll-contain',
+        props.className,
+        scrolling ? '[&_.showOnScroll]:opacity-100' : ''
       )}
       style={{
         height: isMd ? undefined : 100 - ctx.drawerHeight + '%',
@@ -92,7 +121,7 @@ export function DrawerOrSidebar(props: {
       {isMd ? (
         <div
           className={cn(
-            'flex md:col-span-4 xl:col-span-6 flex-col overflow-auto',
+            'ml-4 md:col-span-4 xl:col-span-6 overflow-auto overscroll-contain',
             props.className
           )}
         >
@@ -100,7 +129,7 @@ export function DrawerOrSidebar(props: {
         </div>
       ) : (
         <div
-          className={cn('flex flex-col overflow-auto', props.className)}
+          className={cn('overflow-auto overscroll-contain', props.className)}
           style={{
             height: ctx.drawerHeight + '%',
           }}
