@@ -1,29 +1,23 @@
-import { Switch } from '@/components/ui/switch';
-import { useState, useEffect } from 'react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { SortableItem } from '@/components/SortableItem';
+import { SortableItem } from '@/pages/settings/SortableItem';
 import { LayoutWithNav } from '../../Nav';
+import { useAccount } from '@/main';
+import { useParams } from 'react-router-dom';
+import { ID } from 'jazz-tools';
+import { Brand } from '@/sharedDataModel';
+import { PersonalBrandSettings } from '@/dataModel';
 
 export const insightTypes = [
-  'profileVisits',
-  'impressions',
-  'totalInteractions',
-  'reach',
   'likes',
+  'totalInteractions',
+  'impressions',
+  'profileVisits',
+  'reach',
   'comments',
   'saved',
   'shares',
@@ -32,67 +26,41 @@ export const insightTypes = [
 ] as const;
 
 export function PreferencesPage() {
-  const [items, setItems] = useState([1, 2, 3]);
-  const [postPreferences, setPostPreferences] = useState<
-    (typeof insightTypes)[number][]
-  >([]);
+  const { me } = useAccount();
 
-  useEffect(() => {
-    const storedPrefs = localStorage.getItem('postPreferences');
-    storedPrefs
-      ? setPostPreferences(JSON.parse(storedPrefs))
-      : setPostPreferences([...insightTypes]);
-  }, []);
+  const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
 
-  useEffect(() => {
-    localStorage.setItem('postPreferences', JSON.stringify(postPreferences));
-  }, [postPreferences]);
+  if (!brandId || !me.root?.settings?.perBrand) {
+    return null;
+  }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleCheckedChange = (id: (typeof insightTypes)[number]) => {
-    const swithActive = postPreferences.includes(id);
-    if (swithActive) {
-      const filteredPrefs = postPreferences.filter((prefId) => prefId !== id);
-      setPostPreferences(filteredPrefs);
-    } else {
-      setPostPreferences(postPreferences.concat(id));
-    }
-  };
+  const insightsOrder = me.root.settings.perBrand[brandId]
+    ?.postInsightsOrder || [...insightTypes];
 
   return (
     <LayoutWithNav>
-      <p>😒</p>
-      <h3>Post Prefs:</h3>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={items} strategy={verticalListSortingStrategy}>
-          {insightTypes.map((id) => (
-            <div className="flex">
-              <Switch
-                key={`switch-${id}`}
-                className="m-1"
-                checked={postPreferences.includes(id)}
-                onCheckedChange={() => handleCheckedChange(id)}
-              />
+      <h3 className="text-xl mt-10">Post Insight Order:</h3>
+      <div className="relative border px-2 rounded max-w-sm">
+        <div className="absolute top-0 left-0 right-0 h-[4.5rem] bg-stone-900 -z-10"></div>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={insightsOrder}
+            strategy={verticalListSortingStrategy}
+          >
+            {insightsOrder.map((insightType) => (
               <SortableItem
-                key={id}
-                id={id}
-                label={id}
-                className="flex items-center"
+                key={insightType}
+                id={insightType}
+                label={insightType}
+                className="cursor-grab"
               />
-            </div>
-          ))}
-        </SortableContext>
-      </DndContext>
+            ))}
+          </SortableContext>
+        </DndContext>
+      </div>
     </LayoutWithNav>
   );
 
@@ -102,12 +70,24 @@ export function PreferencesPage() {
     if (!over || !active) return;
 
     if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(Number(active.id));
-        const newIndex = items.indexOf(Number(over.id));
+      if (!brandId || !me.root?.settings?.perBrand) return;
+      if (!me.root.settings.perBrand?._refs[brandId]) {
+        me.root.settings.perBrand[brandId] = PersonalBrandSettings.create(
+          {
+            postInsightsOrder: [...insightTypes],
+          },
+          { owner: me }
+        );
+      }
 
-        return arrayMove(items, oldIndex, newIndex);
-      });
+      const oldIndex = insightsOrder.findIndex((item) => item === active.id);
+      const newIndex = insightsOrder.findIndex((item) => item === over.id);
+
+      me.root.settings.perBrand[brandId]!.postInsightsOrder = arrayMove(
+        insightsOrder,
+        oldIndex,
+        newIndex
+      );
     }
   }
 }

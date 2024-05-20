@@ -12,7 +12,7 @@ export class Settings extends CoMap {
 }
 
 export class PersonalBrandSettings extends CoMap {
-  postInsightsOrder: (typeof insightTypes)[number][] = [];
+  postInsightsOrder = co.json<(typeof insightTypes)[number][]>();
 }
 
 export class SettingsPerBrand extends CoMap.Record(
@@ -37,12 +37,7 @@ export class SucculentAccount extends Account {
     if (!root._refs.settings) {
       root.settings = Settings.create(
         {
-          perBrand: SettingsPerBrand.create(
-            {
-              // TODO
-            },
-            { owner: this }
-          ),
+          perBrand: SettingsPerBrand.create({}, { owner: this }),
         },
         { owner: this }
       );

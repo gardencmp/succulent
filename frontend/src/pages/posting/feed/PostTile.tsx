@@ -6,8 +6,7 @@ import {
 } from '@/sharedDataModel';
 import { Button } from '../../../components/ui/button';
 import { useCallback, useState } from 'react';
-import { DraftPostComponent } from '../../../components/draftPost/DraftPost';
-import { PostComponent } from '../../../components/OldPost';
+import { PostComponent } from '../../../components/PostComponent';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { PostInsights } from '../../../components/PostInsights';
 import { DropGap } from './DropGap';
@@ -19,7 +18,6 @@ export function PostTile({
   isFirst,
   olderPost,
   alwaysShowInsights,
-  onDeleteDraft,
 }: {
   post: Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>;
   isFirst: boolean;
@@ -32,11 +30,6 @@ export function PostTile({
   const [hovered, setHovered] = useState(false);
   const onHover = useCallback(() => setHovered(true), []);
   const onLeave = useCallback(() => setHovered(false), []);
-
-  const onDelete = useCallback(() => {
-    if (!onDeleteDraft) return;
-    onDeleteDraft(post);
-  }, [onDeleteDraft, post]);
 
   const olderPostDate =
     olderPost &&
@@ -60,14 +53,24 @@ export function PostTile({
         <DialogTrigger asChild>
           <Button
             variant="ghost"
-            className="flex m-0 p-0 h-full w-full rounded-none relative"
+            className={
+              'flex m-0 p-0 h-full w-full rounded-none relative' +
+              (post.instagram.state === 'posted'
+                ? ''
+                : ' border border-stone-700')
+            }
             onMouseOver={onHover}
             onMouseLeave={onLeave}
           >
             {(alwaysShowInsights ||
               hovered ||
               post.instagram.state === 'scheduleDesired') && (
-              <PostInsights post={post} />
+              <div className="absolute bg-neutral-800/80 md:bg-neutral-800/65 md:backdrop-blur bottom-2 left-2 right-2 top-auto max-h-1/2 p-2 rounded-lg">
+                <PostInsights post={post} />
+              </div>
+            )}
+            {post.instagram.state !== 'posted' && (
+              <div className="absolute -top-px -left-px bg-stone-700 border-black w-[1rem] border-l-[1rem] border-b-[1rem] group-hover:border-l-[1.5rem] group-hover:border-b-[1.5rem] border-b-transparent transition-[border] rounded-br "></div>
             )}
             <PostImage post={post} />
             <div className="showOnScroll opacity-0 pointer-events-none transition-opacity absolute top-0 right-2 text-lg md:text-xl [text-shadow:_0_1px_2px_rgb(0_0_0_/_80%)]">
@@ -81,12 +84,10 @@ export function PostTile({
           <DropGap before={post.instagram.scheduledAt} after={olderPostDate} />
         )}
       </div>
-      <DialogContent>
+      <DialogContent className="max-w-2xl">
+        <PostComponent post={post!} />
         {post?.instagram.state === 'posted' && (
-          <PostComponent post={post!} border={false} />
-        )}
-        {post?.instagram.state !== 'posted' && (
-          <DraftPostComponent post={post!} border={false} onDelete={onDelete} />
+          <PostInsights post={post} full />
         )}
       </DialogContent>
     </Dialog>

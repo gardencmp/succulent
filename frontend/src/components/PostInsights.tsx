@@ -1,33 +1,44 @@
 import { Post } from '@/sharedDataModel';
 import { insightConfigForPost } from '@/lib/postInsights';
 import { formatDateTime } from '@/lib/dates';
+import { useAccount } from '@/main';
+import { insightTypes } from '@/pages/settings/PreferencesPage';
 
-export function PostInsights(props: { post: Post }) {
-  const storedPrefs = localStorage.getItem('postPreferences');
+export function PostInsights(props: { post: Post; full?: boolean }) {
+  const { me } = useAccount();
+  const insightsOrder =
+    me.root?.settings?.perBrand?.[props.post._refs.inBrand.id]
+      ?.postInsightsOrder || insightTypes;
 
-  const insightElems = insightConfigForPost(props.post)?.map(
-    (insightType) =>
-      storedPrefs?.includes(insightType.id) && (
-        <div
-          key={insightType.title}
-          title={insightType.title}
-          className="text-xs md:text-sm col-span-1 flex items-center gap-1"
-        >
-          <insightType.icon size={'1em'} />
-          <p>{insightType.data}</p>
-        </div>
-      )
-  );
+  const insightsToShow = props.full ? insightsOrder : insightsOrder.slice(0, 3);
+
+  const insightElems = insightsToShow.flatMap((insightType) => {
+    const insightInPost = insightConfigForPost(props.post)?.find(
+      (insight) => insight.id === insightType
+    );
+    return insightInPost
+      ? [
+          <div
+            key={insightInPost.title}
+            title={insightInPost.title}
+            className="text-xs md:text-base flex items-center gap-1"
+          >
+            <insightInPost.icon size={'1em'} />
+            <p>{insightInPost.data}</p>
+          </div>,
+        ]
+      : [];
+  });
 
   return (
-    <div className="absolute bg-neutral-800/80 md:bg-neutral-800/65 md:backdrop-blur bottom-1 left-1 right-1 top-1 md:bottom-2 md:left-2 md:right-2 md:top-auto md:max-h-1/2 p-1 md:p-2 rounded-lg">
+    <>
       <PostState post={props.post} />
       {insightElems?.length ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 justify-around items-center w-full py-2 px-1 md:px-3 md:gap-2">
+        <div className="flex flex-wrap md:items-center justify-around mt-1">
           {insightElems}
         </div>
       ) : undefined}
-    </div>
+    </>
   );
 }
 
@@ -50,7 +61,9 @@ function PostState({ post }: { post: Post }) {
   return (
     <div className={color + ' text-[0.7em] leading-tight md:text-sm'}>
       {prefix}
-      {date ? formatDateTime(date) : 'Draft'}
+      <span className="whitespace-nowrap">
+        {date ? formatDateTime(date) : 'Draft'}
+      </span>
     </div>
   );
 }
