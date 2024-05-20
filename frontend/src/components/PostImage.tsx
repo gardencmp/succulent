@@ -12,7 +12,6 @@ export function PostImage({ post }: { post: Post }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        console.log('entry', entry);
         if (entry.isIntersecting) {
           setVisible(true);
         } else {
@@ -35,29 +34,26 @@ export function PostImage({ post }: { post: Post }) {
 
   return (
     <div ref={containerRef} className={'w-full h-full'}>
-      {post.images?.[0] && (
-        <ProgressiveImg
-          key={post.images[0].id}
-          image={post.images[0].imageFile}
-          maxWidth={visible ? 1024 : 0}
-        >
-          {({ src }) =>
-            src ? (
-              <img
-                className={cn(
-                  'block w-full h-full object-cover shrink-0 outline-none hover:opacity-100',
-                  {
-                    'opacity-50': post.instagram.state !== 'posted',
-                  }
-                )}
-                src={src}
-              />
-            ) : (
-              <div className="block w-full h-full bg-neutral-800" />
-            )
-          }
-        </ProgressiveImg>
-      )}
+      <ProgressiveImg
+        image={post.images?.[0]?.imageFile}
+        maxWidth={visible ? 1024 : 0}
+      >
+        {({ src }) =>
+          src ? (
+            <img
+              className={cn(
+                'block w-full h-full object-cover shrink-0 outline-none hover:opacity-100',
+                {
+                  'opacity-50': post.instagram.state !== 'posted',
+                }
+              )}
+              src={src}
+            />
+          ) : (
+            <div className="block w-full h-full bg-neutral-800" />
+          )
+        }
+      </ProgressiveImg>
     </div>
   );
 }

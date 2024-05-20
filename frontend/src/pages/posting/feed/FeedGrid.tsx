@@ -29,9 +29,7 @@ export function FeedGrid({
               isFirst={i === 0}
               olderPost={posts[i + 1]}
               alwaysShowInsights={showInsights}
-              onDeleteDraft={() => {
-                deleteDraft(post);
-              }}
+              onDeleteDraft={deleteDraft}
             />
           )
         );

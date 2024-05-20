@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -40,11 +40,26 @@ export function PostingPage() {
   const [filter, setFilter] = useState<string>();
   const [mobileShowFilterBar, setMobileShowFilterBar] =
     useState<boolean>(false);
-  const filteredPosts = brand?.posts?.filter(
-    (post): post is NonNullable<Post> =>
-      !filter ||
-      post?.content?.toLowerCase().includes(filter.toLowerCase()) ||
-      false
+  const filteredPosts = useMemo(
+    () =>
+      brand?.posts?.filter(
+        (post): post is NonNullable<Post> =>
+          !filter ||
+          post?.content?.toLowerCase().includes(filter.toLowerCase()) ||
+          false
+      ),
+    [brand?.posts, filter]
+  );
+
+  const lastScheduledOrPostDate = new Date(
+    brand?.posts?.reduce((acc, post) => {
+      if (post?.instagram?.state === 'scheduled') {
+        return Math.max(acc, new Date(post.instagram?.scheduledAt).getTime());
+      } else if (post?.instagram?.state === 'posted') {
+        return Math.max(acc, new Date(post.instagram?.postedAt).getTime());
+      }
+      return acc;
+    }, 0) || new Date(0)
   );
 
   const createDraft = useCallback(() => {
@@ -69,8 +84,6 @@ export function PostingPage() {
     await getPostInsightsHelper(brand);
   }, [brand]);
 
-  if (!brand) return <div>Loading...</div>;
-
   return (
     <LayoutWithNav>
       <DragToScheduleContext brand={brand}>
@@ -88,13 +101,13 @@ export function PostingPage() {
             >
               <div className="rounded-lg bg-stone-800 border border-stone-700 p-0.5 flex gap-1">
                 <NavLink
-                  to={`/brand/${brand.id}/posting/feed`}
+                  to={`/brand/${brand?.id}/posting/feed`}
                   className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
                 >
                   <Grid3X3Icon size="1em" /> Feed
                 </NavLink>
                 <NavLink
-                  to={`/brand/${brand.id}/posting/calendar`}
+                  to={`/brand/${brand?.id}/posting/calendar`}
                   className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
                 >
                   <CalendarIcon size="1em" /> Calendar
@@ -172,6 +185,7 @@ export function PostingPage() {
               <DraftPostList
                 posts={filterDraftPosts(filteredPosts)}
                 deleteDraft={deleteDraft}
+                lastScheduledOrPostDate={lastScheduledOrPostDate}
               />
               <Button
                 variant="secondary"

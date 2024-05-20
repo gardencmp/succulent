@@ -19,7 +19,7 @@ export async function actuallyPost(
     if (!post) throw new Error('post unavailable');
 
     try {
-      if (!post.inBrand) throw new Error('no brand');
+      if (!post._refs.inBrand) throw new Error('no brand');
 
       const brand = await post._refs.inBrand.load();
       if (!brand) throw new Error('brand unavailable');
@@ -30,7 +30,7 @@ export async function actuallyPost(
       const backendAddr =
         process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331';
 
-      // TODO: fetch tags & location
+      await post._refs.userTags?.load();
 
       let topContainerId;
 
@@ -38,6 +38,18 @@ export async function actuallyPost(
         const url = new URL(`https://graph.facebook.com/v18.0/${igPage}/media`);
         url.searchParams.set('access_token', accessToken);
         url.searchParams.set('caption', post.content || '');
+        if (Object.keys(post.userTags || {}).length > 0) {
+          url.searchParams.set(
+            'user_tags',
+            JSON.stringify(
+              Object.entries(post.userTags!).map(([username, { x, y }]) => ({
+                username,
+                x,
+                y,
+              }))
+            )
+          );
+        }
         url.searchParams.set(
           'image_url',
           backendAddr + '/image/' + state.imageFileIds[0]

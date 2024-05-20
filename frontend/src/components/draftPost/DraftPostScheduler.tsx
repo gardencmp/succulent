@@ -30,7 +30,8 @@ export function DraftPostScheduler({
           post.instagram.state === 'scheduleDesired' ||
           post.instagram.state === 'scheduled'
             ? toDateTimeLocal(post.instagram.scheduledAt)
-            : undefined
+            : desiredScheduleDate &&
+              toDateTimeLocal(desiredScheduleDate.toISOString())
         }
         onChange={(event) => {
           setDesiredScheduleDate(new Date(event.target.value));

@@ -17,7 +17,7 @@ export function DragToScheduleContext({
   brand,
   children,
 }: {
-  brand: Brand;
+  brand: Brand | undefined;
   children: React.ReactNode;
 }) {
   const [draggedPostId, setDraggedPostId] = useState<ID<Post>>();

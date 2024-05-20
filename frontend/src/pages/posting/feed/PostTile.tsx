@@ -5,9 +5,9 @@ import {
   Post,
 } from '@/sharedDataModel';
 import { Button } from '../../../components/ui/button';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { DraftPostComponent } from '../../../components/draftPost/DraftPost';
-import { PostComponent } from '../../../components/Post';
+import { PostComponent } from '../../../components/OldPost';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { PostInsights } from '../../../components/PostInsights';
 import { DropGap } from './DropGap';
@@ -27,9 +27,16 @@ export function PostTile({
     InstagramPosted | InstagramScheduleDesired | InstagramScheduled
   >;
   alwaysShowInsights: boolean;
-  onDeleteDraft?: () => void;
+  onDeleteDraft?: (post: Post) => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const onHover = useCallback(() => setHovered(true), []);
+  const onLeave = useCallback(() => setHovered(false), []);
+
+  const onDelete = useCallback(() => {
+    if (!onDeleteDraft) return;
+    onDeleteDraft(post);
+  }, [onDeleteDraft, post]);
 
   const olderPostDate =
     olderPost &&
@@ -38,7 +45,7 @@ export function PostTile({
       : olderPost.instagram.scheduledAt);
 
   return (
-    <Dialog key={post.id}>
+    <Dialog>
       <div className="col-span-1 aspect-square relative">
         {isFirst && (
           <DropGap
@@ -54,8 +61,8 @@ export function PostTile({
           <Button
             variant="ghost"
             className="flex m-0 p-0 h-full w-full rounded-none relative"
-            onMouseOver={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
+            onMouseOver={onHover}
+            onMouseLeave={onLeave}
           >
             {(alwaysShowInsights ||
               hovered ||
@@ -79,11 +86,7 @@ export function PostTile({
           <PostComponent post={post!} border={false} />
         )}
         {post?.instagram.state !== 'posted' && (
-          <DraftPostComponent
-            post={post!}
-            border={false}
-            onDelete={onDeleteDraft}
-          />
+          <DraftPostComponent post={post!} border={false} onDelete={onDelete} />
         )}
       </DialogContent>
     </Dialog>

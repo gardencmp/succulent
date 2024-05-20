@@ -12,5 +12,5 @@ export const useDeleteDraft = (brand: Brand | undefined | null) =>
       const idx = brand.posts?.findIndex((p) => p?.id === post.id);
       typeof idx === 'number' && idx !== -1 && brand.posts?.splice(idx, 1);
     },
-    [brand]
+    [brand?.id]
   );

@@ -16,10 +16,7 @@ export function Nav() {
   const brand = useCoState(Brand, brandId);
 
   return (
-    <nav
-      data-open={open || undefined}
-      className="relative justify-between bg-black border-t md:border-t-0 h-[3rem] overflow-y-hidden border-b border-stone-800 -mx-2 md:-mx-8 px-2 md:px-8 flex py-2 md:mb-2 gap-2 lg:gap-4"
-    >
+    <nav className="relative justify-between bg-black border-t md:border-t-0 h-[3rem] overflow-y-hidden border-b border-stone-800 -mx-2 md:-mx-8 px-2 md:px-8 flex py-2 md:mb-2 gap-2 lg:gap-4">
       <div className="hidden md:block text-3xl text-stone-700 absolute left-0 right-0 top-1.5 text-center pointer-events-none">
         succulent
       </div>
