@@ -2,7 +2,7 @@ import { Post } from '@/sharedDataModel';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { insightConfigForPost } from '@/lib/postInsights';
+import { insightsForPost } from '@/lib/postInsights';
 import { ProgressiveImg } from 'jazz-react';
 
 export function PostComponent({
@@ -62,7 +62,7 @@ export function PostComponent({
         </p>
       </div>
       <div className="flex gap-2 items-center flex-wrap">
-        {insightConfigForPost(post)?.map((insight) => (
+        {insightsForPost(post)?.map((insight) => (
           <p>
             {insight.title} {insight.data}
           </p>

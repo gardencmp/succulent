@@ -37,8 +37,8 @@ export class Post<out S extends InstagramState = InstagramState> extends CoMap {
   content? = co.string;
   images = co.ref(ListOfImages);
   instagram = co.json<S>();
-  location? = co.ref(Location);
-  userTags? = co.ref(UserTagMap);
+  location = co.ref(Location, { optional: true });
+  userTags = co.ref(UserTagMap, { optional: true });
   instagramInsights? = co.json<{
     profileVisits?: number;
     impressions?: number;
@@ -66,7 +66,7 @@ export class Brand extends CoMap {
   name = co.string;
   instagramAccessToken? = co.string;
   instagramAccessTokenValidUntil? = co.number;
-  instagramInsights? = co.ref(BrandInstagramInsights);
+  instagramInsights = co.ref(BrandInstagramInsights, { optional: true });
   instagramPage? = co.json<{ id: string; name: string }>();
   posts = co.ref(ListOfPosts);
   usedLocations = co.ref(ListOfLocations);

@@ -1,5 +1,5 @@
 import { Post } from '@/sharedDataModel';
-import { insightConfigForPost } from '@/lib/postInsights';
+import { insightMeta, insightsForPost } from '@/lib/postInsights';
 import { formatDateTime } from '@/lib/dates';
 import { useAccount } from '@/main';
 import { insightTypes } from '@/pages/settings/PreferencesPage';
@@ -13,18 +13,17 @@ export function PostInsights(props: { post: Post; full?: boolean }) {
   const insightsToShow = props.full ? insightsOrder : insightsOrder.slice(0, 3);
 
   const insightElems = insightsToShow.flatMap((insightType) => {
-    const insightInPost = insightConfigForPost(props.post)?.find(
-      (insight) => insight.id === insightType
-    );
+    const insightInPost = insightsForPost(props.post)?.[insightType];
+    const meta = insightMeta[insightType];
     return insightInPost
       ? [
           <div
-            key={insightInPost.title}
-            title={insightInPost.title}
+            key={insightType}
+            title={meta.title}
             className="text-xs md:text-base flex items-center gap-1"
           >
-            <insightInPost.icon size={'1em'} />
-            <p>{insightInPost.data}</p>
+            <meta.icon size={'1em'} />
+            <p>{insightInPost}</p>
           </div>,
         ]
       : [];

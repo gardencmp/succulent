@@ -3,25 +3,61 @@ import {
   EyeIcon,
   Heart,
   HeartHandshake,
-  LucideIcon,
   MessageCircle,
   MessageCircleReply,
+  PointerIcon,
   Save,
   Smile,
   UserRoundPlus,
   View,
 } from 'lucide-react';
 
-export function insightConfigForPost(post: Post) {
+export const insightMeta = {
+  likes: {
+    title: 'likes',
+    icon: Heart,
+  },
+  reach: {
+    title: 'reach',
+    icon: Smile,
+  },
+  totalInteractions: {
+    title: 'interactionPc',
+    icon: HeartHandshake,
+  },
+  comments: {
+    title: 'comments',
+    icon: MessageCircle,
+  },
+  saved: {
+    title: 'saves',
+    icon: Save,
+  },
+  shares: {
+    title: 'shares',
+    icon: MessageCircleReply,
+  },
+  profileVisits: {
+    title: 'profileVisits',
+    icon: View,
+  },
+  profileActivity: {
+    title: 'profileActivity',
+    icon: PointerIcon,
+  },
+  follows: {
+    title: 'follows',
+    icon: UserRoundPlus,
+  },
+  impressions: {
+    title: 'impressions',
+    icon: EyeIcon,
+  },
+};
+
+export function insightsForPost(post: Post) {
   const insights = post.instagramInsights;
   if (!insights) return;
-
-  type PostInsight = {
-    id: string;
-    title: string;
-    icon: LucideIcon;
-    data: string;
-  };
 
   type Insights = keyof typeof insights;
 
@@ -43,62 +79,17 @@ export function insightConfigForPost(post: Post) {
     return insightData.toString();
   };
 
-  const insightsConfig: PostInsight[] = [
-    {
-      id: 'likes',
-      title: 'likes',
-      icon: Heart,
-      data: getInsights('likes'),
-    },
-    {
-      id: 'reach',
-      title: 'reach',
-      icon: Smile,
-      data: getInsights('reach'),
-    },
-    {
-      id: 'totalInteractions',
-      title: 'interactionPc',
-      icon: HeartHandshake,
-      data: getInteractionPc(),
-    },
-    {
-      id: 'comments',
-      title: 'comments',
-      icon: MessageCircle,
-      data: getInsights('comments'),
-    },
-    {
-      id: 'saves',
-      title: 'saves',
-      icon: Save,
-      data: getInsights('saved'),
-    },
-    {
-      id: 'shares',
-      title: 'shares',
-      icon: MessageCircleReply,
-      data: getInsights('shares'),
-    },
-    {
-      id: 'profileActivity',
-      title: 'profileVisits',
-      icon: View,
-      data: getInsights('profileVisits'),
-    },
-    {
-      id: 'follows',
-      title: 'follows',
-      icon: UserRoundPlus,
-      data: getInsights('follows'),
-    },
-    {
-      id: 'impressions',
-      title: 'impressions',
-      icon: EyeIcon,
-      data: getInsights('impressions'),
-    },
-  ];
-
-  return insightsConfig;
+  return {
+    likes: getInsights('likes'),
+    reach: getInsights('reach'),
+    impressions: getInsights('impressions'),
+    interactionPc: getInteractionPc(),
+    totalInteractions: getInsights('totalInteractions'),
+    comments: getInsights('comments'),
+    saved: getInsights('saved'),
+    shares: getInsights('shares'),
+    profileVisits: getInsights('profileVisits'),
+    profileActivity: JSON.stringify(insights.profileActivity),
+    follows: getInsights('follows'),
+  };
 }

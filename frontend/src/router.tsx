@@ -4,6 +4,7 @@ import { PreferencesPage } from './pages/settings/PreferencesPage';
 import { PostingPage } from './pages/posting/PostingPage';
 import { BrandInsightsPage } from './pages/insights/brand/BrandInsightsPages';
 import { HashtagInsightsPage } from './pages/insights/hashtags/HashtagInsightsPage';
+import { PostsInsightsPage } from './pages/insights/posts/PostsInsightsPage';
 
 export const router = createHashRouter([
   {
@@ -31,7 +32,7 @@ export const router = createHashRouter([
       },
       {
         path: '/brand/:brandId/insights/posts',
-        element: <div>TODO</div>,
+        element: <PostsInsightsPage />,
       },
       {
         path: '/brand/:brandId/settings/preferences',
