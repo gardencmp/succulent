@@ -63,7 +63,7 @@ async function runner() {
   let lastWorkerUpdateAt: Date | undefined;
   let lastWorkerUpdate: SchedulerAccountRoot | null;
 
-  worker.subscribe((workerUpdate) => {
+  SchedulerAccount.subscribe(worker, {}, (workerUpdate) => {
     lastWorkerUpdateAt = new Date();
     lastWorkerUpdate = workerUpdate?.root;
 
