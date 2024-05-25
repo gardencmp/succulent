@@ -1,7 +1,7 @@
-import { Account, ID, Me } from 'jazz-tools';
+import { Account, ID } from 'jazz-tools';
 import { Brand } from './sharedDataModel';
 
-export async function handleFBConnectRequest(req: Request, as: Account & Me) {
+export async function handleFBConnectRequest(req: Request, as: Account) {
   const code = new URL(req.url).searchParams.get('code');
 
   if (!code) return new Response('no code');
@@ -31,7 +31,7 @@ export async function handleFBConnectRequest(req: Request, as: Account & Me) {
 
   if (!brandId) return new Response('no brandId');
 
-  const brand = await Brand.load(brandId as ID<Brand>, { as });
+  const brand = await Brand.load(brandId as ID<Brand>, as, {});
 
   if (!brand) return new Response('unavailable');
 

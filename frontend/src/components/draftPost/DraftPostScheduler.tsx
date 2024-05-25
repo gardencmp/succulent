@@ -22,23 +22,26 @@ export function DraftPostScheduler({
 }) {
   if (!post) return;
 
+  const dateTime =
+    post.instagram.state === 'scheduleDesired' ||
+    post.instagram.state === 'scheduled'
+      ? toDateTimeLocal(post.instagram.scheduledAt)
+      : desiredScheduleDate &&
+        toDateTimeLocal(desiredScheduleDate.toISOString());
+
   return (
     <>
-      <Input
-        type="datetime-local"
-        value={
-          post.instagram.state === 'scheduleDesired' ||
-          post.instagram.state === 'scheduled'
-            ? toDateTimeLocal(post.instagram.scheduledAt)
-            : desiredScheduleDate &&
-              toDateTimeLocal(desiredScheduleDate.toISOString())
-        }
-        onChange={(event) => {
-          setDesiredScheduleDate(new Date(event.target.value));
-        }}
-        min={toDateTimeLocal(new Date().toISOString())}
-        className="dark:[color-scheme:dark] max-w-[13rem]"
-      />
+      {dateTime && (
+        <Input
+          type="datetime-local"
+          value={dateTime}
+          onChange={(event) => {
+            setDesiredScheduleDate(new Date(event.target.value));
+          }}
+          min={toDateTimeLocal(new Date().toISOString())}
+          className="dark:[color-scheme:dark] max-w-[13rem]"
+        />
+      )}
       <div className="whitespace-nowrap mr-auto">
         {post.instagram.state === 'notScheduled' ? (
           desiredScheduleDate ? (

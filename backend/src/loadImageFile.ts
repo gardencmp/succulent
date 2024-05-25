@@ -1,10 +1,10 @@
-import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
+import { Account, BinaryCoStream, ID, ImageDefinition } from 'jazz-tools';
 
 export async function loadImageFile(
   imageFileId: ID<ImageDefinition>,
-  options: { as: Account & Me }
+  options: { as: Account }
 ) {
-  const image = await ImageDefinition.load(imageFileId, { as: options.as });
+  const image = await ImageDefinition.load(imageFileId, options.as, {});
   if (!image) {
     console.error(new Date(), 'image unavailable');
     return undefined;
@@ -26,7 +26,7 @@ export async function loadImageFile(
     | (ReturnType<(typeof res)['getChunks']> & { chunks: Uint8Array[] })
     | undefined
   >(async (resolve) => {
-    const unsub = res.subscribe(async (res) => {
+    const unsub = BinaryCoStream.subscribe(res, [], async (res) => {
       const streamInfo = res.getChunks();
       if (streamInfo) {
         resolve(streamInfo);

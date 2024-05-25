@@ -5,22 +5,20 @@ import { useAcceptInvite, useAccount } from './main';
 import { Brand } from './sharedDataModel';
 
 function App() {
-  const { me } = useAccount();
+  const { me } = useAccount({ root: { brands: [] } });
+
   useAcceptInvite<Brand>({
     invitedObjectSchema: Brand,
     onAccept: async (brandID) => {
-      const brand = await Brand.load(brandID, { as: me });
+      if (!me) return;
+      const brand = await Brand.load(brandID, me, {});
 
       if (!brand) {
         console.log('Failed to accept invite');
         return;
       }
 
-      const myBrands = await (
-        await me._refs.root?.load()
-      )?._refs.brands?.load();
-
-      myBrands?.push(brand);
+      me.root.brands?.push(brand);
       router.navigate('/');
     },
   });

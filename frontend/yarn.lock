@@ -666,7 +666,14 @@
   resolved "https://registry.npmjs.org/@noble/ciphers/-/ciphers-0.1.4.tgz"
   integrity sha512-d3ZR8vGSpy3v/nllS+bD/OMN5UZqusWiQqkyj7AwzTnhXFH72pF5oB4Ach6DQ50g5kXxC28LdaYBEpsyv9KOUQ==
 
-"@noble/hashes@~1.4.0":
+"@noble/curves@^1.3.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.4.0.tgz#f05771ef64da724997f69ee1261b2417a49522d6"
+  integrity sha512-p+4cb332SFCrReJkCYe8Xzm0OWi4Jji5jVdIZRL/PmacmDkFNw6MrrV+gGpiPxLHbV+zKFRywUWbaseT+tZRXg==
+  dependencies:
+    "@noble/hashes" "1.4.0"
+
+"@noble/hashes@1.4.0", "@noble/hashes@^1.4.0", "@noble/hashes@~1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.4.0.tgz#45814aa329f30e4fe0ba49426f49dfccdd066426"
   integrity sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==
@@ -1563,33 +1570,36 @@ clsx@2.0.0, clsx@^2.0.0:
   resolved "https://registry.npmjs.org/clsx/-/clsx-2.0.0.tgz"
   integrity sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==
 
-cojson-storage-indexeddb@0.7.0-alpha.29:
-  version "0.7.0-alpha.29"
-  resolved "https://registry.yarnpkg.com/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.7.0-alpha.29.tgz#4c8440ad13ff4671e92e995ac3cc9124c9f35c12"
-  integrity sha512-TtvSujnJeACW8FqO50pDwzzu7nZclBXHYCXRvmFBJA78dwNzha+N787gHISvnmr2qPUZECrqvZIFyxwg969OMQ==
+cojson-storage-indexeddb@0.7.0-alpha.42:
+  version "0.7.0-alpha.42"
+  resolved "https://registry.yarnpkg.com/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.7.0-alpha.42.tgz#11e527dd4c258f3271a34cecbf5b59970d602fbb"
+  integrity sha512-zDPHv/s4c21uTR9Uy5J0QieBrMEj/XkW53FCn/ILQ5VHKciIczhKuJRZGGP9Y2dZL6iJq0njFjEWKQGNzTjHLA==
   dependencies:
-    cojson "0.7.0-alpha.29"
+    cojson "0.7.0-alpha.42"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
     typescript "^5.1.6"
 
-cojson-transport-nodejs-ws@0.7.0-alpha.29:
-  version "0.7.0-alpha.29"
-  resolved "https://registry.yarnpkg.com/cojson-transport-nodejs-ws/-/cojson-transport-nodejs-ws-0.7.0-alpha.29.tgz#bff18df0c18987c7ff32ece020d91c261fecbab6"
-  integrity sha512-VbHSIO5pObOkJbpuxYzyZBJFR9RPp/9iqa6x/A9Ng9TjFCrx+KbMHK+BGyCHn4xIuQRyAX/Cv3jd45fe48xc6A==
+cojson-transport-nodejs-ws@0.7.0-alpha.42:
+  version "0.7.0-alpha.42"
+  resolved "https://registry.yarnpkg.com/cojson-transport-nodejs-ws/-/cojson-transport-nodejs-ws-0.7.0-alpha.42.tgz#d1723cd84fe93bee241fcaff1a0faf505fb6137f"
+  integrity sha512-D0u58WvRSmCVdURWt4mU/YwPNvS7k+6WIIlxeJyk1uqioxv7DuhzU7PrWufI/fvzNC/9hhkEjjQMcNro4RKkTg==
   dependencies:
-    cojson "0.7.0-alpha.29"
+    cojson "0.7.0-alpha.42"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
     typescript "^5.1.6"
     ws "^8.14.2"
 
-cojson@0.7.0-alpha.29:
-  version "0.7.0-alpha.29"
-  resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.7.0-alpha.29.tgz#c46e123b7e3c21df1a72531bc10d5fdfbf92b660"
-  integrity sha512-cFW4CFYQCyPTPCnaYG13mgcDl0zCkJzF2QLzv5ffpyWpjsOBfsft7a2/qQMjf5yajf0PvYaTm17Tw+2AHbQsmQ==
+cojson@0.7.0-alpha.42:
+  version "0.7.0-alpha.42"
+  resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.7.0-alpha.42.tgz#b0ac5a6550123e077e0b2b36e6db1e06cda4c85b"
+  integrity sha512-/4YzP4LWR5BvmO5hcR80FKdJdR247XiIxP7LYAEFKWNDDdH2kR5CYBG1ABKe27GekCyiAS58u7DdtKzXdO9kIA==
   dependencies:
     "@hazae41/berith" "^1.2.6"
     "@noble/ciphers" "^0.1.3"
+    "@noble/curves" "^1.3.0"
+    "@noble/hashes" "^1.4.0"
     "@scure/base" "^1.1.1"
+    effect "^3.1.5"
     hash-wasm "^4.9.0"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
@@ -1820,10 +1830,10 @@ eastasianwidth@^0.2.0:
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
-effect@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/effect/-/effect-3.1.3.tgz#d4df46be839464ae1f099edfdee8743291b42cfe"
-  integrity sha512-afL9sbn4m9fCERYMLgUgtJC8+JvHb62zh0Q3v0O56z4aMAEdrrd+DKvLtlTbonQjgdOB37frE9LJuwUO7DV0ww==
+effect@^3.1.5:
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/effect/-/effect-3.2.5.tgz#bf81b3a9a7b5dd329701ea2c883b63fb8f513c66"
+  integrity sha512-Qs/NAX2s/ClRATbiImc4IuzzAs+1RaFzZm7zRx9NKmLFnIeCC+h2LwkrOuprG3PsDM+g1IfPEFWvVbTSDKPnFA==
 
 electron-to-chromium@^1.4.601:
   version "1.4.616"
@@ -2291,9 +2301,9 @@ isexe@^2.0.0:
   resolved "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-"isomorphic-streams@https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
+"isomorphic-streams@git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
   version "1.0.3"
-  resolved "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
+  resolved "git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
 jackspeak@^2.3.5:
   version "2.3.6"
@@ -2304,50 +2314,51 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jazz-browser-media-images@0.7.0-alpha.33:
-  version "0.7.0-alpha.33"
-  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.0-alpha.33.tgz#33696fdee9a8cef5d12d9b10eaf9096675f8dd40"
-  integrity sha512-TDg08b5E+3PJqZvfRR5FC8dSIftrnJruBQag6qe807PaziOgNumsx6K74+yLHzgoD/8EyYZklxT3W6rpjo3zjg==
+jazz-browser-media-images@0.7.0-alpha.40:
+  version "0.7.0-alpha.40"
+  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.0-alpha.40.tgz#ca85d798d2f1686e3b330e057b0f5c84a0d55c5a"
+  integrity sha512-bde9R76tbp4areMPpCK1jxhyBIxzmuro6MytWCQL9dX3t48YPq9v4kXHOzNeTJ5I2tVN3gpvbMINEefr8ForiA==
   dependencies:
     "@types/image-blob-reduce" "^4.1.1"
     image-blob-reduce "^4.1.0"
-    jazz-browser "0.7.0-alpha.34"
-    jazz-tools "0.7.0-alpha.34"
+    jazz-browser "0.7.0-alpha.42"
+    jazz-tools "0.7.0-alpha.42"
     pica "^9.0.1"
     typescript "^5.1.6"
 
-jazz-browser@0.7.0-alpha.34:
-  version "0.7.0-alpha.34"
-  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.0-alpha.34.tgz#c66b901b98f5607964f70e5400b0f41ed055e1bd"
-  integrity sha512-lLYcPcYlrjsF8RMbUJ1H8jexNq/3q7mPDeV14SBuNrtgCUfeT8rkZDmio/a9h/xXx7rhI424uf4ibG3HqJrJdQ==
+jazz-browser@0.7.0-alpha.42:
+  version "0.7.0-alpha.42"
+  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.0-alpha.42.tgz#922c23b7185d96560fd30d1e383a0b66069984ae"
+  integrity sha512-n/e7Vl8UM5Y6ymiP0NNZLt6/z35hGmQoN+g8RtGE5MlIjzsfMcJZedN7/5QTl/yQdUGwxspbXXYoUHWt6ICq6w==
   dependencies:
     "@scure/bip39" "^1.3.0"
-    cojson "0.7.0-alpha.29"
-    cojson-storage-indexeddb "0.7.0-alpha.29"
+    cojson "0.7.0-alpha.42"
+    cojson-storage-indexeddb "0.7.0-alpha.42"
+    effect "^3.1.5"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
-    jazz-tools "0.7.0-alpha.34"
+    jazz-tools "0.7.0-alpha.42"
     typescript "^5.1.6"
 
-jazz-react@0.7.0-alpha.34:
-  version "0.7.0-alpha.34"
-  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.0-alpha.34.tgz#db2da4207f16d3f64920a11bdff99505092f31a0"
-  integrity sha512-3ofb59+ile89IJxosEDMJbSNmPOUiY/NLaT19aXhNLg8oj4yrvUW9elAu49gQR9RnuysPvJT0Qc7ASfKWkqlwA==
+jazz-react@0.7.0-alpha.42:
+  version "0.7.0-alpha.42"
+  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.0-alpha.42.tgz#b017590b86c5d5b627fdf4a2897f69ba9198ff19"
+  integrity sha512-Y/yf/lpowHjHqTA8MGIqWUrCluqNJmZtXD+6NPafBUVsf2wXkXMoXBEKD5GqoibFrspV1yOMY+K7Xfx+eaE7fA==
   dependencies:
     "@scure/bip39" "^1.3.0"
-    cojson "0.7.0-alpha.29"
-    jazz-browser "0.7.0-alpha.34"
-    jazz-tools "0.7.0-alpha.34"
+    cojson "0.7.0-alpha.42"
+    jazz-browser "0.7.0-alpha.42"
+    jazz-tools "0.7.0-alpha.42"
     typescript "^5.1.6"
 
-jazz-tools@0.7.0-alpha.34:
-  version "0.7.0-alpha.34"
-  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.0-alpha.34.tgz#60809be5e54e80fd2bff45037180aa4eb2d613d7"
-  integrity sha512-BFglhe6LDf4rs+tdfC9aq46Y5tWQrnYlGtv32+YTJRuOl9s9Ij/PGyNnNI3U+ZVrdTlFpAt7O9j4bDOuIbKskg==
+jazz-tools@0.7.0-alpha.42:
+  version "0.7.0-alpha.42"
+  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.0-alpha.42.tgz#f9eed0af72fdf466177a1ffd9d0cd153ad02d368"
+  integrity sha512-4eU/HPCMjkdwQWG9uYnVShNnBj5hIa1eDcEtzmRwJK9Z5dNOGVOC2fRCZLxnYSf20DGDD+T2uKdv7xBwyUHFog==
   dependencies:
     "@effect/schema" "^0.66.16"
-    cojson "0.7.0-alpha.29"
-    cojson-transport-nodejs-ws "0.7.0-alpha.29"
-    effect "^3.1.3"
+    cojson "0.7.0-alpha.42"
+    cojson-transport-nodejs-ws "0.7.0-alpha.42"
+    effect "^3.1.5"
     fast-check "^3.17.2"
 
 jiti@^1.19.1:

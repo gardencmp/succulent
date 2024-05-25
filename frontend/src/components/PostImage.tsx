@@ -13,8 +13,6 @@ export function PostImage({ post, idx }: { post: Post; idx?: number }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-        } else {
-          setVisible(false);
         }
       },
       {
@@ -44,7 +42,7 @@ export function PostImage({ post, idx }: { post: Post; idx?: number }) {
               src={src}
             />
           ) : (
-            <div className="block w-full h-full bg-neutral-800" />
+            <div className="block w-full h-full bg-stone-800" />
           )
         }
       </ProgressiveImg>

@@ -29,6 +29,12 @@ export class SucculentAccount extends Account {
       this.root = AccountRoot.create(
         {
           brands: ListOfBrands.create([], { owner: this }),
+          settings: Settings.create(
+            {
+              perBrand: SettingsPerBrand.create({}, { owner: this }),
+            },
+            { owner: this }
+          ),
         },
         { owner: this }
       );

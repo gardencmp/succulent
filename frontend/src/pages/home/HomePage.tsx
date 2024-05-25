@@ -1,6 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Brand, ListOfPosts } from '../../sharedDataModel';
+import {
+  Brand,
+  ListOfLocations,
+  ListOfPosts,
+  UserTagList,
+} from '../../sharedDataModel';
 import { BrandView } from './BrandView';
 import { Account, Group, ID } from 'jazz-tools';
 import { useAccount } from '../../main';
@@ -29,9 +34,7 @@ export function HomePage() {
             const el = event.currentTarget;
             const brandName = el.brand.value;
 
-            const scheduleWorker = await Account.load(scheduleWorkerId, {
-              as: me,
-            });
+            const scheduleWorker = await Account.load(scheduleWorkerId, me, {});
             if (!scheduleWorker) {
               throw new Error('scheduleWorker unavailable');
             }
@@ -45,6 +48,10 @@ export function HomePage() {
               {
                 name: brandName,
                 posts: ListOfPosts.create([], { owner: brandGroup }),
+                usedLocations: ListOfLocations.create([], {
+                  owner: brandGroup,
+                }),
+                usedUserTags: UserTagList.create([], { owner: brandGroup }),
               },
               { owner: brandGroup }
             );

@@ -23,7 +23,7 @@ export function PostComponent({
 }) {
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
 
-  const editable = post.instagram.state === 'notScheduled';
+  const editable = post.instagram.state !== 'posted';
 
   useEffect(() => {
     if (lastScheduledOrPostDate) {

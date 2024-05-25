@@ -1,9 +1,9 @@
-import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
+import { Account, ID, ImageDefinition } from 'jazz-tools';
 import { Image, Post } from './sharedDataModel';
 import { ActuallyScheduled } from '.';
 
 export async function actuallyPost(
-  as: Account & Me,
+  as: Account,
   postId: ID<Post>,
   actuallyScheduled: ActuallyScheduled,
   state: {
@@ -15,22 +15,20 @@ export async function actuallyPost(
   fetchImpl: typeof fetch
 ) {
   try {
-    const post = await Post.load(postId, { as });
+    const post = await Post.load(postId, as, {
+      inBrand: {},
+      userTags: {},
+    });
     if (!post) throw new Error('post unavailable');
 
     try {
-      if (!post._refs.inBrand) throw new Error('no brand');
-
-      const brand = await post._refs.inBrand.load();
-      if (!brand) throw new Error('brand unavailable');
+      const brand = await post.inBrand;
       if (!brand.instagramAccessToken) throw new Error('no access token');
       if (!brand.instagramPage) throw new Error('no instagram page');
       const accessToken = brand.instagramAccessToken;
       const igPage = brand.instagramPage.id;
       const backendAddr =
         process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331';
-
-      await post._refs.userTags?.load();
 
       let topContainerId;
 
