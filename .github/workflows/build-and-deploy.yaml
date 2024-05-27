@@ -50,8 +50,15 @@ jobs:
 
       - name: yarn Build
         run: |
+          if [ "${{github.ref_name}}" == "main" ]; then
+            export BRANCH_SUFFIX="";
+            export BRANCH_SUBDOMAIN="";
+          else
+            export BRANCH_SUFFIX=-${{needs.env-job.outputs.modified-branch-name}};
+            export BRANCH_SUBDOMAIN="${{needs.env-job.outputs.modified-branch-name}}--";
+          fi
           yarn install
-          yarn build;
+          VITE_SUCCULENT_BACKEND_ADDR="https://succulent-backend$BRANCH_SUFFIX.jazz.tools" yarn build;
         working-directory: ./frontend
 
       - name: Docker Build & Push
