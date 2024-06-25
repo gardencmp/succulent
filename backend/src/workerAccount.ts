@@ -21,5 +21,8 @@ export class SchedulerAccount extends Account {
         { owner: this }
       );
     }
+    // const root = await this._refs.root?.load();
+    // const brands = await root?._refs.brands.load();
+    // brands?.push({id: "co_zDC7uyB6dKXzbjgB4KYVEgxW2w8"} as unknown as Brand)
   }
 }

@@ -29,6 +29,8 @@ export async function handleFBConnectRequest(req: Request, as: Account) {
 
   const brandId = new URL(req.url).searchParams.get('state');
 
+  console.log('Updating brand id: ', brandId);
+
   if (!brandId) return new Response('no brandId');
 
   const brand = await Brand.load(brandId as ID<Brand>, as, {});
@@ -37,7 +39,7 @@ export async function handleFBConnectRequest(req: Request, as: Account) {
 
   brand.instagramAccessToken = longLivedResult.access_token;
   brand.instagramAccessTokenValidUntil =
-    Date.now() + longLivedResult.expires_in * 1000;
+    Date.now() + (longLivedResult.expires_in || 30 * 24 * 60 * 60) * 1000;
 
   console.log(new Date(), brand.toJSON());
 

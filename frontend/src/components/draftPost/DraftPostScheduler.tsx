@@ -42,7 +42,7 @@ export function DraftPostScheduler({
           className="dark:[color-scheme:dark] max-w-[13rem]"
         />
       )}
-      <div className="whitespace-nowrap mr-auto">
+      <div className="whitespace-nowrap mr-auto overflow-x-auto">
         {post.instagram.state === 'notScheduled' ? (
           desiredScheduleDate ? (
             <Button

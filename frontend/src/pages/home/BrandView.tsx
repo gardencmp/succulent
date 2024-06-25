@@ -45,9 +45,11 @@ export function BrandView({ brand }: { brand: Brand }) {
             variant="ghost"
             onClick={() => {
               if (confirm('Really reset Instagram page?')) {
+                brand.instagramAccessToken = undefined;
                 brand.instagramPage = undefined;
               }
             }}
+            title={brand.instagramAccessToken}
           >
             <InstagramIcon size="1.2em" /> {brand.instagramPage.name}{' '}
           </Button>

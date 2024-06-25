@@ -62,14 +62,14 @@ async function runner() {
 
   let lastWorkerUpdateAt: Date | undefined;
   let lastWorkerUpdate: SchedulerAccountRoot | null;
+  let accountStateChanged = false;
 
-  SchedulerAccount.subscribe(worker, {}, (workerUpdate) => {
+  worker.subscribe({}, (workerUpdate) => {
     lastWorkerUpdateAt = new Date();
     lastWorkerUpdate = workerUpdate?.root;
+    accountStateChanged = true;
 
     if (workerUpdate?.root?.brands) {
-      logAccountState(workerUpdate);
-
       const seenPosts = [];
 
       for (let brand of workerUpdate.root?.brands) {
@@ -93,11 +93,18 @@ async function runner() {
           actuallyScheduled.delete(postId);
         }
       }
-
-      console.log(new Date(), 'actuallyScheduled after workerUpdate');
-      logActuallyScheduled(actuallyScheduled);
     }
   });
+
+  setInterval(() => {
+    if (accountStateChanged) {
+      logAccountState(lastWorkerUpdate);
+      accountStateChanged = false;
+
+      console.log(new Date(), 'actuallyScheduled after workerUpdates');
+      logActuallyScheduled(actuallyScheduled);
+    }
+  }, 2000);
 
   Bun.serve({
     async fetch(req) {

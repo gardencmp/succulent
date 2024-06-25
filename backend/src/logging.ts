@@ -1,11 +1,12 @@
 import { ActuallyScheduled } from '.';
-import { SchedulerAccount } from './workerAccount';
+import { SchedulerAccountRoot } from './workerAccount';
 
-export function logAccountState(account: SchedulerAccount) {
+export function logAccountState(root: SchedulerAccountRoot | null) {
+  // return;
   console.log(new Date(), 'scheduledPosts');
 
   console.table(
-    account.root?.brands?.flatMap(
+    root?.brands?.flatMap(
       (brand) =>
         brand?.posts
           ?.toSorted((a, b) => {
@@ -47,6 +48,7 @@ export function logAccountState(account: SchedulerAccount) {
 }
 
 export function logActuallyScheduled(actuallyScheduled: ActuallyScheduled) {
+  // return;
   console.table(
     [...actuallyScheduled.entries()].map(([id, state]) =>
       state.state === 'posting' || state.state === 'loadingImagesFailed'
