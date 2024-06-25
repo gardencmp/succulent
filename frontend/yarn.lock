@@ -1570,29 +1570,29 @@ clsx@2.0.0, clsx@^2.0.0:
   resolved "https://registry.npmjs.org/clsx/-/clsx-2.0.0.tgz"
   integrity sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==
 
-cojson-storage-indexeddb@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.7.0.tgz#2580f34f0e82eb6582eba2523a87b205d6169434"
-  integrity sha512-LJEzJYnRZ8XICl+/PfwUGLGxRYv7a3rH41/ujM+0qYL2s49LlI9CIIjF/Gz0j+bFFkG1sFO2Y8GHtGZ2KoieVA==
+cojson-storage-indexeddb@0.7.11:
+  version "0.7.11"
+  resolved "https://registry.yarnpkg.com/cojson-storage-indexeddb/-/cojson-storage-indexeddb-0.7.11.tgz#ee0ce0c8533cf9e5a0df41961cf76e27d683b71f"
+  integrity sha512-A7e0raSmLp+JND6IWiJsqoThTzrI7GdXny/lQpHXE/fnagvTz/viKP/y7B9JieDizE5xm4U8W1Jrk4fMW8P6Pw==
   dependencies:
-    cojson "0.7.0"
+    cojson "0.7.11"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
     typescript "^5.1.6"
 
-cojson-transport-nodejs-ws@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/cojson-transport-nodejs-ws/-/cojson-transport-nodejs-ws-0.7.0.tgz#9d6b3c3cf3eaa269dbee0c97453f3bd8fd4dcc72"
-  integrity sha512-3tR2IUSicBAP8rvf5mvBeiSMivd0ntA5v6nbSjdYFrKFiNevW5h4kJ5sVYvBv39qr7SajfwJbmpL6nnn/g2RNA==
+cojson-transport-nodejs-ws@0.7.11:
+  version "0.7.11"
+  resolved "https://registry.yarnpkg.com/cojson-transport-nodejs-ws/-/cojson-transport-nodejs-ws-0.7.11.tgz#80d3a44fdef1682173147e14b20a4e44c60e3adc"
+  integrity sha512-SjMNHLqTaz2Sn2M/4HV32VCBPj1Qs+uySi1+36ktN9T4uVPxNl+BWyrEzHKJDg8ygb9hHitIrVBOZA/Yelv6zg==
   dependencies:
-    cojson "0.7.0"
+    cojson "0.7.11"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
     typescript "^5.1.6"
     ws "^8.14.2"
 
-cojson@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.7.0.tgz#7b3295a0bbe3ce5d03a0747f61ab1079a18b021d"
-  integrity sha512-VlUgcI/rx4IxbXFRtVKNOQ4yIdt0A4TUjgs6YrREql+fqQuhgGtIkv5i+Fbuj4m5EaCDdFxFoYxOcdC8n3Qkaw==
+cojson@0.7.11:
+  version "0.7.11"
+  resolved "https://registry.yarnpkg.com/cojson/-/cojson-0.7.11.tgz#88701763842d445159b84115cceb6087c5eb196a"
+  integrity sha512-xy2WQqIFm8Bzd31zUbqZ+IYBKUtFhoUH9z3p7UntJIfmvQreOWS8ZSuoKIokS70ISJpfIZc239LMsMk7YmvRww==
   dependencies:
     "@hazae41/berith" "^1.2.6"
     "@noble/ciphers" "^0.1.3"
@@ -2301,9 +2301,9 @@ isexe@^2.0.0:
   resolved "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-"isomorphic-streams@https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
+"isomorphic-streams@git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
   version "1.0.3"
-  resolved "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
+  resolved "git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
 jackspeak@^2.3.5:
   version "2.3.6"
@@ -2314,50 +2314,50 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jazz-browser-media-images@0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.1.tgz#f657bfb1c78ba7e89cb2a4129b2f1a0af04d7bab"
-  integrity sha512-j8eGVVxyPgCr0VrYHOTtWUqF9mT++iJXSj07aVfdzBsiwIkHUyxKGJ6Iq5j1f58uToeGVyfBeBZiw4hWO+xgsQ==
+jazz-browser-media-images@0.7.12:
+  version "0.7.12"
+  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.12.tgz#0f07a385549894ea83f16126145f4943f8ad82cb"
+  integrity sha512-cmPDn7/r6KM0CGf87RM9nDNRflLr8YuV/qClK7HJNLh5xIG8AS0Fgq4rAybEBKiWaWj8BLcVMT8owiSpYA9fEA==
   dependencies:
     "@types/image-blob-reduce" "^4.1.1"
     image-blob-reduce "^4.1.0"
-    jazz-browser "0.7.1"
-    jazz-tools "0.7.1"
+    jazz-browser "0.7.12"
+    jazz-tools "0.7.12"
     pica "^9.0.1"
     typescript "^5.1.6"
 
-jazz-browser@0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.1.tgz#8940abf4ddd93ca087cdbb5523866a9d96d1d971"
-  integrity sha512-cqkrT8Cy0zHZVmpJi+IWj0GzTN7nAC3jpYEnGFS7tMjVVpciRqnuI2wVTA9iOEqOb+xfD2WW931ymTWwbS0LTA==
+jazz-browser@0.7.12:
+  version "0.7.12"
+  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.12.tgz#1cfa5ef20440f964edfbc97d0006acf7a0083e4b"
+  integrity sha512-1Kw1k5JU+fFfBJ3fj5rLvHWxlldfIxtnsRCsixbbYTvQCsusPtwkDHd6sie65+ahssFBQb4qhFl22jbObgLctw==
   dependencies:
     "@scure/bip39" "^1.3.0"
-    cojson "0.7.0"
-    cojson-storage-indexeddb "0.7.0"
+    cojson "0.7.11"
+    cojson-storage-indexeddb "0.7.11"
     effect "^3.1.5"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
-    jazz-tools "0.7.1"
+    jazz-tools "0.7.12"
     typescript "^5.1.6"
 
-jazz-react@0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.2.tgz#8fa7b63ba6b59173d24c8e2350af129daef92fbb"
-  integrity sha512-3fa3bjJSrSOUvrNOfxfTlmDfUKvfVEWk4nAbB5dw8LZBcNwyCiN+WZuhK9TYSXNttNT6T1C0EaqYLX9snyZJ4Q==
+jazz-react@0.7.12:
+  version "0.7.12"
+  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.12.tgz#203cd877fd9fb52d3e92eb5a752195a6ca831fac"
+  integrity sha512-+gccwOcFT2V0pVwCvPwBxKNhx2aFMPIoEHgb4nnI9cfUfZv2QvwAybdVPrHMsrAsx6DURI89DcAqUm6853qp3w==
   dependencies:
     "@scure/bip39" "^1.3.0"
-    cojson "0.7.0"
-    jazz-browser "0.7.1"
-    jazz-tools "0.7.1"
+    cojson "0.7.11"
+    jazz-browser "0.7.12"
+    jazz-tools "0.7.12"
     typescript "^5.1.6"
 
-jazz-tools@0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.1.tgz#e62fba61607156083b0be01b5db5ff456d6e27bb"
-  integrity sha512-hdxOlPh5mukQFtMEappd601YfBB0+VOUjk0DgR6qvpTxFAqmaYnlWo1txX+myu06/Hpavbl/UORPfU4mgx3kEA==
+jazz-tools@0.7.12:
+  version "0.7.12"
+  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.12.tgz#c39b2a315795c2411bb1a2dabd4929bd5b8644a6"
+  integrity sha512-vo/nz8Zp5gDrQl/bh6i91RAUl+C0QhXQUFar9wgxHwM/RjIB8tKG99ECdj2q4nnbPyFb0TuqzgBydRejV1vt5w==
   dependencies:
     "@effect/schema" "^0.66.16"
-    cojson "0.7.0"
-    cojson-transport-nodejs-ws "0.7.0"
+    cojson "0.7.11"
+    cojson-transport-nodejs-ws "0.7.11"
     effect "^3.1.5"
     fast-check "^3.17.2"
 
