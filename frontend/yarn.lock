@@ -2305,6 +2305,11 @@ isexe@^2.0.0:
   version "1.0.3"
   resolved "git+https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
 
+"isomorphic-streams@https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae":
+  version "1.0.3"
+  uid aa9394781bfc92f8d7c981be7daf8af4b4cd4fae
+  resolved "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
+
 jackspeak@^2.3.5:
   version "2.3.6"
   resolved "https://registry.npmjs.org/jackspeak/-/jackspeak-2.3.6.tgz"
@@ -2314,46 +2319,46 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jazz-browser-media-images@0.7.12:
-  version "0.7.12"
-  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.12.tgz#0f07a385549894ea83f16126145f4943f8ad82cb"
-  integrity sha512-cmPDn7/r6KM0CGf87RM9nDNRflLr8YuV/qClK7HJNLh5xIG8AS0Fgq4rAybEBKiWaWj8BLcVMT8owiSpYA9fEA==
+jazz-browser-media-images@0.7.13:
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.13.tgz#34b2d257fe41ab3007011eed3f5cee98d1ad7e42"
+  integrity sha512-kt70nVetBsYXdWm78HuyyS3Xdb3F4A0Y8kY/uGvs8TycDePwsAKZI2bGZRC3AQl/onlenu2v/aVnm2FaBGpBcQ==
   dependencies:
     "@types/image-blob-reduce" "^4.1.1"
     image-blob-reduce "^4.1.0"
-    jazz-browser "0.7.12"
-    jazz-tools "0.7.12"
+    jazz-browser "0.7.13"
+    jazz-tools "0.7.13"
     pica "^9.0.1"
     typescript "^5.1.6"
 
-jazz-browser@0.7.12:
-  version "0.7.12"
-  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.12.tgz#1cfa5ef20440f964edfbc97d0006acf7a0083e4b"
-  integrity sha512-1Kw1k5JU+fFfBJ3fj5rLvHWxlldfIxtnsRCsixbbYTvQCsusPtwkDHd6sie65+ahssFBQb4qhFl22jbObgLctw==
+jazz-browser@0.7.13:
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.13.tgz#36b284eef27cb891a16a7da90b7fd7d0d75705e0"
+  integrity sha512-XIIUBOPnNh7o9PSWhqOMt7G6JIgaKoLxeOPBfhXGxHmt2hemGz2zgkoG5+zAVU7zfFKPQlyaBd/UjKWHG3DFxg==
   dependencies:
     "@scure/bip39" "^1.3.0"
     cojson "0.7.11"
     cojson-storage-indexeddb "0.7.11"
     effect "^3.1.5"
     isomorphic-streams "https://github.com/sgwilym/isomorphic-streams.git#aa9394781bfc92f8d7c981be7daf8af4b4cd4fae"
-    jazz-tools "0.7.12"
+    jazz-tools "0.7.13"
     typescript "^5.1.6"
 
-jazz-react@0.7.12:
-  version "0.7.12"
-  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.12.tgz#203cd877fd9fb52d3e92eb5a752195a6ca831fac"
-  integrity sha512-+gccwOcFT2V0pVwCvPwBxKNhx2aFMPIoEHgb4nnI9cfUfZv2QvwAybdVPrHMsrAsx6DURI89DcAqUm6853qp3w==
+jazz-react@0.7.13:
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.13.tgz#18306e21b7032d56e56c5ec885922c0a60b96882"
+  integrity sha512-XKVdJF4CtpR15u+yXyUyskobfKvCEDuUBjm+DB/DtS5mKl9qUJbSXyn9n60q2bjv5kRnEf11dRovPjPuyQ4udg==
   dependencies:
     "@scure/bip39" "^1.3.0"
     cojson "0.7.11"
-    jazz-browser "0.7.12"
-    jazz-tools "0.7.12"
+    jazz-browser "0.7.13"
+    jazz-tools "0.7.13"
     typescript "^5.1.6"
 
-jazz-tools@0.7.12:
-  version "0.7.12"
-  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.12.tgz#c39b2a315795c2411bb1a2dabd4929bd5b8644a6"
-  integrity sha512-vo/nz8Zp5gDrQl/bh6i91RAUl+C0QhXQUFar9wgxHwM/RjIB8tKG99ECdj2q4nnbPyFb0TuqzgBydRejV1vt5w==
+jazz-tools@0.7.13:
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.13.tgz#c71b91f12cf76262783007cd5c3a12299ec52715"
+  integrity sha512-Tq1m2ISVYTcRTGArHmb7rMlR5o2HNnJIQAkEruj9h6da2DojQgfgj4cO1JKRvtGLMWOP5PpKx68pfteSkrIvsg==
   dependencies:
     "@effect/schema" "^0.66.16"
     cojson "0.7.11"
