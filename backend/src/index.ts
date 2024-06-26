@@ -185,12 +185,17 @@ async function runner() {
         });
 
         const streams = await Promise.all(
-          state.imageFileIds.map(async (imageId) => ({
-            id: imageId,
-            ...(await loadImageFile(imageId, {
+          state.imageFileIds.map(async (imageId) => {
+            const loadedImage = await loadImageFile(imageId, {
               as: worker,
-            })),
-          }))
+            });
+            return (
+              loadedImage && {
+                id: imageId,
+                ...loadedImage,
+              }
+            );
+          })
         );
 
         if (
