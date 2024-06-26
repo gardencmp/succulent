@@ -26,13 +26,18 @@ export async function loadImageFile(
     | (ReturnType<(typeof res)['getChunks']> & { chunks: Uint8Array[] })
     | undefined
   >(async (resolve) => {
-    const unsub = BinaryCoStream.subscribe(res, [], async (res) => {
-      const streamInfo = res.getChunks();
-      if (streamInfo) {
-        resolve(streamInfo);
-        return;
+    const unsub = BinaryCoStream.subscribe(
+      res.id,
+      options.as,
+      [],
+      async (res) => {
+        const streamInfo = res.getChunks();
+        if (streamInfo) {
+          resolve(streamInfo);
+          return;
+        }
       }
-    });
+    );
 
     setTimeout(() => {
       unsub();
