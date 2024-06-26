@@ -222,6 +222,7 @@ async function runner() {
             };
           }
         } else {
+          console.error(new Date(), 'Loading images failed', postId, streams);
           actuallyScheduled.set(postId, { state: 'loadingImagesFailed' });
           state.post.instagram = {
             state: 'scheduleDesired',
