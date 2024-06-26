@@ -14,8 +14,10 @@ export function handleImageRequest(
   const streamInfo = loadedImages.get(imageFileId as ID<ImageDefinition>);
 
   if (!streamInfo) return new Response('not found', { status: 404 });
-  if (streamInfo.chunks.length === 0)
+  if (!streamInfo.chunks || streamInfo.chunks.length === 0) {
+    console.error(new Date(), 'no chunks in image', streamInfo);
     return new Response('no chunks in image', { status: 500 });
+  }
 
   return new Response(new Blob(streamInfo.chunks), {
     headers: {
