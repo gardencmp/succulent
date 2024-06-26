@@ -1,4 +1,4 @@
-import { Account, ID, ImageDefinition, Me } from 'jazz-tools';
+import { Account, ID, ImageDefinition } from 'jazz-tools';
 import { InstagramScheduleDesired, Post } from './sharedDataModel';
 import { ActuallyScheduled } from '.';
 
@@ -8,7 +8,7 @@ export const handlePostUpdate = (
     ImageDefinition['id'],
     { mimeType?: string; chunks: Uint8Array[] }
   >,
-  worker: Account & Me
+  worker: Account
 ) => {
   return async function handlePostUpdateInner(post: Post) {
     if (!post.instagram?.state) return;
@@ -40,13 +40,25 @@ export const handlePostUpdate = (
         new Date(post.instagram.scheduledAt).getTime() >=
         Date.now() - 1000 * 60 * 5
       ) {
+        const imageFileIds = post.images
+          ?.map((image) => image?.imageFile?.id)
+          .filter((i): i is NonNullable<typeof i> => !!i);
+
+        if (!imageFileIds || imageFileIds.length === 0) {
+          console.log(
+            new Date(),
+            '⚠️ Ignoring scheduleDesired post without images',
+            post.id,
+            post.content?.split('\n')[0].slice(0, 20),
+            imageFileIds
+          );
+          return;
+        }
+
         actuallyScheduled.set(post.id, {
           state: 'imagesNotLoaded',
           content: post.content || '',
-          imageFileIds:
-            post.images
-              ?.map((image) => image?.imageFile?.id)
-              .filter((i): i is NonNullable<typeof i> => !!i) || [],
+          imageFileIds,
           scheduledAt: new Date(post.instagram.scheduledAt),
           post: post as Post<InstagramScheduleDesired>,
         });
