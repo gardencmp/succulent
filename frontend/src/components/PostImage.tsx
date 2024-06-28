@@ -1,6 +1,6 @@
 import { Post } from '@/sharedDataModel';
 import { ProgressiveImg } from 'jazz-react';
-import { CheckIcon, ImageOffIcon } from 'lucide-react';
+import { CheckIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 export function PostImage({ post, idx }: { post: Post; idx?: number }) {
