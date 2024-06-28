@@ -7,6 +7,10 @@ export function PostImage({ post, idx }: { post: Post; idx?: number }) {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const isScheduled =
+    post.instagram?.state === 'scheduleDesired' ||
+    post.instagram?.state === 'scheduled';
+
   // use intersection observer
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,7 +37,7 @@ export function PostImage({ post, idx }: { post: Post; idx?: number }) {
     <div ref={containerRef} className={'w-full h-full'}>
       <ProgressiveImg
         image={post.images?.[idx || 0]?.imageFile}
-        maxWidth={visible ? 1024 : 0}
+        maxWidth={isScheduled ? undefined : visible ? 1024 : 0}
       >
         {({ src }) =>
           src ? (
