@@ -1,5 +1,6 @@
 import { Post } from '@/sharedDataModel';
 import { ProgressiveImg } from 'jazz-react';
+import { CheckIcon, ImageOffIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 export function PostImage({ post, idx }: { post: Post; idx?: number }) {
@@ -7,7 +8,8 @@ export function PostImage({ post, idx }: { post: Post; idx?: number }) {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const isScheduled =
+  const isDraftOrScheduled =
+    post.instagram?.state === 'notScheduled' ||
     post.instagram?.state === 'scheduleDesired' ||
     post.instagram?.state === 'scheduled';
 
@@ -34,17 +36,27 @@ export function PostImage({ post, idx }: { post: Post; idx?: number }) {
   }, []);
 
   return (
-    <div ref={containerRef} className={'w-full h-full'}>
+    <div ref={containerRef} className={'w-full h-full relative'}>
       <ProgressiveImg
         image={post.images?.[idx || 0]?.imageFile}
-        maxWidth={isScheduled ? undefined : visible ? 1024 : 0}
+        maxWidth={isDraftOrScheduled ? undefined : visible ? 1024 : 0}
       >
-        {({ src }) =>
+        {({ src, res, originalSize }) =>
           src ? (
-            <img
-              className="block w-full h-full object-cover shrink-0 outline-none hover:opacity-100"
-              src={src}
-            />
+            <>
+              {isDraftOrScheduled ? (
+                res === originalSize?.join('x') ? (
+                  <>
+                    <CheckIcon className="absolute bottom-1.5 right-2 text-black" />
+                    <CheckIcon className="absolute bottom-2 right-2 text-white" />
+                  </>
+                ) : undefined
+              ) : undefined}
+              <img
+                className="block w-full h-full object-cover shrink-0 outline-none hover:opacity-100"
+                src={src}
+              />
+            </>
           ) : (
             <div className="block w-full h-full bg-stone-800" />
           )
