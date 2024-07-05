@@ -65,7 +65,7 @@ export function PostTile({
             {(alwaysShowInsights ||
               hovered ||
               post.instagram.state === 'scheduleDesired') && (
-              <div className="absolute bg-neutral-800/80 md:bg-neutral-800/65 md:backdrop-blur bottom-2 left-2 right-2 top-auto max-h-1/2 p-2 rounded-lg">
+              <div className="absolute bg-neutral-800/80 md:bg-neutral-800/65 md:backdrop-blur bottom-2 left-2 right-2 top-auto max-h-1/2 p-2 rounded-lg z-10">
                 <PostInsights post={post} />
               </div>
             )}
