@@ -1,7 +1,11 @@
-import { Account, ID } from 'jazz-tools';
+import { ID } from 'jazz-tools';
 import { Brand } from './sharedDataModel';
+import { SchedulerAccount } from './workerAccount';
 
-export async function handleFBConnectRequest(req: Request, as: Account) {
+export async function handleFBConnectRequest(
+  req: Request,
+  worker: SchedulerAccount
+) {
   const code = new URL(req.url).searchParams.get('code');
 
   if (!code) return new Response('no code');
@@ -28,14 +32,20 @@ export async function handleFBConnectRequest(req: Request, as: Account) {
   console.log(new Date(), 'longLivedResult', longLivedResult);
 
   const brandId = new URL(req.url).searchParams.get('state');
-
   console.log('Updating brand id: ', brandId);
-
   if (!brandId) return new Response('no brandId');
 
-  const brand = await Brand.load(brandId as ID<Brand>, as, {});
-
+  const brand = await Brand.load(brandId as ID<Brand>, worker, {});
   if (!brand) return new Response('unavailable');
+
+  const workerWithBrands = await worker.ensureLoaded({ root: { brands: [] } });
+  if (!workerWithBrands) return new Response('unavailable');
+
+  if (
+    ![...workerWithBrands.root.brands._refs].some((ref) => ref.id === brand.id)
+  ) {
+    workerWithBrands.root.brands.push(brand);
+  }
 
   brand.instagramAccessToken = longLivedResult.access_token;
   brand.instagramAccessTokenValidUntil =
