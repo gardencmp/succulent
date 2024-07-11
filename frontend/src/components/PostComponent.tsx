@@ -1,21 +1,15 @@
 import { Post, UserTagMap } from '@/sharedDataModel';
 import { PostImage } from './PostImage';
 import { Textarea } from './ui/textarea';
-import {
-  CircleUserRoundIcon,
-  HashIcon,
-  MapPinIcon,
-  Trash2Icon,
-  XIcon,
-} from 'lucide-react';
-import { Input } from './ui/input';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Trash2Icon } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { DraftPostScheduler } from './draftPost/DraftPostScheduler';
 import { ImageUploader } from './draftPost/ImageUploader';
 import { Button } from './ui/button';
 import { useDeleteDraft } from '@/lib/deleteDraft';
 import CreatableSelect from 'react-select/creatable';
 import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
+import { ClassNamesConfig } from 'node_modules/react-select/dist/declarations/src';
 
 export function PostComponent({
   post,
@@ -62,11 +56,20 @@ export function PostComponent({
   const deleteDraft = useDeleteDraft(post.inBrand);
 
   const allUserTagOptions = useMemo(
-    () => (allUserTags || []).map((user) => ({ user })),
+    () =>
+      (allUserTags || []).map((user) => ({ user, x: undefined, y: undefined })),
     [allUserTags]
   );
   const currentUserTagsValue = useMemo(
-    () => Object.keys(post.userTags || {}).map((user) => ({ user })),
+    () =>
+      Object.entries(post.userTags || {}).map(
+        ([user, pos]) =>
+          ({ user, ...pos }) as {
+            user: string;
+            x: number | undefined;
+            y: number | undefined;
+          }
+      ),
     [post.userTags]
   );
 
@@ -75,7 +78,7 @@ export function PostComponent({
       post.content
         ? [
             post.content.split('#')[0],
-            post.content.match(/(#[a-zA-Z]+\b)/g) || [],
+            post.content.match(/(#[a-zA-Z_]+\b)/g) || [],
           ]
         : ['', []],
     [post.content]
@@ -103,8 +106,23 @@ export function PostComponent({
   );
 
   const classNames = {
+    container() {
+      return 'px-2 rounded-md bg-background text-sm ring-offset-background placeholder:text-muted-foreground [&:has(:focus-visible)]:outline-none [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ring [&:has(:focus-visible)]:ring-offset-2';
+    },
+    valueContainer() {
+      return 'cursor-text';
+    },
+    multiValue() {
+      return 'relative group';
+    },
+    multiValueLabel() {
+      return 'text-xs bg-stone-700 text-stone-100 px-1 rounded-sm mr-1 mb-1 group-hover:line-through group-hover:text-red-500';
+    },
+    multiValueRemove() {
+      return 'absolute top-0 right-0 p-1 rounded-sm cursor-pointer w-full opacity-0 peer';
+    },
     menu() {
-      return 'p-2 bg-white z-50 border rounded-lg';
+      return 'p-2 bg-white z-50 border rounded-lg dark:bg-stone-800 dark:text-stone-100';
     },
     menuList() {
       return 'flex flex-wrap';
@@ -113,12 +131,13 @@ export function PostComponent({
       return 'flex flex-wrap gap-1';
     },
     option() {
-      return 'px-1 py-2 hover:bg-stone-100 rounded-sm !w-auto';
+      return 'px-1 py-2 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-sm !w-auto cursor-pointer';
     },
-  } as const;
+  } satisfies ClassNamesConfig;
 
   return (
     <div className="grid grid-cols-3 max-w-full gap-2 relative">
+      {/* <div className='text-xs whitespace-pre col-span-3'>{post.content}</div> */}
       <div
         key={post.images?.length}
         className="w-full max-w-52 aspect-square md:row-span-2 overflow-x-scroll flex snap-mandatory snap-x"
@@ -149,28 +168,32 @@ export function PostComponent({
           </div>
         )}
       </div>
-      <div className="col-span-2 flex flex-col gap-2">
+      <div className="col-span-2 border rounded-xl p-px">
         <Textarea
-          value={contentWithoutHashTags.replace(/\n/g, '↵')}
+          value={contentWithoutHashTags}
           onChange={(event) => {
-            post.content = event.target.value;
+            post.content = event.target.value + currentHashTags.join(' ');
           }}
-          className={'min-h-0 h-auto ' + (editable ? '' : 'border-transparent')}
+          className={
+            'min-h-0 h-fit border-transparent p-2' +
+            (!editable &&
+              ' focus-visible:ring-offset-0 focus-visible:ring-transparent')
+          }
+          readOnly={!editable}
         />
-        <div className="text-sm">
+        <div className="text-sm border-t">
           <div className="flex gap-1 items-center mt-3">
             <CreatableSelect
               isMulti
               isClearable={false}
+              isDisabled={!editable}
               allowCreateWhileLoading
               options={allHashTagsOptions}
               className="absolute z-50 flex-1"
               value={currentHashTagsValue}
               getOptionLabel={(option) =>
                 `${option.tag} (${
-                  option.quality == undefined
-                    ? 'unknown'
-                    : option.quality.toFixed(2)
+                  option.quality == undefined ? '?' : option.quality.toFixed(2)
                 })`
               }
               getOptionValue={(option) => option.tag}
@@ -178,7 +201,11 @@ export function PostComponent({
                 tag: '#' + inputValue,
                 quality: undefined,
               })}
-              onChange={(val) => console.log(val)}
+              onChange={(newHashTags) => {
+                post.content =
+                  contentWithoutHashTags +
+                  newHashTags.map((tag) => tag.tag).join(' ');
+              }}
               unstyled
               classNames={classNames}
               closeMenuOnSelect={false}
@@ -188,23 +215,47 @@ export function PostComponent({
             <CreatableSelect
               isMulti
               isClearable={false}
+              isDisabled={!editable}
               allowCreateWhileLoading
               options={allUserTagOptions}
               className="absolute z-40 flex-1"
               value={currentUserTagsValue}
               getOptionLabel={(option) => '@' + option.user}
               getOptionValue={(option) => option.user}
-              getNewOptionData={(inputValue) => ({ user: inputValue })}
-              onChange={(val) => console.log(val)}
+              getNewOptionData={(inputValue) => ({
+                user: inputValue,
+                x: undefined,
+                y: undefined,
+              })}
+              onChange={(newUserTags) => {
+                if (!post.userTags) {
+                  post.userTags = UserTagMap.create({}, { owner: post._owner });
+                }
+                for (const newUserTag of newUserTags) {
+                  post.userTags[newUserTag.user] = {
+                    x: newUserTag.x || Math.random(),
+                    y: newUserTag.y || Math.random(),
+                  };
+                }
+                for (const maybeDeletedUser of Object.keys(
+                  post.userTags || {}
+                )) {
+                  if (
+                    !newUserTags.find((tag) => tag.user === maybeDeletedUser)
+                  ) {
+                    delete post.userTags[maybeDeletedUser];
+                  }
+                }
+              }}
               unstyled
               classNames={classNames}
               closeMenuOnSelect={false}
             />
           </div>
-          <div className="flex gap-1 items-center mt-2 opacity-50">
+          {/* <div className="flex gap-1 items-center mt-2 opacity-50">
             <MapPinIcon size="1em" />{' '}
             <Input value={'Location'} className="px-2 py-0.5 h-auto" disabled />
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="col-span-3 md:col-span-2 md:col-start-2">
