@@ -37,26 +37,32 @@ export function PostImage({ post, idx }: { post: Post; idx?: number }) {
 
   return (
     <div ref={containerRef} className={'w-full h-full relative'}>
+      {isDraftOrScheduled && (
+        // we're not actually rendering the image in full res, but make sure it is loaded
+        <ProgressiveImg
+          image={post.images?.[idx || 0]?.imageFile}
+          maxWidth={undefined}
+        >
+          {({ res, originalSize }) =>
+            res && res === originalSize?.join('x') ? (
+              <>
+                <CheckIcon className="absolute bottom-1.5 right-2 text-black" />
+                <CheckIcon className="absolute bottom-2 right-2 text-white" />
+              </>
+            ) : undefined
+          }
+        </ProgressiveImg>
+      )}
       <ProgressiveImg
         image={post.images?.[idx || 0]?.imageFile}
-        maxWidth={isDraftOrScheduled ? undefined : visible ? 1024 : 0}
+        maxWidth={visible ? 1024 : 0}
       >
-        {({ src, res, originalSize }) =>
+        {({ src }) =>
           src ? (
-            <>
-              {isDraftOrScheduled ? (
-                res === originalSize?.join('x') ? (
-                  <>
-                    <CheckIcon className="absolute bottom-1.5 right-2 text-black" />
-                    <CheckIcon className="absolute bottom-2 right-2 text-white" />
-                  </>
-                ) : undefined
-              ) : undefined}
-              <img
-                className="block w-full h-full object-cover shrink-0 outline-none hover:opacity-100"
-                src={src}
-              />
-            </>
+            <img
+              className="block w-full h-full object-cover shrink-0 outline-none hover:opacity-100"
+              src={src}
+            />
           ) : (
             <div className="block w-full h-full bg-stone-800" />
           )
