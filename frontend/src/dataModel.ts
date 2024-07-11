@@ -1,10 +1,11 @@
 import { Account, CoMap, Profile, co } from 'jazz-tools';
-import { ListOfBrands } from './sharedDataModel';
+import { ListOfBrands, MetaAPIConnection } from './sharedDataModel';
 import { insightTypes } from './pages/settings/PreferencesPage';
 
 export class AccountRoot extends CoMap {
   brands = co.ref(ListOfBrands);
   settings = co.ref(Settings);
+  metaAPIConnection? = co.ref(MetaAPIConnection, { optional: true });
 }
 
 export class Settings extends CoMap {

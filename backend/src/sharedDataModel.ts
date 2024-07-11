@@ -1,4 +1,4 @@
-import { CoList, CoMap, ImageDefinition, co } from 'jazz-tools';
+import { CoList, CoMap, Encoders, ImageDefinition, co } from 'jazz-tools';
 
 export type Platform = 'Twitter' | 'Instagram' | 'Facebook' | 'TikTok';
 
@@ -64,13 +64,17 @@ export class ListOfImages extends CoList.Of(co.ref(Image)) {}
 
 export class Brand extends CoMap {
   name = co.string;
-  instagramAccessToken? = co.string;
-  instagramAccessTokenValidUntil? = co.number;
+  metaAPIConnection? = co.ref(MetaAPIConnection, { optional: true });
   instagramInsights = co.ref(BrandInstagramInsights, { optional: true });
   instagramPage? = co.json<{ id: string; name: string }>();
   posts = co.ref(ListOfPosts);
   usedLocations = co.ref(ListOfLocations);
   usedUserTags = co.ref(UserTagList);
+}
+
+export class MetaAPIConnection extends CoMap {
+  longLivedToken = co.string;
+  validUntil = co.encoded(Encoders.Date);
 }
 
 export class ListOfBrands extends CoList.Of(co.ref(Brand)) {}
