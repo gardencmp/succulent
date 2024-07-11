@@ -30,12 +30,17 @@ import {
 import { LayoutWithNav } from '@/Nav';
 import { FilterBar } from '../../components/FilterBar';
 import { CalendarView } from './calendar/CalendarView';
+import { collectHashtagInsights } from '../insights/hashtags/collectHashtagInsights';
+
+let lastInstanceIds: any;
 
 export function PostingPage() {
   const location = useLocation();
   const [showInsights, setShowInsights] = useState<boolean>(false);
   const brandId = useParams<{ brandId: ID<Brand> }>().brandId;
-  const brand = useCoState(Brand, brandId);
+  const brand = useCoState(Brand, brandId, {
+    posts: [{ images: [], userTags: [] }],
+  });
 
   const [filter, setFilter] = useState<string>();
   const [mobileShowFilterBar, setMobileShowFilterBar] =
@@ -51,16 +56,59 @@ export function PostingPage() {
     [brand?.posts, filter]
   );
 
-  const lastScheduledOrPostDate = new Date(
-    brand?.posts?.reduce((acc, post) => {
-      if (post?.instagram?.state === 'scheduled') {
-        return Math.max(acc, new Date(post.instagram?.scheduledAt).getTime());
-      } else if (post?.instagram?.state === 'posted') {
-        return Math.max(acc, new Date(post.instagram?.postedAt).getTime());
-      }
-      return acc;
-    }, 0) || new Date(0)
+  const lastScheduledOrPostDateMs = useMemo(
+    () =>
+      new Date(
+        brand?.posts?.reduce((acc, post) => {
+          if (post?.instagram?.state === 'scheduled') {
+            return Math.max(
+              acc,
+              new Date(post.instagram?.scheduledAt).getTime()
+            );
+          } else if (post?.instagram?.state === 'posted') {
+            return Math.max(acc, new Date(post.instagram?.postedAt).getTime());
+          }
+          return acc;
+        }, 0) || new Date(0)
+      ).getTime(),
+    [brand?.posts]
   );
+
+  const lastScheduledOrPostDate = useMemo(
+    () => new Date(lastScheduledOrPostDateMs),
+    [lastScheduledOrPostDateMs]
+  );
+
+  const allUserTags = useMemo(
+    () => [
+      ...new Set(
+        brand?.posts?.flatMap((post) => Object.keys(post?.userTags || {}))
+      ),
+    ],
+    [brand?.posts]
+  );
+
+  const allHashTags = useMemo(
+    () =>
+      brand
+        ? collectHashtagInsights(brand).sort(
+            (a, b) => b.relativeReachQuality - a.relativeReachQuality
+          )
+        : [],
+    [brand, brand?.posts]
+  );
+
+  const instanceIds = Object.fromEntries(
+    brand?.posts?.map((p) => [p?.id, p?._instanceID]) || []
+  );
+  const diff = lastInstanceIds
+    ? Object.keys(instanceIds).filter(
+        (id) => lastInstanceIds[id] !== instanceIds[id]
+      )
+    : [];
+  lastInstanceIds = instanceIds;
+
+  console.log(new Date(), diff);
 
   const createDraft = useCallback(() => {
     if (!brand) return;
@@ -83,6 +131,11 @@ export function PostingPage() {
     if (!brand) return;
     await getPostInsightsHelper(brand);
   }, [brand]);
+
+  const feedPosts = useMemo(
+    () => filterAndSortScheduledAndPostedPosts(filteredPosts),
+    [filteredPosts]
+  );
 
   return (
     <LayoutWithNav>
@@ -158,7 +211,7 @@ export function PostingPage() {
 
             {location.pathname.endsWith('feed') ? (
               <FeedGrid
-                posts={filterAndSortScheduledAndPostedPosts(filteredPosts)}
+                posts={feedPosts}
                 showInsights={showInsights}
                 createDraft={createDraft}
                 deleteDraft={deleteDraft}
@@ -186,6 +239,8 @@ export function PostingPage() {
                 posts={filterDraftPosts(filteredPosts)}
                 deleteDraft={deleteDraft}
                 lastScheduledOrPostDate={lastScheduledOrPostDate}
+                allHashTags={allHashTags}
+                allUserTags={allUserTags}
               />
               <Button
                 variant="secondary"

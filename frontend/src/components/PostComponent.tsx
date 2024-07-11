@@ -3,23 +3,30 @@ import { PostImage } from './PostImage';
 import { Textarea } from './ui/textarea';
 import {
   CircleUserRoundIcon,
+  HashIcon,
   MapPinIcon,
   Trash2Icon,
   XIcon,
 } from 'lucide-react';
 import { Input } from './ui/input';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DraftPostScheduler } from './draftPost/DraftPostScheduler';
 import { ImageUploader } from './draftPost/ImageUploader';
 import { Button } from './ui/button';
 import { useDeleteDraft } from '@/lib/deleteDraft';
+import CreatableSelect from 'react-select/creatable';
+import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
 
 export function PostComponent({
   post,
   lastScheduledOrPostDate,
+  allHashTags,
+  allUserTags,
 }: {
   post: Post;
   lastScheduledOrPostDate?: Date;
+  allHashTags?: HashtagInsights[];
+  allUserTags?: string[];
 }) {
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
 
@@ -53,6 +60,62 @@ export function PostComponent({
   }, [lastScheduledOrPostDate]);
 
   const deleteDraft = useDeleteDraft(post.inBrand);
+
+  const allUserTagOptions = useMemo(
+    () => (allUserTags || []).map((user) => ({ user })),
+    [allUserTags]
+  );
+  const currentUserTagsValue = useMemo(
+    () => Object.keys(post.userTags || {}).map((user) => ({ user })),
+    [post.userTags]
+  );
+
+  const [contentWithoutHashTags, currentHashTags] = useMemo(
+    () =>
+      post.content
+        ? [
+            post.content.split('#')[0],
+            post.content.match(/(#[a-zA-Z]+\b)/g) || [],
+          ]
+        : ['', []],
+    [post.content]
+  );
+
+  const allHashTagsOptions = useMemo(
+    () =>
+      allHashTags?.map((insights) => ({
+        tag: insights.hashtag,
+        quality: insights.relativeReachQuality,
+      })) || [],
+    [allHashTags]
+  );
+
+  const currentHashTagsValue = useMemo(
+    () =>
+      currentHashTags.map(
+        (tag) =>
+          allHashTagsOptions.find((t) => t.tag === tag) || {
+            tag,
+            quality: undefined,
+          }
+      ),
+    [currentHashTags, allHashTagsOptions]
+  );
+
+  const classNames = {
+    menu() {
+      return 'p-2 bg-white z-50 border rounded-lg';
+    },
+    menuList() {
+      return 'flex flex-wrap';
+    },
+    group() {
+      return 'flex flex-wrap gap-1';
+    },
+    option() {
+      return 'px-1 py-2 hover:bg-stone-100 rounded-sm !w-auto';
+    },
+  } as const;
 
   return (
     <div className="grid grid-cols-3 max-w-full gap-2 relative">
@@ -88,70 +151,59 @@ export function PostComponent({
       </div>
       <div className="col-span-2 flex flex-col gap-2">
         <Textarea
-          value={post.content}
+          value={contentWithoutHashTags.replace(/\n/g, '↵')}
           onChange={(event) => {
             post.content = event.target.value;
           }}
-          className={editable ? '' : 'border-transparent'}
+          className={'min-h-0 h-auto ' + (editable ? '' : 'border-transparent')}
         />
         <div className="text-sm">
+          <div className="flex gap-1 items-center mt-3">
+            <CreatableSelect
+              isMulti
+              isClearable={false}
+              allowCreateWhileLoading
+              options={allHashTagsOptions}
+              className="absolute z-50 flex-1"
+              value={currentHashTagsValue}
+              getOptionLabel={(option) =>
+                `${option.tag} (${
+                  option.quality == undefined
+                    ? 'unknown'
+                    : option.quality.toFixed(2)
+                })`
+              }
+              getOptionValue={(option) => option.tag}
+              getNewOptionData={(inputValue) => ({
+                tag: '#' + inputValue,
+                quality: undefined,
+              })}
+              onChange={(val) => console.log(val)}
+              unstyled
+              classNames={classNames}
+              closeMenuOnSelect={false}
+            />
+          </div>
+          <div className="flex gap-1 items-center mt-3">
+            <CreatableSelect
+              isMulti
+              isClearable={false}
+              allowCreateWhileLoading
+              options={allUserTagOptions}
+              className="absolute z-40 flex-1"
+              value={currentUserTagsValue}
+              getOptionLabel={(option) => '@' + option.user}
+              getOptionValue={(option) => option.user}
+              getNewOptionData={(inputValue) => ({ user: inputValue })}
+              onChange={(val) => console.log(val)}
+              unstyled
+              classNames={classNames}
+              closeMenuOnSelect={false}
+            />
+          </div>
           <div className="flex gap-1 items-center mt-2 opacity-50">
             <MapPinIcon size="1em" />{' '}
             <Input value={'Location'} className="px-2 py-0.5 h-auto" disabled />
-          </div>
-          <div className="overflow-x-scroll">
-            <div className="flex gap-1 items-center mt-3">
-              <CircleUserRoundIcon size="1em" className="flex-shrink-0" />
-
-              {Object.entries(post.userTags || {}).map(([user]) => (
-                <div
-                  key={user}
-                  className="flex gap-1 items-center rounded px-1 bg-stone-700"
-                >
-                  {user}{' '}
-                  {editable && (
-                    <XIcon
-                      size="1em"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        if (!post.userTags) return;
-                        delete post.userTags[user];
-                      }}
-                    />
-                  )}
-                </div>
-              ))}
-              {editable && (
-                <div className="flex gap-1 items-center w-24 flex-shrink-0">
-                  <form
-                    onSubmit={(event) => {
-                      event.preventDefault();
-                      if (!post._refs.userTags) {
-                        post.userTags = UserTagMap.create(
-                          {},
-                          { owner: post._owner }
-                        );
-                      }
-                      if (!post.userTags) return;
-                      const element = (event.target as any)
-                        .tagUser as HTMLInputElement;
-                      const tagUser = element.value;
-                      post.userTags[tagUser] = {
-                        x: Math.random(),
-                        y: Math.random(),
-                      };
-                      element.value = '';
-                    }}
-                  >
-                    <Input
-                      name="tagUser"
-                      placeholder="Tag a user"
-                      className="px-2 py-0.5 h-auto flex-shrink-0"
-                    />
-                  </form>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
