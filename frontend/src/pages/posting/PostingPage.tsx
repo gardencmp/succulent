@@ -48,7 +48,7 @@ export function PostingPage() {
   const filteredPosts = useMemo(
     () =>
       brand?.posts?.filter(
-        (post): post is NonNullable<Post> =>
+        (post): post is NonNullable<typeof post> =>
           !filter ||
           post?.content?.toLowerCase().includes(filter.toLowerCase()) ||
           false
