@@ -6,15 +6,20 @@ import {
 } from '@/sharedDataModel';
 import { Draggable } from '@/lib/dragAndDrop';
 import { PostComponent } from '@/components/PostComponent';
+import { HashtagInsights } from '../insights/hashtags/collectHashtagInsights';
 
 export function DraftPostList({
   posts,
   lastScheduledOrPostDate,
+  allHashTags,
+  allUserTags,
 }: {
   posts?: Post<
     InstagramNotScheduled | InstagramScheduleDesired | InstagramScheduled
   >[];
   lastScheduledOrPostDate?: Date;
+  allHashTags: HashtagInsights[];
+  allUserTags: string[];
   deleteDraft: (post: Post) => void;
 }) {
   return posts?.map(
@@ -33,6 +38,8 @@ export function DraftPostList({
               post={post}
               lastScheduledOrPostDate={lastScheduledOrPostDate}
               // onDelete={() => deleteDraft(post)}
+              allHashTags={allHashTags}
+              allUserTags={allUserTags}
             />
           </div>
         </div>
