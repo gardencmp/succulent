@@ -91,14 +91,14 @@ export function BrandView({ brand }: { brand: Brand }) {
           ))}
         </div>
       )}
-      <div>
+      {/* <div>
         IG Access Token{' '}
         {brand.metaAPIConnection &&
           brand.metaAPIConnection?.longLivedToken +
             '(expires : ' +
             new Date(brand.metaAPIConnection.validUntil).toLocaleString() +
             ')'}
-      </div>
+      </div> */}
 
       <Link to={`/brand/${brand.id}/posting/feed`}>
         <div className="rounded grid grid-cols-3 gap-px w-full overflow-hidden">
