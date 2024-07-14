@@ -4,7 +4,6 @@ import {
   Brand,
   ListOfLocations,
   ListOfPosts,
-  MetaAPIConnection,
   UserTagList,
 } from '../../sharedDataModel';
 import { BrandView } from './BrandView';
