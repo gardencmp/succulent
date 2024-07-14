@@ -75,6 +75,10 @@ export class Brand extends CoMap {
 export class MetaAPIConnection extends CoMap {
   longLivedToken = co.string;
   validUntil = co.encoded(Encoders.Date);
+
+  isValid() {
+    return this.validUntil > new Date();
+  }
 }
 
 export class ListOfBrands extends CoList.Of(co.ref(Brand)) {}

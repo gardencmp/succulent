@@ -23,9 +23,10 @@ export async function actuallyPost(
 
     try {
       const brand = await post.inBrand;
-      if (!brand.instagramAccessToken) throw new Error('no access token');
+      if (!brand.metaAPIConnection?.longLivedToken)
+        throw new Error('no access token');
       if (!brand.instagramPage) throw new Error('no instagram page');
-      const accessToken = brand.instagramAccessToken;
+      const accessToken = brand.metaAPIConnection?.longLivedToken;
       const igPage = brand.instagramPage.id;
       const backendAddr =
         process.env.SUCCULENT_BACKEND_ADDR || 'http://localhost:3331';

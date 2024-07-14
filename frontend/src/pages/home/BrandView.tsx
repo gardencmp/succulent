@@ -8,22 +8,6 @@ import { filterAndSortScheduledAndPostedPosts } from '@/lib/filterAndSortPosts';
 import { ProgressiveImg } from 'jazz-react';
 import { InstagramIcon, TrashIcon } from 'lucide-react';
 
-const scopes = [
-  'instagram_basic',
-  'pages_show_list',
-  'business_management',
-  'pages_read_engagement',
-  'pages_manage_metadata',
-  'pages_read_user_content',
-  'pages_manage_ads',
-  'pages_manage_posts',
-  'pages_manage_engagement',
-  'read_insights',
-  'instagram_manage_insights',
-  'ads_management',
-  'instagram_content_publish',
-];
-
 export function BrandView({ brand }: { brand: Brand }) {
   const { me } = useAccount();
 
@@ -36,24 +20,24 @@ export function BrandView({ brand }: { brand: Brand }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-2">
-        <h1 className="text-2xl mb-4">{brand.name} </h1>
+      <div className="flex gap-2 flex-wrap  items-center mb-2">
+        <h1 className="text-2xl">{brand.name} </h1>
         {brand.instagramPage && (
-          <Button
-            size="sm"
-            className="text-xs flex gap-1"
-            variant="ghost"
-            onClick={() => {
-              if (confirm('Really reset Instagram page?')) {
-                brand.instagramAccessToken = undefined;
-                brand.instagramPage = undefined;
-              }
-            }}
-            title={brand.instagramAccessToken}
-          >
+          <>
             <InstagramIcon size="1.2em" /> {brand.instagramPage.name}{' '}
-          </Button>
+          </>
         )}
+        {!brand.metaAPIConnection?.isValid() &&
+          me.root?.metaAPIConnection?.isValid() && (
+            <Button
+              onClick={() => {
+                if (!me.root?.metaAPIConnection) return;
+                brand.metaAPIConnection = me.root.metaAPIConnection;
+              }}
+            >
+              Control with your account
+            </Button>
+          )}
         <div className="ml-auto">
           <InviteButton value={brand} />
         </div>
@@ -72,29 +56,14 @@ export function BrandView({ brand }: { brand: Brand }) {
           <TrashIcon size="1.2em" />
         </Button>
       </div>
-      {!brand.instagramAccessToken && (
-        <Button
-          onClick={() => {
-            window.location =
-              `https://www.facebook.com/v18.0/dialog/oauth?client_id=${'851322152980071'}&redirect_uri=${encodeURIComponent(
-                (import.meta.env.VITE_SUCCULENT_BACKEND_ADDR ||
-                  'http://localhost:3331') + '/connectFB'
-              )}&state=${brand.id}&scope=${encodeURIComponent(
-                scopes.join(',')
-              )}&response_type=code` as string & Location;
-          }}
-        >
-          Connect to Instagram/Facebook
-        </Button>
-      )}
-      {brand.instagramAccessToken &&
+      {brand.metaAPIConnection &&
         !brand.instagramPage &&
         pagesToChoose.length === 0 && (
           <Button
             onClick={async () => {
               const pages = await (
                 await fetch(
-                  `https://graph.facebook.com/v11.0/me/accounts?fields=instagram_business_account,name&access_token=${brand.instagramAccessToken}`
+                  `https://graph.facebook.com/v11.0/me/accounts?fields=instagram_business_account,name&access_token=${brand.metaAPIConnection?.longLivedToken}`
                 )
               ).json();
               setPagesToChoose(pages.data);
@@ -122,21 +91,14 @@ export function BrandView({ brand }: { brand: Brand }) {
           ))}
         </div>
       )}
-      {/* <div>
+      <div>
         IG Access Token{' '}
-        {brand.instagramAccessToken &&
-          brand.instagramAccessTokenValidUntil &&
-          '(expires : ' +
-            new Date(brand.instagramAccessTokenValidUntil).toLocaleString() +
+        {brand.metaAPIConnection &&
+          brand.metaAPIConnection?.longLivedToken +
+            '(expires : ' +
+            new Date(brand.metaAPIConnection.validUntil).toLocaleString() +
             ')'}
-        <Input
-          type="text"
-          value={brand.instagramAccessToken}
-          onChange={(event) => {
-            brand.instagramAccessToken = event.target.value;
-          }}
-        />
-      </div> */}
+      </div>
 
       <Link to={`/brand/${brand.id}/posting/feed`}>
         <div className="rounded grid grid-cols-3 gap-px w-full overflow-hidden">

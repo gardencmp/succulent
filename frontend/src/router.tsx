@@ -5,6 +5,7 @@ import { PostingPage } from './pages/posting/PostingPage';
 import { BrandInsightsPage } from './pages/insights/brand/BrandInsightsPages';
 import { HashtagInsightsPage } from './pages/insights/hashtags/HashtagInsightsPage';
 import { PostsInsightsPage } from './pages/insights/posts/PostsInsightsPage';
+import { AddNewMetaConnection } from './pages/home/AddNewMetaConnection';
 
 export const router = createHashRouter([
   {
@@ -46,7 +47,7 @@ export const router = createHashRouter([
     element: <p>Accepting invite...</p>,
   },
   {
-    path: '_=_',
-    element: <HomePage />,
+    path: '/newMetaConnection/:connectionId',
+    element: <AddNewMetaConnection />,
   },
 ]);

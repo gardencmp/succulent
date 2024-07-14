@@ -23,12 +23,12 @@ export function BrandInsightsPage() {
       insights = brand.instagramInsights;
     }
 
-    if (!insights || !brand.instagramAccessToken) {
+    if (!insights || !brand.metaAPIConnection?.longLivedToken) {
       return;
     }
 
-    fetchBrandInsights(brand.instagramAccessToken, insights);
-  }, [brand?.instagramAccessToken, brand?.instagramInsights]);
+    fetchBrandInsights(brand.metaAPIConnection?.longLivedToken, insights);
+  }, [brand?.metaAPIConnection?.longLivedToken, brand?.instagramInsights]);
 
   return (
     <LayoutWithNav>

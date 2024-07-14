@@ -1,5 +1,5 @@
-import { ID } from 'jazz-tools';
-import { Brand } from './sharedDataModel';
+import { ID, Group, Account } from 'jazz-tools';
+import { Brand, MetaAPIConnection } from './sharedDataModel';
 import { SchedulerAccount } from './workerAccount';
 
 export async function handleFBConnectRequest(
@@ -31,30 +31,35 @@ export async function handleFBConnectRequest(
 
   console.log(new Date(), 'longLivedResult', longLivedResult);
 
-  const brandId = new URL(req.url).searchParams.get('state');
-  console.log('Updating brand id: ', brandId);
-  if (!brandId) return new Response('no brandId');
+  const connectionOwnerId = new URL(req.url).searchParams.get('state');
+  if (!connectionOwnerId)
+    return new Response('no connectionOwnerId', { status: 400 });
 
-  const brand = await Brand.load(brandId as ID<Brand>, worker, {});
-  if (!brand) return new Response('unavailable');
+  const connectionOwner = await Account.load(
+    connectionOwnerId as ID<Account>,
+    worker,
+    []
+  );
+  if (!connectionOwner)
+    return new Response('no connectionOwner', { status: 500 });
 
-  const workerWithBrands = await worker.ensureLoaded({ root: { brands: [] } });
-  if (!workerWithBrands) return new Response('unavailable');
+  const connectionGroup = Group.create({ owner: worker });
+  connectionGroup.addMember(connectionOwner, 'reader');
 
-  if (
-    ![...workerWithBrands.root.brands._refs].some((ref) => ref.id === brand.id)
-  ) {
-    workerWithBrands.root.brands.push(brand);
-  }
-
-  brand.instagramAccessToken = longLivedResult.access_token;
-  brand.instagramAccessTokenValidUntil =
-    Date.now() + (longLivedResult.expires_in || 30 * 24 * 60 * 60) * 1000;
-
-  console.log(new Date(), brand.toJSON());
+  const newConnection = MetaAPIConnection.create(
+    {
+      longLivedToken: longLivedResult.access_token,
+      validUntil: new Date(
+        Date.now() + (longLivedResult.expires_in || 30 * 24 * 60 * 60) * 1000
+      ),
+    },
+    { owner: connectionGroup }
+  );
 
   // redirect to frontend
   return Response.redirect(
-    process.env.SUCCULENT_FRONTEND_ADDR || 'http://localhost:3889/'
+    (process.env.SUCCULENT_FRONTEND_ADDR || 'http://localhost:3889/') +
+      '#/newMetaConnection/' +
+      newConnection.id
   );
 }
