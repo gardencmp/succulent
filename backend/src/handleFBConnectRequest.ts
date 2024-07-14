@@ -56,6 +56,10 @@ export async function handleFBConnectRequest(
     { owner: connectionGroup }
   );
 
+  console.log('Syncing new connection', newConnection);
+
+  await worker._raw.core.node.syncManager.syncCoValue(newConnection._raw.core);
+
   // redirect to frontend
   return Response.redirect(
     (process.env.SUCCULENT_FRONTEND_ADDR || 'http://localhost:3889/') +
