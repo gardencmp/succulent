@@ -2628,46 +2628,46 @@ jackspeak@^2.3.5:
   optionalDependencies:
     "@pkgjs/parseargs" "^0.11.0"
 
-jazz-browser-media-images@0.7.20:
-  version "0.7.20"
-  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.20.tgz#8456b259b9b3eaa3c688af511d878e54acea1a38"
-  integrity sha512-9LmutGdtGvc7JZpLRDVC5Qa1nWFDH9Ll+E1Wna2lH4ZADHXZNf7JNHofpXe1+DKRyFCGGEaDIlEP8CGoqF7fSA==
+jazz-browser-media-images@0.7.21:
+  version "0.7.21"
+  resolved "https://registry.yarnpkg.com/jazz-browser-media-images/-/jazz-browser-media-images-0.7.21.tgz#6635125f3edb66cb84cc83ebdac1b6f51454990e"
+  integrity sha512-uGrzJ/yBS/nootjBbEUH2Nju+UG0a0cjQAWiawElBgy65P6NZ1E4gc/1bpeJ2vdyrXIETcPBN1sPD0nZb3S6GQ==
   dependencies:
     "@types/image-blob-reduce" "^4.1.1"
     image-blob-reduce "^4.1.0"
-    jazz-browser "0.7.20"
-    jazz-tools "0.7.20"
+    jazz-browser "0.7.21"
+    jazz-tools "0.7.21"
     pica "^9.0.1"
     typescript "^5.1.6"
 
-jazz-browser@0.7.20:
-  version "0.7.20"
-  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.20.tgz#bbe9e1cd34cdbebb24aa9f2835bdfdf6f1fa16b2"
-  integrity sha512-EQZa4ramQun0rAINN/09/kECKA5NtrDtbk9ngTM+Pbu5YCxmpuXJncPS864JKZ0jIWsKRpZro6jnngTDp3NKjA==
+jazz-browser@0.7.21:
+  version "0.7.21"
+  resolved "https://registry.yarnpkg.com/jazz-browser/-/jazz-browser-0.7.21.tgz#d2a702c60644aa31b60b35e420e04a7a6636b9d7"
+  integrity sha512-59u+HJ2QVRPAahpxHLLztHN0tR6/Hzd9q+pByzIVizxoKsYiXC0EN7WQAv8AWwax18GVY/kZ5L7kig8pE2Haag==
   dependencies:
     "@scure/bip39" "^1.3.0"
     cojson "0.7.18"
     cojson-storage-indexeddb "0.7.18"
     cojson-transport-ws "0.7.18"
     effect "^3.5.2"
-    jazz-tools "0.7.20"
+    jazz-tools "0.7.21"
     typescript "^5.1.6"
 
-jazz-react@0.7.20:
-  version "0.7.20"
-  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.20.tgz#5f61fd1da1b6a391134982342dc7454f2eab1486"
-  integrity sha512-YoFEFl4JPYQMD35X0FGutpCmIkrRt1FkEyHdUINnMd+8CYDM3eKVgfx1xRJbDlwLxd8Y1/aDjyUZ/1Ab8naisw==
+jazz-react@0.7.21:
+  version "0.7.21"
+  resolved "https://registry.yarnpkg.com/jazz-react/-/jazz-react-0.7.21.tgz#7843436c40420e4c485bd51a0f68e5099cc11de2"
+  integrity sha512-TzGRxkdTQDWShP6bjpJbWtxhdaUZ9cDM0pAqyzUDH/OH/6juf2/5KOsLkZrP5kZiH2FCGfiOcUWeOREtDliveQ==
   dependencies:
     "@scure/bip39" "^1.3.0"
     cojson "0.7.18"
-    jazz-browser "0.7.20"
-    jazz-tools "0.7.20"
+    jazz-browser "0.7.21"
+    jazz-tools "0.7.21"
     typescript "^5.1.6"
 
-jazz-tools@0.7.20:
-  version "0.7.20"
-  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.20.tgz#a7d58d71cb9dee38eba8efc16a38313c4af28179"
-  integrity sha512-4v0pGzcB3ViDK+uux6jyzpqJlWEp0QJiRwaJaH7SAHzT8AylpcXfDgRuZjEzFZmm2m//sJ+pX/7CajmthWB8IA==
+jazz-tools@0.7.21:
+  version "0.7.21"
+  resolved "https://registry.yarnpkg.com/jazz-tools/-/jazz-tools-0.7.21.tgz#adae8a976d87b5589e7ec9c493b47b80bc47ed4c"
+  integrity sha512-M48NSNeW4JxxxauPbr3otefHiLl7ii83NkWAN2yGnr1WqEQSj4sbsPndRTvOA/9pJSSMGop6Eu3puGscGZXUIA==
   dependencies:
     "@effect/schema" "^0.66.16"
     cojson "0.7.18"
