@@ -75,20 +75,22 @@ export function BrandView({ brand }: { brand: Brand }) {
       {pagesToChoose.length > 0 && (
         <div>
           Choose an Instagram page:
-          {pagesToChoose.map((page) => (
-            <Button
-              key={page.instagram_business_account.id}
-              onClick={() => {
-                brand.instagramPage = {
-                  id: page.instagram_business_account.id,
-                  name: page.name,
-                };
-                setPagesToChoose([]);
-              }}
-            >
-              {page.name} ({page.instagram_business_account.id})
-            </Button>
-          ))}
+          {pagesToChoose.map((page) =>
+            page.instagram_business_account ? (
+              <Button
+                key={page.instagram_business_account.id}
+                onClick={() => {
+                  brand.instagramPage = {
+                    id: page.instagram_business_account.id,
+                    name: page.name,
+                  };
+                  setPagesToChoose([]);
+                }}
+              >
+                {page.name} ({page.instagram_business_account.id})
+              </Button>
+            ) : null
+          )}
         </div>
       )}
       {/* <div>
