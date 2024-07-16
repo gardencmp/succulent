@@ -24,6 +24,10 @@ export const router = createHashRouter([
         element: <PostingPage />,
       },
       {
+        path: '/brand/:brandId/posting/drafts',
+        element: <PostingPage />,
+      },
+      {
         path: '/brand/:brandId/insights/brand',
         element: <BrandInsightsPage />,
       },

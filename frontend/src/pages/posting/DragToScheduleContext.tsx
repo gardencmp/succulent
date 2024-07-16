@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { smartSchedule } from '@/lib/smartSchedule';
 import { PostImage } from '../../components/PostImage';
 import { ID } from 'jazz-tools';
+import { useBreakpoint } from '@/lib/useBreakpoint';
 
 export function DragToScheduleContext({
   brand,
@@ -20,6 +21,8 @@ export function DragToScheduleContext({
   brand: Brand | undefined;
   children: React.ReactNode;
 }) {
+  const { isMd } = useBreakpoint('md');
+
   const [draggedPostId, setDraggedPostId] = useState<ID<Post>>();
   const draggedPost = brand?.posts?.find((post) => post?.id === draggedPostId);
 
@@ -35,6 +38,10 @@ export function DragToScheduleContext({
     before?: ISODate;
     after?: ISODate;
   }>();
+
+  if (!isMd) {
+    return children;
+  }
 
   return (
     <DndContext

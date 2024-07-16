@@ -1,7 +1,7 @@
 import {
-  HashtagGroup,
-  HashtagList,
-  ListOfHashtagGroups,
+  ListOfUsertagGroups,
+  UsertagGroup,
+  UsertagList,
 } from '@/sharedDataModel';
 import { Input } from './ui/input';
 import { ID } from 'jazz-tools';
@@ -10,7 +10,6 @@ import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
 import { ArrowRightIcon, PlusIcon } from 'lucide-react';
 import {
   DropdownMenu,
@@ -19,25 +18,25 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
-export function HashtagManager({
-  hashtagGroupsId,
+export function UsertagManager({
+  usertagGroupIds,
   selected,
   onSelectedChange,
   contextHint,
   focusTrigger,
-  hashtagInsights,
+  allUsertags,
 }: {
-  hashtagGroupsId: ID<ListOfHashtagGroups> | undefined | null;
+  usertagGroupIds: ID<ListOfUsertagGroups> | undefined | null;
   selected?: string[];
   onSelectedChange?: (newSelected: string[]) => void;
   contextHint: string;
   focusTrigger: boolean;
-  hashtagInsights?: HashtagInsights[];
+  allUsertags?: string[];
 }) {
-  const hashtagGroups = useCoState(
-    ListOfHashtagGroups,
-    hashtagGroupsId || undefined,
-    [{ hashtags: [] }]
+  const usertagGroups = useCoState(
+    ListOfUsertagGroups,
+    usertagGroupIds || undefined,
+    [{ usertags: [] }]
   );
 
   const mainInputRef = useRef<HTMLTextAreaElement>(null);
@@ -68,7 +67,7 @@ export function HashtagManager({
     () =>
       tempValue
         ?.split(/[,\s]+/g)
-        .map((tag) => tag.replace('#', ''))
+        .map((tag) => tag.replace('@', ''))
         .filter((tag) => tag && !selected?.includes(tag)),
 
     [tempValue, selected]
@@ -78,16 +77,16 @@ export function HashtagManager({
     string[] | undefined
   >();
 
-  const hashtagGroupsWithAll = useMemo(() => {
+  const usertagGroupsWithAll = useMemo(() => {
     return [
-      ...(hashtagGroups || []),
+      ...(usertagGroups || []),
       {
         id: '_all',
         name: 'Previously used',
-        hashtags: hashtagInsights?.map((t) => t.hashtag.replace('#', '')) || [],
+        usertags: allUsertags || [],
       },
     ];
-  }, [hashtagGroups, hashtagInsights]);
+  }, [usertagGroups, allUsertags]);
 
   return (
     <div className="flex flex-col h-full">
@@ -106,13 +105,13 @@ export function HashtagManager({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {hashtagGroups?.map((group) => (
+                {usertagGroups?.map((group) => (
                   <DropdownMenuItem
                     className="flex gap-1"
                     onClick={() => {
-                      for (const hashtag of tagsInSelection) {
-                        if (!group.hashtags.includes(hashtag)) {
-                          group.hashtags.push(hashtag);
+                      for (const usertag of tagsInSelection) {
+                        if (!group.usertags.includes(usertag)) {
+                          group.usertags.push(usertag);
                         }
                       }
                     }}
@@ -124,21 +123,21 @@ export function HashtagManager({
                 <DropdownMenuItem
                   className="flex gap-1"
                   onClick={() => {
-                    hashtagGroups?.push(
-                      HashtagGroup.create(
+                    usertagGroups?.push(
+                      UsertagGroup.create(
                         {
                           name: '',
-                          hashtags: HashtagList.create(tagsInSelection, {
-                            owner: hashtagGroups._owner,
+                          usertags: UsertagList.create(tagsInSelection, {
+                            owner: usertagGroups._owner,
                           }),
                         },
-                        { owner: hashtagGroups._owner }
+                        { owner: usertagGroups._owner }
                       )
                     );
                   }}
                 >
                   <PlusIcon size={12} />
-                  New Hashtag Group
+                  New Usertag Group
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -157,7 +156,7 @@ export function HashtagManager({
         <Textarea
           ref={mainInputRef}
           className="mb-2"
-          placeholder="Add hashtag(s)"
+          placeholder="Add usertag(s)"
           value={tempValue}
           onChange={(e) => {
             setTempValue(e.target.value);
@@ -269,7 +268,7 @@ export function HashtagManager({
       </div>
       <div className="flex-grow min-h-0">
         <div className="h-full overflow-y-scroll">
-          {hashtagGroupsWithAll?.map((group) => (
+          {usertagGroupsWithAll?.map((group) => (
             <div key={group.id} className="mb-4">
               <Input
                 className="text-xl border-none -mx-2 p-2 bg-stone-950 z-10"
@@ -281,16 +280,9 @@ export function HashtagManager({
                 }}
               />
               <div className="flex flex-wrap text-xs gap-3">
-                {group.hashtags
+                {group.usertags
                   .filter(
-                    (hashtag) => !added?.[0] || hashtag.includes(added[0])
-                  )
-                  .toSorted(
-                    (a, b) =>
-                      (hashtagInsights?.find((h) => h.hashtag === '#' + b)
-                        ?.relativeReachQuality || 0) -
-                        (hashtagInsights?.find((h) => h.hashtag === '#' + a)
-                          ?.relativeReachQuality || 0) || a.localeCompare(b)
+                    (usertag) => !added?.[0] || usertag.includes(added[0])
                   )
                   .toSorted((a, b) =>
                     selected?.includes(a)
@@ -301,38 +293,33 @@ export function HashtagManager({
                         ? 1
                         : 0
                   )
-                  .map((hashtag) => (
+                  .map((usertag) => (
                     <div
                       className={
                         'p-2 -m-2 flex items-center gap-1 cursor-pointer ' +
-                        (selected?.includes(hashtag)
+                        (selected?.includes(usertag)
                           ? 'opacity-100 hover:opacity-70'
                           : 'opacity-50 hover:opacity-70')
                       }
                     >
                       <Checkbox
-                        id={group.id + hashtag}
-                        checked={selected?.includes(hashtag)}
+                        id={group.id + usertag}
+                        checked={selected?.includes(usertag)}
                         onCheckedChange={(checked) => {
                           if (checked) {
-                            onSelectedChange?.([...(selected || []), hashtag]);
+                            onSelectedChange?.([...(selected || []), usertag]);
                           } else {
                             onSelectedChange?.(
-                              selected?.filter((h) => h !== hashtag) || []
+                              selected?.filter((h) => h !== usertag) || []
                             );
                           }
                         }}
                       />
                       <label
-                        htmlFor={group.id + hashtag}
+                        htmlFor={group.id + usertag}
                         className="cursor-pointer"
                       >
-                        {hashtag}
-                        <sup>
-                          {hashtagInsights
-                            ?.find((h) => h.hashtag === '#' + hashtag)
-                            ?.relativeReachQuality.toFixed(1)}
-                        </sup>
+                        {usertag}
                       </label>
                     </div>
                   ))}

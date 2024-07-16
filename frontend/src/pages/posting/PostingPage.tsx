@@ -9,28 +9,26 @@ import {
 } from '@/lib/filterAndSortPosts';
 import { useDeleteDraft } from '@/lib/deleteDraft';
 
-import {
-  DrawerOrSidebar,
-  MainContent,
-  ResponsiveDrawer,
-} from './ResponsiveDrawer';
 import { DragToScheduleContext } from './DragToScheduleContext';
 import { FeedGrid } from './feed/FeedGrid';
 import { DraftPostList } from './DraftPostList';
 import { ID } from 'jazz-tools';
 import { useCoState } from '@/main';
-import { getPostInsightsHelper } from '@/lib/importPostsHelper';
 import {
   CalendarIcon,
   EyeIcon,
+  FileEditIcon,
   Grid3X3Icon,
   ListFilterIcon,
+  PanelRightCloseIcon,
+  PanelRightOpenIcon,
   PlusIcon,
 } from 'lucide-react';
 import { LayoutWithNav } from '@/Nav';
 import { FilterBar } from '../../components/FilterBar';
 import { CalendarView } from './calendar/CalendarView';
 import { collectHashtagInsights } from '../insights/hashtags/collectHashtagInsights';
+import { useBreakpoint } from '@/lib/useBreakpoint';
 
 let lastInstanceIds: any;
 
@@ -60,7 +58,10 @@ export function PostingPage() {
     () =>
       new Date(
         brand?.posts?.reduce((acc, post) => {
-          if (post?.instagram?.state === 'scheduled') {
+          if (
+            post?.instagram?.state === 'scheduled' ||
+            post.instagram.state === 'scheduleDesired'
+          ) {
             return Math.max(
               acc,
               new Date(post.instagram?.scheduledAt).getTime()
@@ -127,133 +128,225 @@ export function PostingPage() {
 
   const deleteDraft = useDeleteDraft(brand);
 
-  const getPostInsights = useCallback(async () => {
-    if (!brand) return;
-    await getPostInsightsHelper(brand);
-  }, [brand]);
-
   const feedPosts = useMemo(
     () => filterAndSortScheduledAndPostedPosts(filteredPosts),
     [filteredPosts]
   );
 
+  const { isMd } = useBreakpoint('md');
+
+  const [showDraftSidebar, setShowDraftSidebar] = useState(true);
+
+  const ToolbarProps = {
+    isMd,
+    mobileShowFilterBar,
+    brand,
+    filter,
+    setFilter,
+    setMobileShowFilterBar,
+  };
+
+  const NewDraftButton = (
+    <Button
+      variant="secondary"
+      size="sm"
+      className="gap-1 py-0 h-8"
+      onClick={createDraft}
+    >
+      <PlusIcon size={15} /> New Draft
+    </Button>
+  );
+
   return (
     <LayoutWithNav>
       <DragToScheduleContext brand={brand}>
-        <ResponsiveDrawer
-          className="h-full"
-          initialDrawerHeightPercent={30}
-          minDrawerHeightPercent={10}
-        >
-          <MainContent className="relative">
-            <div
-              className={
-                'mb-2 flex items-center justify-between gap-2' +
-                (mobileShowFilterBar ? ' mb-12' : '')
-              }
-            >
-              <div className="rounded-lg bg-stone-800 border border-stone-700 p-0.5 flex gap-1">
-                <NavLink
-                  to={`/brand/${brand?.id}/posting/feed`}
-                  className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
-                >
-                  <Grid3X3Icon size="1em" /> Feed
-                </NavLink>
-                <NavLink
-                  to={`/brand/${brand?.id}/posting/calendar`}
-                  className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
-                >
-                  <CalendarIcon size="1em" /> Calendar
-                </NavLink>
-              </div>
-              <FilterBar
-                filter={filter}
-                setFilter={setFilter}
-                className={
-                  mobileShowFilterBar
-                    ? 'absolute top-8 left-0 right-0 z-10 '
-                    : 'hidden md:block'
-                }
-                autoFocus={mobileShowFilterBar}
-                key={mobileShowFilterBar + ''}
-              />
-              <div className="flex gap-2">
-                <Button
-                  variant={mobileShowFilterBar ? 'default' : 'outline'}
-                  size="sm"
-                  className="md:hidden gap-1 p-2 h-8 overflow-ellipsis text-nowrap "
-                  onClick={() => {
-                    if (mobileShowFilterBar) {
-                      setMobileShowFilterBar(false);
-                      setFilter(undefined);
-                    } else {
-                      setMobileShowFilterBar(true);
-                    }
-                  }}
-                >
-                  <ListFilterIcon size={15} /> Filter
-                </Button>
-                <Button
-                  variant={showInsights ? 'default' : 'outline'}
-                  size="sm"
-                  className="gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
-                  onClick={() => setShowInsights(!showInsights)}
-                  onDragStart={(e) => {
-                    e.preventDefault();
-                    alert('woo');
-                  }}
-                >
-                  <EyeIcon size={15} />
-                  <span className="hidden md:inline">Compare</span>Insights
-                </Button>
-              </div>
-            </div>
-
+        <div className="relative h-full">
+          <div className="flex gap-4  h-full">
             {location.pathname.endsWith('feed') ? (
-              <FeedGrid
-                posts={feedPosts}
-                showInsights={showInsights}
-                createDraft={createDraft}
-                deleteDraft={deleteDraft}
-              />
-            ) : (
-              <CalendarView />
-            )}
-          </MainContent>
-          <DrawerOrSidebar>
-            <div className="uppercase text-xs tracking-wider font-semibold text-stone-500 mb-2 flex items-center justify-between">
-              <div onClick={getPostInsights} className="cursor-pointer">
-                Drafts
+              <div className="flex-1 flex flex-col h-full max-w-[50rem] mx-auto">
+                <PostingToolbar
+                  {...ToolbarProps}
+                  extraItems={
+                    <>
+                      <Button
+                        variant={showInsights ? 'default' : 'outline'}
+                        size="sm"
+                        className="gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
+                        onClick={() => setShowInsights(!showInsights)}
+                        onDragStart={(e) => {
+                          e.preventDefault();
+                          alert('woo');
+                        }}
+                      >
+                        <EyeIcon size={15} />
+                        <span className="hidden md:inline">Compare</span>
+                        Insights
+                      </Button>
+                      {!showDraftSidebar && (
+                        <Button
+                          variant="outline"
+                          className="ml-auto gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
+                          onClick={() => setShowDraftSidebar(!showDraftSidebar)}
+                        >
+                          <PanelRightOpenIcon size="1em" /> Drafts
+                        </Button>
+                      )}
+                    </>
+                  }
+                />
+                <div className="flex-1 min-h-0 overflow-y-scroll mx-auto">
+                  <FeedGrid
+                    posts={feedPosts}
+                    showInsights={showInsights}
+                    createDraft={createDraft}
+                    deleteDraft={deleteDraft}
+                  />
+                </div>
               </div>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="gap-1 py-0 h-8"
-                onClick={createDraft}
-              >
-                <PlusIcon size={15} /> New Draft
-              </Button>
-            </div>
-            <div className="flex flex-col gap-4">
-              <DraftPostList
-                posts={filterDraftPosts(filteredPosts)}
-                deleteDraft={deleteDraft}
-                lastScheduledOrPostDate={lastScheduledOrPostDate}
-                allHashTags={allHashTags}
-                allUserTags={allUserTags}
-              />
-              <Button
-                variant="secondary"
-                size="sm"
-                className="gap-1 h-full min-h-28"
-                onClick={createDraft}
-              >
-                <PlusIcon /> New Draft
-              </Button>
-            </div>
-          </DrawerOrSidebar>
-        </ResponsiveDrawer>
+            ) : location.pathname.endsWith('calendar') ? (
+              <div className="flex-1 ">
+                <PostingToolbar
+                  {...ToolbarProps}
+                  extraItems={
+                    !showDraftSidebar && (
+                      <Button
+                        variant="outline"
+                        className="ml-auto gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
+                        onClick={() => setShowDraftSidebar(!showDraftSidebar)}
+                      >
+                        <PanelRightOpenIcon size="1em" /> Drafts
+                      </Button>
+                    )
+                  }
+                />
+                <CalendarView />
+              </div>
+            ) : null}{' '}
+            {(isMd && showDraftSidebar) ||
+            location.pathname.endsWith('drafts') ? (
+              <div className="flex-1 flex flex-col h-full">
+                {location.pathname.endsWith('drafts') ? (
+                  <PostingToolbar
+                    {...ToolbarProps}
+                    extraItems={NewDraftButton}
+                  />
+                ) : null}
+                {location.pathname.endsWith('drafts') ? null : (
+                  <div className="flex-none uppercase text-xs tracking-wider font-semibold text-stone-500 mb-2 flex items-center justify-between">
+                    <Button
+                      variant="outline"
+                      className="gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
+                      onClick={() => setShowDraftSidebar(!showDraftSidebar)}
+                    >
+                      <PanelRightCloseIcon size="1em" /> Drafts
+                    </Button>
+                    {NewDraftButton}
+                  </div>
+                )}
+                <div className="flex-1 min-h-0 overflow-y-scroll">
+                  <div className="flex flex-col gap-4 min-h-0 ">
+                    <DraftPostList
+                      posts={filterDraftPosts(filteredPosts)}
+                      deleteDraft={deleteDraft}
+                      lastScheduledOrPostDate={lastScheduledOrPostDate}
+                      allHashTags={allHashTags}
+                      allUserTags={allUserTags}
+                      draggable={showDraftSidebar}
+                    />
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="gap-1 h-full min-h-28"
+                      onClick={createDraft}
+                    >
+                      <PlusIcon /> New Draft
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
       </DragToScheduleContext>
     </LayoutWithNav>
+  );
+}
+
+function PostingToolbar({
+  isMd,
+  mobileShowFilterBar,
+  brand,
+  filter,
+  setFilter,
+  setMobileShowFilterBar,
+  extraItems,
+}: {
+  isMd: boolean;
+  mobileShowFilterBar: boolean;
+  brand: Brand | undefined;
+  filter: string | undefined;
+  setFilter: (filter: string | undefined) => void;
+  setMobileShowFilterBar: (show: boolean) => void;
+  extraItems?: React.ReactNode;
+}) {
+  return (
+    <div
+      className={
+        'flex-none mt-2 mb-2 flex items-center justify-between gap-2 order-1 md:order-none' +
+        (mobileShowFilterBar ? ' mb-12' : '')
+      }
+    >
+      <div className="rounded-lg bg-stone-800 border border-stone-700 p-0.5 flex gap-1">
+        <NavLink
+          to={`/brand/${brand?.id}/posting/feed`}
+          className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
+        >
+          <Grid3X3Icon size="1em" /> Feed
+        </NavLink>
+        <NavLink
+          to={`/brand/${brand?.id}/posting/calendar`}
+          className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
+        >
+          <CalendarIcon size="1em" /> Calendar
+        </NavLink>
+        {isMd ? null : (
+          <NavLink
+            to={`/brand/${brand?.id}/posting/drafts`}
+            className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
+          >
+            <FileEditIcon size="1em" /> Drafts
+          </NavLink>
+        )}
+      </div>
+      <FilterBar
+        filter={filter}
+        setFilter={setFilter}
+        className={
+          mobileShowFilterBar
+            ? 'absolute top-8 left-0 right-0 z-10 '
+            : 'hidden md:block'
+        }
+        autoFocus={mobileShowFilterBar}
+        key={mobileShowFilterBar + ''}
+      />
+      <div className="flex gap-2">
+        <Button
+          variant={mobileShowFilterBar ? 'default' : 'outline'}
+          size="sm"
+          className="md:hidden gap-1 p-2 h-8 overflow-ellipsis text-nowrap "
+          onClick={() => {
+            if (mobileShowFilterBar) {
+              setMobileShowFilterBar(false);
+              setFilter(undefined);
+            } else {
+              setMobileShowFilterBar(true);
+            }
+          }}
+        >
+          <ListFilterIcon size={15} /> Filter
+        </Button>
+        {extraItems}
+      </div>
+    </div>
   );
 }

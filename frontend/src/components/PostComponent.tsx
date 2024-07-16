@@ -2,27 +2,26 @@ import { Post, UserTagMap } from '@/sharedDataModel';
 import { PostImage } from './PostImage';
 import { Textarea } from './ui/textarea';
 import { Trash2Icon } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { DraftPostScheduler } from './draftPost/DraftPostScheduler';
 import { ImageUploader } from './draftPost/ImageUploader';
 import { Button } from './ui/button';
 import { useDeleteDraft } from '@/lib/deleteDraft';
-import CreatableSelect from 'react-select/creatable';
 import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
-import { ClassNamesConfig } from 'node_modules/react-select/dist/declarations/src';
 import { HashtagManager } from './HashtagManager';
 import { LargePopoverOrDialog } from './PopoverOrDialog';
+import { UsertagManager } from './UsertagManager';
 
 export function PostComponent({
   post,
   lastScheduledOrPostDate,
-  allHashTags,
-  allUserTags,
+  allHashtags,
+  allUsertags,
 }: {
   post: Post;
   lastScheduledOrPostDate?: Date;
-  allHashTags?: HashtagInsights[];
-  allUserTags?: string[];
+  allHashtags?: HashtagInsights[];
+  allUsertags?: string[];
 }) {
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
 
@@ -57,24 +56,6 @@ export function PostComponent({
 
   const deleteDraft = useDeleteDraft(post.inBrand);
 
-  const allUserTagOptions = useMemo(
-    () =>
-      (allUserTags || []).map((user) => ({ user, x: undefined, y: undefined })),
-    [allUserTags]
-  );
-  const currentUserTagsValue = useMemo(
-    () =>
-      Object.entries(post.userTags || {}).map(
-        ([user, pos]) =>
-          ({ user, ...pos }) as {
-            user: string;
-            x: number | undefined;
-            y: number | undefined;
-          }
-      ),
-    [post.userTags]
-  );
-
   const [contentWithoutHashTags, currentHashTags] = useMemo(
     () =>
       post.content
@@ -88,35 +69,15 @@ export function PostComponent({
     [post.content]
   );
 
-  const classNames = {
-    container() {
-      return 'px-2 rounded-md bg-background text-sm ring-offset-background placeholder:text-muted-foreground [&:has(:focus-visible)]:outline-none [&:has(:focus-visible)]:ring-2 [&:has(:focus-visible)]:ring-ring [&:has(:focus-visible)]:ring-offset-2';
-    },
-    valueContainer() {
-      return 'cursor-text';
-    },
-    multiValue() {
-      return 'relative group';
-    },
-    multiValueLabel() {
-      return 'text-xs bg-stone-700 text-stone-100 px-1 rounded-sm mr-1 mb-1 group-hover:line-through group-hover:text-red-500';
-    },
-    multiValueRemove() {
-      return 'absolute top-0 right-0 p-1 rounded-sm cursor-pointer w-full opacity-0 peer';
-    },
-    menu() {
-      return 'p-2 bg-white z-50 border rounded-lg dark:bg-stone-800 dark:text-stone-100';
-    },
-    menuList() {
-      return 'flex flex-wrap';
-    },
-    group() {
-      return 'flex flex-wrap gap-1';
-    },
-    option() {
-      return 'px-1 py-2 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-sm !w-auto cursor-pointer';
-    },
-  } satisfies ClassNamesConfig;
+  const contentInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    // auto-resize textarea
+    if (!contentInputRef.current) return;
+    contentInputRef.current.style.height = '0';
+    contentInputRef.current.style.height =
+      contentInputRef.current?.scrollHeight + 'px';
+  }, [contentWithoutHashTags]);
 
   return (
     <div className="grid grid-cols-3 max-w-full gap-2 relative">
@@ -153,9 +114,11 @@ export function PostComponent({
       </div>
       <div className="col-span-2 border rounded-xl p-px">
         <Textarea
-          value={contentWithoutHashTags}
+          value={contentWithoutHashTags.replace(/\n/g, '↵')}
           onChange={(event) => {
-            post.content = event.target.value + currentHashTags.join(' ');
+            post.content =
+              event.target.value.replace(/↵/g, '\n') +
+              currentHashTags.map((tag) => '#' + tag).join(' ');
           }}
           className={
             'min-h-0 h-fit border-transparent p-2' +
@@ -163,6 +126,7 @@ export function PostComponent({
               ' focus-visible:ring-offset-0 focus-visible:ring-transparent')
           }
           readOnly={!editable}
+          ref={contentInputRef}
         />
         <div className="text-sm border-t">
           <div className="flex gap-1 items-center mt-3">
@@ -170,7 +134,11 @@ export function PostComponent({
               side="left"
               trigger={
                 <div className="min-w-full overflow-x-scroll whitespace-nowrap px-2 cursor-text pb-4 -mb-6">
-                  {currentHashTags.map((tag) => '#' + tag).join(' ')}
+                  {currentHashTags.length ? (
+                    currentHashTags.map((tag) => '#' + tag).join(' ')
+                  ) : (
+                    <span className="opacity-50">(Tap to add hashtags)</span>
+                  )}
                 </div>
               }
             >
@@ -180,7 +148,7 @@ export function PostComponent({
                   contextHint={'Hashtags on ' + contentWithoutHashTags}
                   hashtagGroupsId={post.inBrand?._refs.hashtagGroups.id}
                   selected={currentHashTags}
-                  hashtagInsights={allHashTags}
+                  hashtagInsights={allHashtags}
                   onSelectedChange={(newSelected) => {
                     post.content =
                       contentWithoutHashTags +
@@ -189,75 +157,57 @@ export function PostComponent({
                 />
               )}
             </LargePopoverOrDialog>
-
-            {/* <CreatableSelect
-              isMulti
-              isClearable={false}
-              isDisabled={!editable}
-              allowCreateWhileLoading
-              options={allHashTagsOptions}
-              className="absolute z-50 flex-1"
-              value={currentHashTagsValue}
-              getOptionLabel={(option) =>
-                `${option.tag} (${
-                  option.quality == undefined ? '?' : option.quality.toFixed(2)
-                })`
-              }
-              getOptionValue={(option) => option.tag}
-              getNewOptionData={(inputValue) => ({
-                tag: '#' + inputValue,
-                quality: undefined,
-              })}
-              onChange={(newHashTags) => {
-                post.content =
-                  contentWithoutHashTags +
-                  newHashTags.map((tag) => tag.tag).join(' ');
-              }}
-              unstyled
-              classNames={classNames}
-              closeMenuOnSelect={false}
-            /> */}
           </div>
-          <div className="flex gap-1 items-center mt-3">
-            <CreatableSelect
-              isMulti
-              isClearable={false}
-              isDisabled={!editable}
-              allowCreateWhileLoading
-              options={allUserTagOptions}
-              className="absolute z-40 flex-1"
-              value={currentUserTagsValue}
-              getOptionLabel={(option) => '@' + option.user}
-              getOptionValue={(option) => option.user}
-              getNewOptionData={(inputValue) => ({
-                user: inputValue,
-                x: undefined,
-                y: undefined,
-              })}
-              onChange={(newUserTags) => {
-                if (!post.userTags) {
-                  post.userTags = UserTagMap.create({}, { owner: post._owner });
-                }
-                for (const newUserTag of newUserTags) {
-                  post.userTags[newUserTag.user] = {
-                    x: newUserTag.x || Math.random(),
-                    y: newUserTag.y || Math.random(),
-                  };
-                }
-                for (const maybeDeletedUser of Object.keys(
-                  post.userTags || {}
-                )) {
-                  if (
-                    !newUserTags.find((tag) => tag.user === maybeDeletedUser)
-                  ) {
-                    delete post.userTags[maybeDeletedUser];
-                  }
-                }
-              }}
-              unstyled
-              classNames={classNames}
-              closeMenuOnSelect={false}
-            />
+          <div className="flex gap-1 items-center mt-5 pt-3 -mb-1 border-t">
+            <LargePopoverOrDialog
+              side="left"
+              trigger={
+                <div className="min-w-full overflow-x-scroll whitespace-nowrap px-2 cursor-text pb-4 -mb-6">
+                  {Object.keys(post.userTags || {}).length ? (
+                    Object.keys(post.userTags || {})
+                      .map((tag) => '@' + tag)
+                      .join(' ')
+                  ) : (
+                    <span className="opacity-50">(Tap to add usertags)</span>
+                  )}
+                </div>
+              }
+            >
+              {(open) => (
+                <UsertagManager
+                  focusTrigger={open}
+                  contextHint={'Usertags on ' + contentWithoutHashTags}
+                  usertagGroupIds={post.inBrand?._refs.usertagGroups.id}
+                  selected={Object.keys(post.userTags || {})}
+                  allUsertags={allUsertags}
+                  onSelectedChange={(newUserTags) => {
+                    if (!post.userTags) {
+                      post.userTags = UserTagMap.create(
+                        {},
+                        { owner: post._owner }
+                      );
+                    }
+                    for (const newUserTag of newUserTags) {
+                      if (!post.userTags[newUserTag]) {
+                        post.userTags[newUserTag] = {
+                          x: Math.random(),
+                          y: Math.random(),
+                        };
+                      }
+                    }
+                    for (const maybeDeletedUser of Object.keys(
+                      post.userTags || {}
+                    )) {
+                      if (
+                        !newUserTags.find((tag) => tag === maybeDeletedUser)
+                      ) {
+                        delete post.userTags[maybeDeletedUser];
+                      }
+                    }
+                  }}
+                />
+              )}
+            </LargePopoverOrDialog>
           </div>
           {/* <div className="flex gap-1 items-center mt-2 opacity-50">
             <MapPinIcon size="1em" />{' '}
