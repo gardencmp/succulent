@@ -10,14 +10,7 @@ import { useDeleteDraft } from '@/lib/deleteDraft';
 import CreatableSelect from 'react-select/creatable';
 import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
 import { ClassNamesConfig } from 'node_modules/react-select/dist/declarations/src';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { HashtagManager } from './HashtagManager';
-import { Dialog, DialogContent } from './ui/dialog';
-import { DialogTrigger } from '@radix-ui/react-dialog';
 import { LargePopoverOrDialog } from './PopoverOrDialog';
 
 export function PostComponent({

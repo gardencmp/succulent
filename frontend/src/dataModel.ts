@@ -1,13 +1,9 @@
 import { Account, CoMap, Profile, co } from 'jazz-tools';
 import {
-  HashtagGroup,
-  HashtagList,
   ListOfBrands,
   ListOfHashtagGroups,
   ListOfUsertagGroups,
   MetaAPIConnection,
-  UsertagGroup,
-  UsertagList,
 } from './sharedDataModel';
 import { insightTypes } from './pages/settings/PreferencesPage';
 

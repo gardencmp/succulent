@@ -106,6 +106,11 @@ async function runner() {
     }
   }, 2000);
 
+  setInterval(() => {
+    for (const brand of lastWorkerUpdate?.brands || []) {
+    }
+  }, 2000);
+
   Bun.serve({
     async fetch(req) {
       if (req.url.includes('/connectFB')) {

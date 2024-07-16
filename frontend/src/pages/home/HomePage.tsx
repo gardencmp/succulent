@@ -2,14 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '../../components/ui/input';
 import {
   Brand,
-  HashtagGroup,
-  HashtagList,
   ListOfHashtagGroups,
-  ListOfLocations,
   ListOfPosts,
   ListOfUsertagGroups,
-  UsertagGroup,
-  UsertagList,
 } from '../../sharedDataModel';
 import { BrandView } from './BrandView';
 import { Account, Group, ID } from 'jazz-tools';
