@@ -155,7 +155,7 @@ export function UsertagManager({
         </div>
         <Textarea
           ref={mainInputRef}
-          className="mb-2"
+          className="mb-2 text-base"
           placeholder="Add usertag(s)"
           value={tempValue}
           onChange={(e) => {

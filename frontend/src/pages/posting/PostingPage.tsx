@@ -172,7 +172,7 @@ export function PostingPage() {
                       <Button
                         variant={showInsights ? 'default' : 'outline'}
                         size="sm"
-                        className="gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
+                        className="text-sm gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
                         onClick={() => setShowInsights(!showInsights)}
                         onDragStart={(e) => {
                           e.preventDefault();
@@ -181,7 +181,7 @@ export function PostingPage() {
                       >
                         <EyeIcon size={15} />
                         <span className="hidden md:inline">Compare</span>
-                        Insights
+                        Stats
                       </Button>
                       {!showDraftSidebar && (
                         <Button
@@ -308,7 +308,8 @@ function PostingToolbar({
           to={`/brand/${brand?.id}/posting/calendar`}
           className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
         >
-          <CalendarIcon size="1em" /> Calendar
+          <CalendarIcon size="1em" /> Cal
+          <span className="hidden md:inline">endar</span>
         </NavLink>
         {isMd ? null : (
           <NavLink
@@ -324,7 +325,7 @@ function PostingToolbar({
         setFilter={setFilter}
         className={
           mobileShowFilterBar
-            ? 'absolute top-8 left-0 right-0 z-10 '
+            ? 'absolute bottom-12 left-0 right-0 z-10 text-base '
             : 'hidden md:block'
         }
         autoFocus={mobileShowFilterBar}
@@ -334,7 +335,7 @@ function PostingToolbar({
         <Button
           variant={mobileShowFilterBar ? 'default' : 'outline'}
           size="sm"
-          className="md:hidden gap-1 p-2 h-8 overflow-ellipsis text-nowrap "
+          className="text-sm md:hidden gap-1 p-2 h-8 overflow-ellipsis text-nowrap "
           onClick={() => {
             if (mobileShowFilterBar) {
               setMobileShowFilterBar(false);
@@ -344,7 +345,8 @@ function PostingToolbar({
             }
           }}
         >
-          <ListFilterIcon size={15} /> Filter
+          <ListFilterIcon size={15} />
+          <span className="hidden md:inline"> Filter</span>
         </Button>
         {extraItems}
       </div>

@@ -156,7 +156,7 @@ export function HashtagManager({
         </div>
         <Textarea
           ref={mainInputRef}
-          className="mb-2"
+          className="mb-2 text-base"
           placeholder="Add hashtag(s)"
           value={tempValue}
           onChange={(e) => {

@@ -121,7 +121,7 @@ export function PostComponent({
               currentHashTags.map((tag) => '#' + tag).join(' ');
           }}
           className={
-            'min-h-0 h-fit border-transparent p-2' +
+            'text-base min-h-0 h-fit border-transparent p-2' +
             (!editable &&
               ' focus-visible:ring-offset-0 focus-visible:ring-transparent')
           }
