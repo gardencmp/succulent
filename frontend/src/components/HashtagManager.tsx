@@ -9,7 +9,7 @@ import { useCoState } from '@/main';
 import { Checkbox } from './ui/checkbox';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
 import { ArrowRightIcon, PlusIcon } from 'lucide-react';
 import {
