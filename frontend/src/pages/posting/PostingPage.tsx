@@ -29,6 +29,7 @@ import { FilterBar } from '../../components/FilterBar';
 import { CalendarView } from './calendar/CalendarView';
 import { collectHashtagInsights } from '../insights/hashtags/collectHashtagInsights';
 import { useBreakpoint } from '@/lib/useBreakpoint';
+import { getPostInsightsHelper } from '@/lib/importPostsHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let lastInstanceIds: any;
@@ -173,10 +174,11 @@ export function PostingPage() {
                         variant={showInsights ? 'default' : 'outline'}
                         size="sm"
                         className="text-sm gap-1 p-2 h-8 overflow-ellipsis text-nowrap"
-                        onClick={() => setShowInsights(!showInsights)}
-                        onDragStart={(e) => {
-                          e.preventDefault();
-                          alert('woo');
+                        onClick={() => {
+                          setShowInsights(!showInsights);
+                          if (brand && !showInsights) {
+                            getPostInsightsHelper(brand);
+                          }
                         }}
                       >
                         <EyeIcon size={15} />

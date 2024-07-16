@@ -32,6 +32,7 @@ export function BrandView({ brand }: { brand: Brand }) {
             <Button
               onClick={() => {
                 if (!me.root?.metaAPIConnection) return;
+                // TODO: actually share with whole group of brand!
                 brand.metaAPIConnection = me.root.metaAPIConnection;
               }}
             >

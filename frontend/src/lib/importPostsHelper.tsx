@@ -144,6 +144,14 @@ export async function importPostsHelper(
 }
 
 export async function getPostInsightsHelper(brand: Brand) {
+  const brandWithToken = await brand.ensureLoaded({ metaAPIConnection: {} });
+  const accessToken = brandWithToken?.metaAPIConnection?.longLivedToken;
+
+  if (!accessToken) {
+    console.error('No access token found');
+    return;
+  }
+
   const posts = (
     [...(brand.posts || [])].filter(
       (p) => p?.instagram?.state === 'posted'
@@ -154,7 +162,7 @@ export async function getPostInsightsHelper(brand: Brand) {
     if (post?.instagram?.state === 'posted') {
       const insights = await fetch(
         `https://graph.facebook.com/v11.0/${post.instagram.postId}/insights?metric=profile_visits,impressions,total_interactions,reach,likes,comments,saved,shares,follows&access_token=` +
-          brand.metaAPIConnection?.longLivedToken
+          accessToken
       ).then((response) => response.json());
 
       console.log('insights', insights);
@@ -162,7 +170,7 @@ export async function getPostInsightsHelper(brand: Brand) {
 
       const profileActivity = await fetch(
         `https://graph.facebook.com/v11.0/${post.instagram.postId}/insights?metric=profile_activity&breakdown=action_type&access_token=` +
-          brand.metaAPIConnection?.longLivedToken
+          accessToken
       ).then((response) => response.json());
 
       console.log('profileActivity', profileActivity);
