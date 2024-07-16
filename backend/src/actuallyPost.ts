@@ -16,13 +16,13 @@ export async function actuallyPost(
 ) {
   try {
     const post = await Post.load(postId, as, {
-      inBrand: {},
+      inBrand: { metaAPIConnection: {} },
       userTags: {},
     });
     if (!post) throw new Error('post unavailable');
 
     try {
-      const brand = await post.inBrand;
+      const brand = post.inBrand;
       if (!brand.metaAPIConnection?.longLivedToken)
         throw new Error('no access token');
       if (!brand.instagramPage) throw new Error('no instagram page');
