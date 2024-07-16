@@ -2,9 +2,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '../../components/ui/input';
 import {
   Brand,
+  HashtagGroup,
+  HashtagList,
+  ListOfHashtagGroups,
   ListOfLocations,
   ListOfPosts,
-  UserTagList,
+  ListOfUsertagGroups,
+  UsertagGroup,
+  UsertagList,
 } from '../../sharedDataModel';
 import { BrandView } from './BrandView';
 import { Account, Group, ID } from 'jazz-tools';
@@ -64,10 +69,12 @@ export function HomePage() {
               {
                 name: brandName,
                 posts: ListOfPosts.create([], { owner: brandGroup }),
-                usedLocations: ListOfLocations.create([], {
+                hashtagGroups: ListOfHashtagGroups.create([], {
                   owner: brandGroup,
                 }),
-                usedUserTags: UserTagList.create([], { owner: brandGroup }),
+                usertagGroups: ListOfUsertagGroups.create([], {
+                  owner: brandGroup,
+                }),
               },
               { owner: brandGroup }
             );

@@ -10,6 +10,15 @@ import { useDeleteDraft } from '@/lib/deleteDraft';
 import CreatableSelect from 'react-select/creatable';
 import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
 import { ClassNamesConfig } from 'node_modules/react-select/dist/declarations/src';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { HashtagManager } from './HashtagManager';
+import { Dialog, DialogContent } from './ui/dialog';
+import { DialogTrigger } from '@radix-ui/react-dialog';
+import { LargePopoverOrDialog } from './PopoverOrDialog';
 
 export function PostComponent({
   post,
@@ -78,31 +87,12 @@ export function PostComponent({
       post.content
         ? [
             post.content.split('#')[0],
-            post.content.match(/(#[a-zA-Z_]+\b)/g) || [],
+            (post.content.match(/(#[a-zA-Z_]+\b)/g) || []).map((tag) =>
+              tag.replace('#', '')
+            ),
           ]
         : ['', []],
     [post.content]
-  );
-
-  const allHashTagsOptions = useMemo(
-    () =>
-      allHashTags?.map((insights) => ({
-        tag: insights.hashtag,
-        quality: insights.relativeReachQuality,
-      })) || [],
-    [allHashTags]
-  );
-
-  const currentHashTagsValue = useMemo(
-    () =>
-      currentHashTags.map(
-        (tag) =>
-          allHashTagsOptions.find((t) => t.tag === tag) || {
-            tag,
-            quality: undefined,
-          }
-      ),
-    [currentHashTags, allHashTagsOptions]
   );
 
   const classNames = {
@@ -183,7 +173,31 @@ export function PostComponent({
         />
         <div className="text-sm border-t">
           <div className="flex gap-1 items-center mt-3">
-            <CreatableSelect
+            <LargePopoverOrDialog
+              side="left"
+              trigger={
+                <div className="min-w-full overflow-x-scroll whitespace-nowrap px-2 cursor-text pb-4 -mb-6">
+                  {currentHashTags.map((tag) => '#' + tag).join(' ')}
+                </div>
+              }
+            >
+              {(open) => (
+                <HashtagManager
+                  focusTrigger={open}
+                  contextHint={'Hashtags on ' + contentWithoutHashTags}
+                  hashtagGroupsId={post.inBrand?._refs.hashtagGroups.id}
+                  selected={currentHashTags}
+                  hashtagInsights={allHashTags}
+                  onSelectedChange={(newSelected) => {
+                    post.content =
+                      contentWithoutHashTags +
+                      newSelected.map((tag) => '#' + tag).join(' ');
+                  }}
+                />
+              )}
+            </LargePopoverOrDialog>
+
+            {/* <CreatableSelect
               isMulti
               isClearable={false}
               isDisabled={!editable}
@@ -209,7 +223,7 @@ export function PostComponent({
               unstyled
               classNames={classNames}
               closeMenuOnSelect={false}
-            />
+            /> */}
           </div>
           <div className="flex gap-1 items-center mt-3">
             <CreatableSelect

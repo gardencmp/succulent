@@ -68,8 +68,8 @@ export class Brand extends CoMap {
   instagramInsights = co.ref(BrandInstagramInsights, { optional: true });
   instagramPage? = co.json<{ id: string; name: string }>();
   posts = co.ref(ListOfPosts);
-  usedLocations = co.ref(ListOfLocations);
-  usedUserTags = co.ref(UserTagList);
+  hashtagGroups = co.ref(ListOfHashtagGroups);
+  usertagGroups = co.ref(ListOfUsertagGroups);
 }
 
 export class MetaAPIConnection extends CoMap {
@@ -100,7 +100,19 @@ export class UserTagMap extends CoMap.Record(
   }>()
 ) {}
 
-export class UserTagList extends CoList.Of(co.string) {}
+export class HashtagGroup extends CoMap {
+  name = co.string;
+  hashtags = co.ref(HashtagList);
+}
+export class ListOfHashtagGroups extends CoList.Of(co.ref(HashtagGroup)) {}
+export class HashtagList extends CoList.Of(co.string) {} // without #
+
+export class UsertagGroup extends CoMap {
+  name = co.string;
+  usertags = co.ref(UsertagList);
+}
+export class ListOfUsertagGroups extends CoList.Of(co.ref(UsertagGroup)) {}
+export class UsertagList extends CoList.Of(co.string) {} // without @
 
 export type DayInsights = {
   impressions?: number;

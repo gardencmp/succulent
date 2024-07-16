@@ -1,5 +1,14 @@
 import { Account, CoMap, Profile, co } from 'jazz-tools';
-import { ListOfBrands, MetaAPIConnection } from './sharedDataModel';
+import {
+  HashtagGroup,
+  HashtagList,
+  ListOfBrands,
+  ListOfHashtagGroups,
+  ListOfUsertagGroups,
+  MetaAPIConnection,
+  UsertagGroup,
+  UsertagList,
+} from './sharedDataModel';
 import { insightTypes } from './pages/settings/PreferencesPage';
 
 export class AccountRoot extends CoMap {
@@ -24,7 +33,7 @@ export class SucculentAccount extends Account {
   profile = co.ref(Profile);
   root = co.ref(AccountRoot);
 
-  async migrate(creationProps?: { name: string }) {
+  async migrate(this: SucculentAccount, creationProps?: { name: string }) {
     super.migrate(creationProps);
     if (!this._refs.root) {
       this.root = AccountRoot.create(
@@ -48,6 +57,21 @@ export class SucculentAccount extends Account {
         },
         { owner: this }
       );
+    }
+    const rootWithBrands = await root.ensureLoaded({ brands: [{}] });
+    if (!rootWithBrands) throw new Error('rootWithBrands not loaded');
+
+    for (const brand of rootWithBrands.brands) {
+      if (!brand._refs.hashtagGroups) {
+        brand.hashtagGroups = ListOfHashtagGroups.create([], {
+          owner: brand._owner,
+        });
+      }
+      if (!brand._refs.usertagGroups) {
+        brand.usertagGroups = ListOfUsertagGroups.create([], {
+          owner: brand._owner,
+        });
+      }
     }
   }
 }
