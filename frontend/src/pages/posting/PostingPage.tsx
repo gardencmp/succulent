@@ -30,6 +30,7 @@ import { CalendarView } from './calendar/CalendarView';
 import { collectHashtagInsights } from '../insights/hashtags/collectHashtagInsights';
 import { useBreakpoint } from '@/lib/useBreakpoint';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let lastInstanceIds: any;
 
 export function PostingPage() {
@@ -194,7 +195,7 @@ export function PostingPage() {
                     </>
                   }
                 />
-                <div className="flex-1 min-h-0 overflow-y-scroll mx-auto">
+                <div className="flex-1 min-h-0 overflow-y-scroll w-full">
                   <FeedGrid
                     posts={feedPosts}
                     showInsights={showInsights}
@@ -292,7 +293,7 @@ function PostingToolbar({
   return (
     <div
       className={
-        'flex-none mt-2 mb-2 flex items-center justify-between gap-2 order-1 md:order-none' +
+        'flex-none mt-2 md:mt-0 mb-2 flex items-center justify-between gap-2 order-1 md:order-none' +
         (mobileShowFilterBar ? ' mb-12' : '')
       }
     >

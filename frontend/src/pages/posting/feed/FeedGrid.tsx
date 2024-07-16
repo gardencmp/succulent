@@ -19,7 +19,7 @@ export function FeedGrid({
   createDraft: () => void;
 }) {
   return (
-    <div className="grid grid-cols-3 gap-0.5">
+    <div className="grid grid-cols-3 gap-0.5 w-full">
       {posts.map((post, i) => {
         return (
           post && (
