@@ -17,11 +17,13 @@ export function PostComponent({
   lastScheduledOrPostDate,
   allHashtags,
   allUsertags,
+  tagsAlwaysModal,
 }: {
   post: Post;
   lastScheduledOrPostDate?: Date;
   allHashtags?: HashtagInsights[];
   allUsertags?: string[];
+  tagsAlwaysModal?: boolean;
 }) {
   const [desiredScheduleDate, setDesiredScheduleDate] = useState<Date>();
 
@@ -132,6 +134,7 @@ export function PostComponent({
           <div className="flex gap-1 items-center mt-3">
             <LargePopoverOrDialog
               side="left"
+              alwaysModal={tagsAlwaysModal}
               trigger={
                 <div className="min-w-full overflow-x-scroll whitespace-nowrap px-2 cursor-text pb-4 -mb-6">
                   {currentHashTags.length ? (
@@ -161,6 +164,7 @@ export function PostComponent({
           <div className="flex gap-1 items-center mt-5 pt-3 -mb-1 border-t">
             <LargePopoverOrDialog
               side="left"
+              alwaysModal={tagsAlwaysModal}
               trigger={
                 <div className="min-w-full overflow-x-scroll whitespace-nowrap px-2 cursor-text pb-4 -mb-6">
                   {Object.keys(post.userTags || {}).length ? (

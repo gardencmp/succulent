@@ -12,11 +12,14 @@ import { PostInsights } from '../../../components/PostInsights';
 import { DropGap } from './DropGap';
 import { PostImage } from '../../../components/PostImage';
 import { formatDateOnly } from '@/lib/dates';
+import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
 
 export function PostTile({
   post,
   isFirst,
   olderPost,
+  allHashtags,
+  allUsertags,
   alwaysShowInsights,
 }: {
   post: Post<InstagramPosted | InstagramScheduleDesired | InstagramScheduled>;
@@ -25,6 +28,8 @@ export function PostTile({
     InstagramPosted | InstagramScheduleDesired | InstagramScheduled
   >;
   alwaysShowInsights: boolean;
+  allHashtags?: HashtagInsights[];
+  allUsertags?: string[];
   onDeleteDraft?: (post: Post) => void;
 }) {
   const [hovered, setHovered] = useState(false);
@@ -85,7 +90,12 @@ export function PostTile({
         )}
       </div>
       <DialogContent className="max-w-2xl">
-        <PostComponent post={post!} />
+        <PostComponent
+          post={post!}
+          tagsAlwaysModal={true}
+          allHashtags={allHashtags}
+          allUsertags={allUsertags}
+        />
         {post?.instagram.state === 'posted' && (
           <PostInsights post={post} full />
         )}

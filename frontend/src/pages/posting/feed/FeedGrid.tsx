@@ -5,11 +5,14 @@ import {
   Post,
 } from '@/sharedDataModel';
 import { PostTile } from './PostTile';
+import { HashtagInsights } from '@/pages/insights/hashtags/collectHashtagInsights';
 
 export function FeedGrid({
   posts,
   showInsights,
   deleteDraft,
+  allHashtags,
+  allUsertags,
 }: {
   posts: Post<
     InstagramPosted | InstagramScheduleDesired | InstagramScheduled
@@ -17,6 +20,8 @@ export function FeedGrid({
   showInsights: boolean;
   deleteDraft: (post: Post) => void;
   createDraft: () => void;
+  allHashtags?: HashtagInsights[];
+  allUsertags?: string[];
 }) {
   return (
     <div className="grid grid-cols-3 gap-0.5 w-full">
@@ -30,6 +35,8 @@ export function FeedGrid({
               olderPost={posts[i + 1]}
               alwaysShowInsights={showInsights}
               onDeleteDraft={deleteDraft}
+              allHashtags={allHashtags}
+              allUsertags={allUsertags}
             />
           )
         );

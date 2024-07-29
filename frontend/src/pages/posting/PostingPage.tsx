@@ -32,7 +32,7 @@ import { useBreakpoint } from '@/lib/useBreakpoint';
 import { getPostInsightsHelper } from '@/lib/importPostsHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let lastInstanceIds: any;
+// let lastInstanceIds: any;
 
 export function PostingPage() {
   const location = useLocation();
@@ -101,17 +101,17 @@ export function PostingPage() {
     [brand, brand?.posts]
   );
 
-  const instanceIds = Object.fromEntries(
-    brand?.posts?.map((p) => [p?.id, p?._instanceID]) || []
-  );
-  const diff = lastInstanceIds
-    ? Object.keys(instanceIds).filter(
-        (id) => lastInstanceIds[id] !== instanceIds[id]
-      )
-    : [];
-  lastInstanceIds = instanceIds;
+  // const instanceIds = Object.fromEntries(
+  //   brand?.posts?.map((p) => [p?.id, p?._instanceID]) || []
+  // );
+  // const diff = lastInstanceIds
+  //   ? Object.keys(instanceIds).filter(
+  //       (id) => lastInstanceIds[id] !== instanceIds[id]
+  //     )
+  //   : [];
+  // lastInstanceIds = instanceIds;
 
-  console.log(new Date(), diff);
+  // console.log(new Date(), diff);
 
   const createDraft = useCallback(() => {
     if (!brand) return;
@@ -203,6 +203,8 @@ export function PostingPage() {
                     showInsights={showInsights}
                     createDraft={createDraft}
                     deleteDraft={deleteDraft}
+                    allHashtags={allHashTags}
+                    allUsertags={allUserTags}
                   />
                 </div>
               </div>
@@ -310,8 +312,9 @@ function PostingToolbar({
           to={`/brand/${brand?.id}/posting/calendar`}
           className="text-sm flex gap-2 py-0.5 px-2 h-auto items-center rounded text-stone-400 hover:text-white [&.active]:bg-stone-950 [&.active]:text-white"
         >
-          <CalendarIcon size="1em" /> Cal
-          <span className="hidden md:inline">endar</span>
+          <CalendarIcon size="1em" />{' '}
+          <span className="inline md:hidden">Cal</span>
+          <span className="hidden md:inline">Calendar</span>
         </NavLink>
         {isMd ? null : (
           <NavLink
