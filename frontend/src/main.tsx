@@ -14,7 +14,7 @@ export const Jazz = createJazzReactContext<SucculentAccount>({
       : undefined,
   }),
   peer: 'wss://mesh.jazz.tools',
-  // storage: 'experimentalOPFSdoNotUseOrYouWillBeFired',
+  storage: 'singleTabOPFS',
 });
 export const { useCoState, useAccount, useAcceptInvite } = Jazz;
 
