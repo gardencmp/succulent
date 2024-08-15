@@ -50,6 +50,7 @@ async function runner() {
   // TODO: make sure this is inferred
   const { worker } = await startWorker<SchedulerAccount>({
     accountSchema: SchedulerAccount,
+    syncServer: 'wss://mesh.jazz.tools/?key=succulent-backend@gcmp.io',
   });
 
   const actuallyScheduled: ActuallyScheduled = new Map();

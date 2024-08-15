@@ -13,7 +13,7 @@ export const Jazz = createJazzReactContext<SucculentAccount>({
       ? 'succulent.jazz.tools'
       : undefined,
   }),
-  peer: 'wss://mesh.jazz.tools',
+  peer: 'wss://mesh.jazz.tools/?key=succulent-frontend@gcmp.io',
   storage: 'singleTabOPFS',
 });
 export const { useCoState, useAccount, useAcceptInvite } = Jazz;
