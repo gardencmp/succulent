@@ -30,6 +30,7 @@ import { CalendarView } from './calendar/CalendarView';
 import { collectHashtagInsights } from '../insights/hashtags/collectHashtagInsights';
 import { useBreakpoint } from '@/lib/useBreakpoint';
 import { getPostInsightsHelper } from '@/lib/importPostsHelper';
+import { useDebouncedMemo } from '@/lib/debouncedUseMemo';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 // let lastInstanceIds: any;
@@ -91,14 +92,15 @@ export function PostingPage() {
     [brand?.posts]
   );
 
-  const allHashTags = useMemo(
+  const allHashTags = useDebouncedMemo(
     () =>
       brand
         ? collectHashtagInsights(brand).sort(
             (a, b) => b.relativeReachQuality - a.relativeReachQuality
           )
         : [],
-    [brand, brand?.posts]
+    [brand, brand?.posts],
+    5000
   );
 
   // const instanceIds = Object.fromEntries(

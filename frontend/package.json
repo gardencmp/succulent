@@ -27,6 +27,7 @@
     "date-fns": "^2.30.0",
     "jazz-browser-media-images": "0.7.32",
     "jazz-react": "0.7.32",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.309.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.9.1",
@@ -39,6 +40,7 @@
     "vaul": "^0.8.0"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20.8.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",

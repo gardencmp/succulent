@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '../../../components/ui/table';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../../../components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
 import { ID } from 'jazz-tools';
@@ -26,6 +26,7 @@ import {
   HashtagInsights,
   collectHashtagInsights,
 } from './collectHashtagInsights';
+import { useDebouncedMemo } from '@/lib/debouncedUseMemo';
 
 const columns: ColumnDef<HashtagInsights>[] = [
   {
@@ -89,9 +90,10 @@ export function HashtagInsightsPage() {
 
   const brand = useCoState(Brand, brandId);
 
-  const rows: HashtagInsights[] = useMemo(
+  const rows: HashtagInsights[] = useDebouncedMemo(
     () => (brand ? collectHashtagInsights(brand) : []),
-    [brand]
+    [brand],
+    5000
   );
 
   const [sorting, setSorting] = useState<SortingState>([
