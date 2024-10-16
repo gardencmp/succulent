@@ -45,7 +45,7 @@ export class SucculentAccount extends Account {
         { owner: this }
       );
     }
-    const root = (await this._refs.root!.load())!;
+    const root = (await this.ensureLoaded({ root: true }))!.root;
     if (!root._refs.settings) {
       root.settings = Settings.create(
         {

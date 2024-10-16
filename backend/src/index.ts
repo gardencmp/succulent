@@ -47,9 +47,8 @@ export type ActuallyScheduled = Map<
 >;
 
 async function runner() {
-  // TODO: make sure this is inferred
-  const { worker } = await startWorker<SchedulerAccount>({
-    accountSchema: SchedulerAccount,
+  const { worker } = await startWorker({
+    AccountSchema: SchedulerAccount,
     syncServer: 'wss://mesh.jazz.tools/?key=succulent-backend@gcmp.io',
   });
 
